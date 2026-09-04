@@ -1,26 +1,167 @@
 @import "tailwindcss";
 
+@theme {
+  /* Earth Greens - Natural Organic Palette */
+  --color-forest-950: #0d1a12;
+  --color-forest-900: #14271c;
+  --color-forest-850: #193224;
+  --color-forest-800: #1e3d2c;
+  --color-forest-700: #29523c;
+  --color-forest-600: #386b4f;
+  --color-forest-500: #4a8665;
+  --color-forest-400: #62a17f;
+  --color-forest-300: #88be9f;
+  --color-forest-200: #b5dac5;
+  --color-forest-100: #dcefe4;
+  --color-forest-50: #f0f7f2;
+
+  /* Moss & Sage Herbal Tones */
+  --color-moss-900: #1f3324;
+  --color-moss-800: #2b4530;
+  --color-moss: #3a5c40;
+  --color-moss-light: #527958;
+  --color-sage: #608066;
+  --color-sage-light: #8fa894;
+  --color-sage-subtle: #dbe4dc;
+  --color-sage-mist: #eef3ed;
+
+  /* Earth Light Surfaces */
+  --color-linen-base: #f7f8f4;
+  --color-linen-card: #ffffff;
+  --color-linen-alt: #f0f3eb;
+  --color-linen-border: rgba(30, 61, 44, 0.12);
+  --color-linen-border-hover: rgba(30, 61, 44, 0.28);
+
+  /* Warm Sacred Wood & Soil Accents */
+  --color-amberWood-light: #dfb282;
+  --color-amberWood: #b88758;
+  --color-amberWood-dark: #96673b;
+  --color-amberWood-muted: #7d522c;
+
+  /* Backward-compatible mappings for existing components to light organic theme */
+  --color-charcoal-950: #ffffff;
+  --color-charcoal-900: #f7f8f4;
+  --color-charcoal-850: #eff2eb;
+  --color-charcoal-800: #e6ece0;
+  --color-charcoal-700: #d8e2d2;
+  --color-charcoal-600: #8ba588;
+
+  --color-smokeGray: #6b7f70;
+  --color-whisper-border: rgba(30, 61, 44, 0.12);
+  --color-whisper-border-hover: rgba(30, 61, 44, 0.28);
+
+  --font-serif: var(--font-cormorant);
+  --font-sans: var(--font-jakarta);
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --background: #f7f8f4;
+  --foreground: #1c2e22; /* Forest dark body text */
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), sans-serif;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #f0f3eb;
+}
+::-webkit-scrollbar-thumb {
+  background: #608066;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #29523c;
+}
+
+/* Vietnamese Italic & Display Descender Clearance - Mandatory by Taste-Skill */
+.descender-safe {
+  line-height: 1.18 !important;
+  padding-bottom: 0.25rem;
+}
+
+/* Zen Glassmorphism styling for Light Botanical Theme */
+.glass-panel,
+.zen-glass {
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(14px) saturate(130%);
+  -webkit-backdrop-filter: blur(14px) saturate(130%);
+  border: 1px solid rgba(30, 61, 44, 0.12);
+  box-shadow: 0 20px 50px -15px rgba(20, 40, 28, 0.08);
+}
+
+.glass-card,
+.zen-card {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(30, 61, 44, 0.1);
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glass-card:hover,
+.zen-card:hover {
+  background: rgba(255, 255, 255, 0.95);
+  border-color: rgba(30, 61, 44, 0.28);
+  transform: translateY(-3px);
+  box-shadow: 0 16px 36px -12px rgba(20, 40, 28, 0.12);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .glass-panel,
+  .zen-glass {
+    background: #ffffff;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+  .glass-card,
+  .zen-card {
+    background: #f7f9f5;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
+/* Accessibility: Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Subtle Pulsing for Zen Presence */
+@keyframes subtleBreath {
+  0%, 100% { transform: scale(1); opacity: 0.85; }
+  50% { transform: scale(1.03); opacity: 1; }
+}
+
+.zen-breath {
+  animation: subtleBreath 6s infinite ease-in-out;
+}
+
+/* Text underline micro interaction */
+.hover-underline {
+  position: relative;
+}
+.hover-underline::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 1.5px;
+  bottom: -2px;
+  left: 0;
+  background-color: #29523c;
+  transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.hover-underline:hover::after {
+  width: 100%;
 }
