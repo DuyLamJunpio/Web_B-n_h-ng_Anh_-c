@@ -1,244 +1,78 @@
 "use client";
 
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
+import { ArrowUpRight, Check, Eye, ShoppingBag } from "lucide-react";
 import { PRODUCTS, Product } from "@/lib/data";
 import { useCart } from "@/lib/CartContext";
-import { Star, Eye, ShoppingBag, Sparkles, Flame, Check } from "lucide-react";
+
+const filters = [
+  { id: "all", label: "Tất cả" },
+  { id: "purify", label: "Thanh tẩy" },
+  { id: "warmth", label: "Hơi ấm" },
+  { id: "energy", label: "Năng lượng" },
+];
 
 export default function Collections() {
-  const [filter, setFilter] = useState<string>("all");
+  const [filter, setFilter] = useState("all");
   const [addedId, setAddedId] = useState<string | null>(null);
   const { addToCart, openProductModal } = useCart();
 
-  const filteredProducts =
-    filter === "all"
-      ? PRODUCTS
-      : PRODUCTS.filter((p) => p.category === filter);
+  const products = filter === "all" ? PRODUCTS : PRODUCTS.filter((product) => product.category === filter);
 
-  const handleAddWithFeedback = (product: Product) => {
+  const addProduct = (product: Product) => {
     addToCart(product.id);
     setAddedId(product.id);
-    setTimeout(() => setAddedId(null), 1800);
+    window.setTimeout(() => setAddedId(null), 1600);
   };
 
-  const categories = [
-    { id: "all", label: "Tất Cả", count: PRODUCTS.length },
-    { id: "purify", label: "Thanh Tẩy & Tẩy Uế", count: PRODUCTS.filter(p => p.category === 'purify').length },
-    { id: "warmth", label: "Hơi Ấm & Ánh Sáng", count: PRODUCTS.filter(p => p.category === 'warmth').length },
-    { id: "energy", label: "Năng Lượng & Thiền", count: PRODUCTS.filter(p => p.category === 'energy').length },
-  ];
-
   return (
-    <section
-      id="collections"
-      className="py-28 sm:py-36 bg-linen-alt border-y border-forest-800/10 relative overflow-hidden"
-    >
-      {/* Background Subtle Ambient Glow */}
-      <div className="absolute top-1/3 right-0 w-96 h-96 bg-forest-500/5 rounded-full blur-[140px] pointer-events-none" />
-      <div className="absolute bottom-10 left-10 w-80 h-80 bg-forest-600/5 rounded-full blur-[120px] pointer-events-none" />
-
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-8 lg:px-12 xl:px-16">
-        {/* Section Header & Subtitle */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-60px" }}
-          transition={{ duration: 0.8 }}
-          className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-8"
-        >
-          <div className="space-y-4 max-w-2xl">
-            <div className="inline-flex items-center gap-2 text-forest-700 text-xs tracking-[0.3em] uppercase font-semibold">
-              <Sparkles className="w-3.5 h-3.5 text-forest-600" />
-              <span>Tuyển Tập Thủ Công Tự Nhiên</span>
-            </div>
-            <h2 className="font-serif text-3xl sm:text-5xl md:text-6xl text-forest-950 font-light leading-tight descender-safe">
-              Những Vật Phẩm Chữa Lành
-            </h2>
-            <p className="text-forest-800/80 font-light text-sm sm:text-base leading-relaxed">
-              Mỗi vật phẩm là một tạo tác của thiên nhiên hoang sơ, mang nguồn năng lượng thanh khiết giúp phục hồi sự cân bằng trong tâm trí và không gian sống.
-            </p>
-          </div>
-
-          {/* Category Filter Tabs with active indicators */}
-          <div className="flex flex-wrap gap-2 text-xs">
-            {categories.map((cat) => (
-              <button
-                key={cat.id}
-                onClick={() => setFilter(cat.id)}
-                className={`px-4 sm:px-5 py-2.5 rounded-full transition-all duration-300 flex items-center gap-2 cursor-pointer font-medium ${
-                  filter === cat.id
-                    ? "border border-forest-800 text-white bg-forest-800 shadow-md shadow-forest-900/15"
-                    : "border border-forest-800/15 text-forest-800 hover:border-forest-700 hover:text-forest-950 bg-white/90 shadow-sm"
-                }`}
-              >
-                <span>{cat.label}</span>
-                <span className={`text-[10px] font-serif ${filter === cat.id ? "text-white/80" : "text-forest-600"}`}>({cat.count})</span>
-              </button>
-            ))}
-          </div>
+    <section id="collections" className="bg-[#f3f1eb] px-5 py-20 text-[#282723] sm:px-8 sm:py-28 lg:px-12">
+      <div className="mx-auto max-w-[1400px]">
+        <motion.div initial={{ opacity: 0, y: 18 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.25 }} transition={{ duration: 0.6 }} className="max-w-2xl">
+          <h2 className="text-4xl font-light leading-[1.05] tracking-[-0.045em] sm:text-5xl lg:text-6xl">Những vật phẩm cho đời sống thường nhật</h2>
+          <p className="mt-5 max-w-xl text-sm leading-6 text-[#625f57] sm:text-base">Gỗ, khói, ánh sáng và những nốt hương được chọn để ở lại thật lâu trong không gian của bạn.</p>
         </motion.div>
 
-        {/* Dynamic Product Grid with Staggered Animations */}
-        <motion.div
-          layout
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
-        >
-          <AnimatePresence>
-            {filteredProducts.map((p, index) => (
-              <motion.div
-                key={p.id}
-                layout
-                initial={{ opacity: 0, y: 30, filter: "blur(6px)" }}
-                animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                transition={{ duration: 0.6, delay: index * 0.08, ease: "easeOut" }}
-                className="bg-white/95 rounded-2xl overflow-hidden flex flex-col justify-between group relative border border-forest-800/15 hover:border-forest-700 transition-all duration-500 shadow-sm hover:shadow-xl"
-              >
-                {/* Top Photo Frame with Zoom & Hover Actions */}
-                <div className="relative aspect-[4/3] sm:aspect-[4/3.2] overflow-hidden bg-forest-50">
-                  {/* Product Image */}
+        <div className="mt-12 flex flex-wrap items-center gap-x-6 gap-y-3 border-y border-[#282723]/15 py-4 text-xs">
+          <span className="mr-3 text-[#625f57]">Xem theo</span>
+          {filters.map((item) => (
+            <button key={item.id} type="button" onClick={() => setFilter(item.id)} className={`border-b pb-1 transition-colors ${filter === item.id ? "border-[#282723] text-[#282723]" : "border-transparent text-[#77736b] hover:border-[#77736b] hover:text-[#282723]"}`}>
+              {item.label}
+            </button>
+          ))}
+        </div>
+
+        <motion.div layout className="mt-10 grid grid-cols-1 gap-x-5 gap-y-12 md:grid-cols-2 lg:grid-cols-12 lg:gap-y-16">
+          <AnimatePresence mode="popLayout">
+            {products.map((product, index) => (
+              <motion.article key={product.id} layout initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 12 }} transition={{ duration: 0.45, delay: index * 0.04 }} className={`${index === 0 ? "lg:col-span-7" : index === 1 ? "lg:col-span-5" : "lg:col-span-4"} group`}>
+                <button type="button" onClick={() => openProductModal(product.id)} className="relative block w-full overflow-hidden bg-[#e4e0d6] text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8d693a]">
+                  {/* Product photography comes from the catalog data and remains an actual image, not a CSS mock. */}
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={p.image}
-                    alt={p.name}
-                    className="w-full h-full object-cover object-center group-hover:scale-108 group-hover:filter group-hover:brightness-105 transition-all duration-700 ease-out"
-                  />
+                  <img src={product.image} alt={product.name} className={`w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.035] ${index === 0 ? "aspect-[1.22]" : "aspect-[1.08]"}`} />
+                  <span className="absolute bottom-4 right-4 flex h-10 w-10 items-center justify-center bg-[#f3f1eb]/90 text-[#282723] opacity-0 transition-opacity duration-300 group-hover:opacity-100"><Eye className="h-4 w-4" strokeWidth={1.25} /></span>
+                </button>
 
-                  {/* Subtle Image Gradient */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-forest-950/60 via-transparent to-transparent pointer-events-none" />
-
-                  {/* Floating Badges */}
-                  <div className="absolute top-3.5 left-3.5 flex flex-col gap-1.5 z-10">
-                    {p.badge && (
-                      <span className="px-3 py-1 rounded-full bg-forest-900 text-white text-[10px] font-semibold tracking-wider uppercase shadow-md">
-                        {p.badge}
-                      </span>
-                    )}
-                    <span className="px-2.5 py-1 rounded-full bg-white/90 text-forest-800 text-[10px] tracking-wider uppercase border border-forest-800/15 backdrop-blur-md shadow-sm">
-                      {p.origin}
-                    </span>
+                <div className="flex items-start justify-between gap-4 border-b border-[#282723]/15 py-4">
+                  <div>
+                    <p className="text-[10px] uppercase tracking-[0.16em] text-[#77736b]">{product.categoryName}</p>
+                    <h3 className="mt-2 max-w-[24rem] text-base font-medium leading-5">{product.name}</h3>
+                    <p className="mt-2 text-xs leading-5 text-[#625f57]">{product.notes}</p>
                   </div>
-
-                  {/* Quick Action Overlay on Hover */}
-                  <div className="absolute inset-0 bg-forest-950/35 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-3 backdrop-blur-[2px] p-4">
-                    <button
-                      onClick={() => openProductModal(p.id)}
-                      className="px-4 py-2.5 rounded-full bg-white/95 hover:bg-forest-800 text-forest-800 hover:text-white text-xs font-medium tracking-wider uppercase border border-forest-800/20 flex items-center gap-1.5 transition-all transform translate-y-2 group-hover:translate-y-0 duration-300 shadow-md cursor-pointer"
-                    >
-                      <Eye className="w-3.5 h-3.5" />
-                      <span>Xem Nhanh</span>
-                    </button>
-                    <button
-                      onClick={() => handleAddWithFeedback(p)}
-                      className="px-4 py-2.5 rounded-full bg-forest-800 hover:bg-forest-700 text-white text-xs font-semibold tracking-wider uppercase flex items-center gap-1.5 transition-all transform translate-y-2 group-hover:translate-y-0 duration-300 shadow-xl cursor-pointer"
-                    >
-                      {addedId === p.id ? (
-                        <>
-                          <Check className="w-3.5 h-3.5 text-emerald-200" />
-                          <span>Đã Thêm</span>
-                        </>
-                      ) : (
-                        <>
-                          <ShoppingBag className="w-3.5 h-3.5" />
-                          <span>+ Giỏ Hàng</span>
-                        </>
-                      )}
+                  <div className="shrink-0 text-right">
+                    <p className="text-sm">{product.price.toLocaleString("vi-VN")}đ</p>
+                    <button type="button" onClick={() => addProduct(product)} className="mt-4 inline-flex items-center gap-1 text-[11px] font-medium text-[#625f57] transition-colors hover:text-[#8d693a]">
+                      {addedId === product.id ? <><Check className="h-3.5 w-3.5" />Đã thêm</> : <><ShoppingBag className="h-3.5 w-3.5" />Thêm vào giỏ</>}
                     </button>
                   </div>
                 </div>
-
-                {/* Bottom Card Content */}
-                <div className="p-6 flex-1 flex flex-col justify-between space-y-4">
-                  <div className="space-y-2.5">
-                    {/* Rating and Scent Category */}
-                    <div className="flex items-center justify-between text-xs">
-                      <span className="text-[11px] text-forest-700 tracking-[0.2em] uppercase font-semibold">
-                        {p.categoryName}
-                      </span>
-                      <div className="flex items-center gap-1.5 text-forest-700 text-[11px]">
-                        <Star className="w-3 h-3 fill-amberWood text-amberWood" />
-                        <span className="text-forest-900 font-bold">{p.rating}</span>
-                        <span className="text-forest-500 font-serif">({p.reviewsCount})</span>
-                      </div>
-                    </div>
-
-                    {/* Product Title */}
-                    <h3
-                      onClick={() => openProductModal(p.id)}
-                      className="font-serif text-xl sm:text-2xl text-forest-950 group-hover:text-forest-700 transition-colors cursor-pointer line-clamp-1 font-normal"
-                    >
-                      {p.name}
-                    </h3>
-
-                    {/* Scent Note tag */}
-                    <p className="text-xs text-forest-700 font-medium line-clamp-1 italic font-serif">
-                      ✦ {p.notes}
-                    </p>
-
-                    {/* Short Description */}
-                    <p className="text-forest-800/75 text-xs font-light line-clamp-2 leading-relaxed">
-                      {p.desc}
-                    </p>
-                  </div>
-
-                  {/* Price & Action Bar */}
-                  <div className="pt-4 border-t border-forest-800/10 flex items-center justify-between">
-                    <div className="flex items-baseline gap-2">
-                      <span className="font-serif text-xl sm:text-2xl text-forest-900 font-semibold">
-                        {p.price.toLocaleString("vi-VN")} đ
-                      </span>
-                      {p.originalPrice && (
-                        <span className="text-xs text-forest-500 line-through font-serif">
-                          {p.originalPrice.toLocaleString("vi-VN")} đ
-                        </span>
-                      )}
-                    </div>
-
-                    <button
-                      onClick={() => handleAddWithFeedback(p)}
-                      className="px-4 py-2 text-[11px] uppercase tracking-widest bg-white hover:bg-forest-800 text-forest-800 hover:text-white border border-forest-800/20 hover:border-forest-800 rounded-full font-medium transition-all duration-300 flex items-center gap-1.5 cursor-pointer shadow-sm"
-                    >
-                      {addedId === p.id ? (
-                        <>
-                          <Check className="w-3 h-3 text-emerald-600" />
-                          <span className="text-emerald-700 font-semibold">Đã Thêm</span>
-                        </>
-                      ) : (
-                        <span>+ Chọn</span>
-                      )}
-                    </button>
-                  </div>
-                </div>
-              </motion.div>
+              </motion.article>
             ))}
           </AnimatePresence>
         </motion.div>
 
-        {/* Bottom Guarantee Banner Spanning Full Width */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
-          className="mt-16 p-6 sm:p-8 rounded-2xl bg-white/95 backdrop-blur-md border border-forest-800/15 flex flex-col sm:flex-row items-center justify-between gap-6 text-center sm:text-left shadow-lg"
-        >
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-full bg-forest-100 border border-forest-300 flex items-center justify-center text-forest-800 flex-shrink-0 shadow-sm">
-              <Flame className="w-6 h-6 text-forest-700 animate-pulse" />
-            </div>
-            <div>
-              <h4 className="font-serif text-lg text-forest-950 font-normal">Đóng gói chuẩn nghi thức an tịnh</h4>
-              <p className="text-forest-800/80 text-xs font-light mt-0.5">Mỗi kiện hàng đều được xông trầm thơm dịu và bọc gói bằng giấy mộc tái chế thân thiện môi trường.</p>
-            </div>
-          </div>
-          <a
-            href="#quiz"
-            className="px-7 py-3 border border-forest-700 hover:border-forest-900 text-forest-800 hover:bg-forest-800 hover:text-white text-xs uppercase tracking-widest font-semibold rounded-full whitespace-nowrap transition-all shadow-sm"
-          >
-            Tư Vấn Mùi Hương Cá Nhân
-          </a>
-        </motion.div>
+        <a href="#about" className="mt-14 inline-flex items-center gap-2 border-b border-[#282723] pb-1 text-sm transition-colors hover:text-[#8d693a]">Tìm hiểu về RUNGU <ArrowUpRight className="h-4 w-4" strokeWidth={1.25} /></a>
       </div>
     </section>
   );

@@ -4,16 +4,14 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { PRODUCTS, Product } from "@/lib/data";
 import { useCart } from "@/lib/CartContext";
-import { Sparkles, ArrowRight, RotateCcw, Check, ShoppingBag, Eye, Heart, Compass } from "lucide-react";
+import { Sparkles, RotateCcw, Check, ShoppingBag, Eye } from "lucide-react";
 
 export default function Quiz() {
   const [recommendedProduct, setRecommendedProduct] = useState<Product | null>(null);
-  const [selectedMood, setSelectedMood] = useState<string | null>(null);
   const [isAdded, setIsAdded] = useState(false);
   const { addToCart, openProductModal } = useCart();
 
   const handleSelectMood = (mood: string) => {
-    setSelectedMood(mood);
     let selected = PRODUCTS[0];
     if (mood === "stress") selected = PRODUCTS[0]; // Palo Santo
     if (mood === "focus") selected = PRODUCTS[3]; // Vòng Tây Tạng
@@ -73,16 +71,16 @@ export default function Quiz() {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-60px" }}
         transition={{ duration: 0.8 }}
-        className="bg-white/90 p-8 sm:p-14 lg:p-16 rounded-2xl space-y-12 border border-forest-800/15 shadow-xl relative overflow-hidden w-full"
+        className="bg-white/65 p-8 sm:p-14 lg:p-16 space-y-12 border border-forest-800/15 relative overflow-hidden w-full"
       >
         {/* Quiz Header */}
         <div className="text-center space-y-3 relative z-10 max-w-2xl mx-auto">
           <div className="inline-flex items-center gap-2 text-forest-700 text-xs tracking-[0.3em] uppercase font-mono font-semibold">
             <Sparkles className="w-3.5 h-3.5 text-forest-600" />
-            <span>Trải Nghiệm Cá Nhân Hóa</span>
+            <span>Trải nghiệm cá nhân hóa</span>
           </div>
           <h2 className="font-serif text-3xl sm:text-5xl text-forest-950 font-light leading-tight descender-safe">
-            Lắng Nghe Nhu Cầu Của Bạn
+            Lắng nghe nhu cầu của bạn
           </h2>
           <p className="text-forest-800/80 font-light text-sm sm:text-base leading-relaxed">
             Hãy chạm vào trạng thái cảm xúc hiện tại của bạn, chúng tôi sẽ gợi ý vật phẩm tương ứng giúp cân bằng lại trường năng lượng.
@@ -112,11 +110,11 @@ export default function Quiz() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: idx * 0.1, duration: 0.5 }}
                     onClick={() => handleSelectMood(opt.id)}
-                    className="p-6 text-left bg-white/90 hover:bg-forest-50/70 border border-forest-800/15 hover:border-forest-700 rounded-xl transition-all duration-300 group relative flex flex-col justify-between cursor-pointer hover:shadow-lg shadow-sm"
+                    className="p-6 text-left bg-white/75 hover:bg-forest-50/70 border border-forest-800/15 hover:border-forest-700 transition-all duration-300 group relative flex flex-col justify-between cursor-pointer"
                   >
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
-                        <span className="text-3xl p-2 rounded-lg bg-forest-50 border border-forest-200 group-hover:border-forest-400 transition-colors">{opt.icon}</span>
+                        <span className="text-3xl p-2 bg-forest-50 border border-forest-200 group-hover:border-forest-400 transition-colors">{opt.icon}</span>
                         <span className="text-[10px] uppercase tracking-widest text-forest-700 opacity-0 group-hover:opacity-100 transition-opacity font-bold">
                           Chọn →
                         </span>
@@ -153,18 +151,18 @@ export default function Quiz() {
               </div>
 
               {/* Recommendation Detail Card with Image */}
-              <div className="p-6 sm:p-10 bg-white/95 rounded-2xl border border-forest-800/20 grid grid-cols-1 md:grid-cols-12 gap-8 items-center text-left max-w-4xl mx-auto shadow-xl relative overflow-hidden">
+              <div className="p-6 sm:p-10 bg-white/75 border border-forest-800/20 grid grid-cols-1 md:grid-cols-12 gap-8 items-center text-left max-w-4xl mx-auto relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-64 h-64 bg-forest-500/10 rounded-full blur-3xl pointer-events-none" />
 
                 {/* Product Photo */}
-                <div className="md:col-span-5 relative aspect-square rounded-xl overflow-hidden border border-forest-800/15 shadow-md">
+                <div className="md:col-span-5 relative aspect-square overflow-hidden border border-forest-800/15">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={recommendedProduct.image}
                     alt={recommendedProduct.name}
                     className="w-full h-full object-cover"
                   />
-                  <span className="absolute top-3 left-3 px-3 py-1 bg-forest-900 text-white text-[10px] font-semibold tracking-wider uppercase rounded-full shadow-md">
+                  <span className="absolute top-3 left-3 px-3 py-1 bg-forest-900 text-white text-[10px] font-semibold tracking-wider uppercase">
                     {recommendedProduct.badge || "Gợi ý tối ưu"}
                   </span>
                 </div>
@@ -204,18 +202,18 @@ export default function Quiz() {
                     <div className="flex gap-3">
                       <button
                         onClick={() => openProductModal(recommendedProduct.id)}
-                        className="px-4 py-2.5 border border-forest-800/20 hover:border-forest-700 text-forest-800 hover:text-forest-950 text-xs tracking-wider uppercase rounded-full flex items-center gap-1.5 transition-colors cursor-pointer bg-white"
+                        className="px-4 py-2.5 border border-forest-800/20 hover:border-forest-700 text-forest-800 hover:text-forest-950 text-xs tracking-wider uppercase flex items-center gap-1.5 transition-colors cursor-pointer bg-[#f6f4ee]"
                       >
                         <Eye className="w-3.5 h-3.5 text-forest-600" />
                         <span>Chi Tiết</span>
                       </button>
                       <button
                         onClick={() => handleAddToCart(recommendedProduct)}
-                        className="px-6 py-2.5 bg-forest-800 hover:bg-forest-700 text-white text-xs uppercase tracking-widest font-semibold rounded-full transition-all flex items-center gap-2 shadow-xl shadow-forest-900/15 cursor-pointer"
+                        className="px-6 py-2.5 bg-forest-800 hover:bg-forest-700 text-white text-xs uppercase tracking-widest font-semibold transition-all flex items-center gap-2 cursor-pointer"
                       >
                         {isAdded ? (
                           <>
-                            <Check className="w-4 h-4 text-emerald-200" />
+                            <Check className="w-4 h-4 text-sky-200" />
                             <span>Đã Thêm Vào Giỏ!</span>
                           </>
                         ) : (

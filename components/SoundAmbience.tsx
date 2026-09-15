@@ -7,7 +7,7 @@ import { Volume2, VolumeX } from "lucide-react";
  * Chuông xoay Tây Tạng (Tibetan Singing Bowl 432Hz)
  * Tổng hợp âm thanh bằng Web Audio API thuần, siêu nhẹ và êm ái.
  */
-export default function SoundAmbience() {
+export default function SoundAmbience({ placement = "floating" }: { placement?: "floating" | "nav" }) {
   const [isPlaying, setIsPlaying] = useState(false);
   const audioCtxRef = useRef<AudioContext | null>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
@@ -81,31 +81,40 @@ export default function SoundAmbience() {
       type="button"
       onClick={toggleSound}
       title={isPlaying ? "Tắt âm thanh chuông thiền" : "Bật chuông xoay Tây Tạng chữa lành"}
-      className={`fixed bottom-6 right-6 z-40 flex items-center gap-2.5 rounded-full px-4 py-2.5 text-xs font-medium backdrop-blur-md shadow-xl transition-all duration-300 cursor-pointer ${
+      aria-pressed={isPlaying}
+      aria-label={isPlaying ? "Tắt chuông thiền 432Hz" : "Bật chuông xoay Tây Tạng"}
+      className={`${
+        placement === "nav"
+          ? "flex h-9 w-9 items-center justify-center transition-colors hover:bg-white/10 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-[#d8b879] sm:w-10"
+          : "fixed bottom-6 right-6 z-40 flex items-center gap-2.5 rounded-full px-4 py-2.5 shadow-xl"
+      } text-xs font-medium backdrop-blur-md transition-all duration-300 cursor-pointer ${
         isPlaying
-          ? "bg-forest-800 text-white ring-2 ring-forest-700/60 shadow-forest-900/20 scale-105 font-semibold"
-          : "bg-white/95 text-forest-800 border border-forest-800/20 hover:bg-forest-50 hover:text-forest-950 shadow-md"
+          ? placement === "nav"
+            ? "bg-[#d8b879] text-[#252520]"
+            : "bg-forest-800 text-white ring-2 ring-forest-700/60 shadow-forest-900/20 scale-105 font-semibold"
+          : placement === "nav"
+            ? "text-[#e2ddd3] hover:text-[#d8b879]"
+            : "bg-white/95 text-forest-800 border border-forest-800/20 hover:bg-forest-50 hover:text-forest-950 shadow-md"
       }`}
     >
       <span className="relative flex h-2.5 w-2.5">
         {isPlaying ? (
           <>
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-forest-200 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-forest-200"></span>
+            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#d8b879]"></span>
           </>
         ) : (
-          <span className="inline-flex rounded-full h-2.5 w-2.5 bg-forest-600"></span>
+          <span className="inline-flex rounded-full h-2.5 w-2.5 bg-[#b88d4a]"></span>
         )}
       </span>
-      <span className="hidden sm:inline font-serif italic text-xs tracking-wider">
+      <span className={`${placement === "nav" ? "hidden" : "hidden sm:inline"} font-serif italic text-xs tracking-wider`}>
         {isPlaying ? "Chuông Thiền 432Hz" : "Chuông Xoay Tây Tạng"}
       </span>
       {isPlaying ? (
-        <Volume2 className="w-4 h-4 text-white animate-pulse" />
+      <Volume2 className="w-4 h-4 text-[#252520] animate-pulse" />
       ) : (
-        <VolumeX className="w-4 h-4 text-forest-600" />
+        <VolumeX className="w-4 h-4 text-[#c7c0b4]" />
       )}
     </button>
   );
 }
-

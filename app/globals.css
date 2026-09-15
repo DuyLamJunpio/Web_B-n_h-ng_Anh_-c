@@ -1,167 +1,137 @@
 @import "tailwindcss";
 
 @theme {
-  /* Earth Greens - Natural Organic Palette */
-  --color-forest-950: #0d1a12;
-  --color-forest-900: #14271c;
-  --color-forest-850: #193224;
-  --color-forest-800: #1e3d2c;
-  --color-forest-700: #29523c;
-  --color-forest-600: #386b4f;
-  --color-forest-500: #4a8665;
-  --color-forest-400: #62a17f;
-  --color-forest-300: #88be9f;
-  --color-forest-200: #b5dac5;
-  --color-forest-100: #dcefe4;
-  --color-forest-50: #f0f7f2;
-
-  /* Moss & Sage Herbal Tones */
-  --color-moss-900: #1f3324;
-  --color-moss-800: #2b4530;
-  --color-moss: #3a5c40;
-  --color-moss-light: #527958;
-  --color-sage: #608066;
-  --color-sage-light: #8fa894;
-  --color-sage-subtle: #dbe4dc;
-  --color-sage-mist: #eef3ed;
-
-  /* Earth Light Surfaces */
-  --color-linen-base: #f7f8f4;
-  --color-linen-card: #ffffff;
-  --color-linen-alt: #f0f3eb;
-  --color-linen-border: rgba(30, 61, 44, 0.12);
-  --color-linen-border-hover: rgba(30, 61, 44, 0.28);
-
-  /* Warm Sacred Wood & Soil Accents */
-  --color-amberWood-light: #dfb282;
-  --color-amberWood: #b88758;
-  --color-amberWood-dark: #96673b;
-  --color-amberWood-muted: #7d522c;
-
-  /* Backward-compatible mappings for existing components to light organic theme */
-  --color-charcoal-950: #ffffff;
-  --color-charcoal-900: #f7f8f4;
-  --color-charcoal-850: #eff2eb;
-  --color-charcoal-800: #e6ece0;
-  --color-charcoal-700: #d8e2d2;
-  --color-charcoal-600: #8ba588;
-
-  --color-smokeGray: #6b7f70;
-  --color-whisper-border: rgba(30, 61, 44, 0.12);
-  --color-whisper-border-hover: rgba(30, 61, 44, 0.28);
-
-  --font-serif: var(--font-cormorant);
-  --font-sans: var(--font-jakarta);
+  --color-linen-base: #f3f1eb;
+  --color-linen-alt: #e8e4da;
+  --color-forest-950: #24231f;
+  --color-forest-900: #2d2d2b;
+  --color-forest-850: #3a3934;
+  --color-forest-800: #4c4a43;
+  --color-forest-700: #625f57;
+  --color-forest-600: #77736b;
+  --color-forest-500: #918c82;
+  --color-forest-400: #aaa398;
+  --color-forest-300: #c7c1b6;
+  --color-forest-200: #d8d2c7;
+  --color-forest-100: #e5e1d8;
+  --color-forest-50: #f7f5f0;
+  --color-moss: #66705a;
+  --color-moss-light: #929985;
+  --color-sage: #7f8971;
+  --color-sage-light: #adb69d;
+  --color-sage-subtle: #d8ddcf;
+  --color-sage-mist: #eef0e8;
+  --color-amberWood-light: #d7b77e;
+  --color-amberWood: #9d753d;
+  --color-amberWood-dark: #79592f;
+  --color-amberWood-muted: #6e512d;
+  --color-charcoal: #24231f;
+  --color-charcoal-950: #1b1a18;
+  --color-charcoal-900: #24231f;
+  --color-charcoal-850: #2d2d2b;
+  --color-charcoal-800: #3a3934;
+  --color-charcoal-700: #5e5a52;
+  --color-charcoal-600: #77736b;
+  --color-smokeGray: #77736b;
+  --color-whisper-border: rgba(36, 35, 31, 0.15);
+  --color-whisper-border-hover: rgba(36, 35, 31, 0.36);
+  --color-oak: #65523c;
+  --color-amber: #9d753d;
+  --color-text: #24231f;
+  --color-text-dim: #77736b;
+  --font-serif: var(--font-oswald);
+  --font-sans: var(--font-oswald);
+  --font-mono: var(--font-oswald);
 }
 
 :root {
-  --background: #f7f8f4;
-  --foreground: #1c2e22; /* Forest dark body text */
+  --background: #f3f1eb;
+  --foreground: #24231f;
 }
+
+* { box-sizing: border-box; }
+
+html { background: var(--background); }
 
 body {
+  min-height: 100vh;
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-sans), sans-serif;
+  font-family: var(--font-oswald), Arial, sans-serif;
 }
 
-/* Custom Scrollbar */
-::-webkit-scrollbar {
-  width: 6px;
-}
-::-webkit-scrollbar-track {
-  background: #f0f3eb;
-}
-::-webkit-scrollbar-thumb {
-  background: #608066;
-  border-radius: 3px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #29523c;
+::selection { background: #9d753d; color: #f7f5f0; }
+
+button, a { -webkit-tap-highlight-color: transparent; }
+
+.header-link,
+.header-nav-link,
+.footer-link {
+  transition: color 220ms ease, opacity 220ms ease, border-color 220ms ease;
 }
 
-/* Vietnamese Italic & Display Descender Clearance - Mandatory by Taste-Skill */
-.descender-safe {
-  line-height: 1.18 !important;
-  padding-bottom: 0.25rem;
+.header-link:hover,
+.header-nav-link:hover,
+.footer-link:hover { color: #c9a66f; }
+
+.header-icon { transition: opacity 220ms ease; }
+.header-icon:hover { opacity: 0.72; }
+
+.hero-arrow {
+  position: absolute;
+  top: 58%;
+  z-index: 20;
+  display: flex;
+  height: 48px;
+  width: 48px;
+  transform: translateY(-50%);
+  align-items: center;
+  justify-content: center;
+  color: rgb(255 255 255 / 0.78);
+  transition: color 220ms ease, transform 220ms ease;
+}
+.hero-arrow:hover { color: white; transform: translateY(-50%) scale(1.08); }
+
+.hero-cta {
+  display: inline-flex;
+  min-width: 250px;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  border: 1px solid rgb(255 255 255 / 0.75);
+  padding: 0.85rem 1.35rem;
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 500;
+  transition: background-color 220ms ease, color 220ms ease, transform 220ms ease;
+}
+.hero-cta:hover { background: white; color: #24231f; transform: translateY(-1px); }
+.hero-cta:active { transform: scale(0.985); }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-/* Zen Glassmorphism styling for Light Botanical Theme */
-.glass-panel,
-.zen-glass {
-  background: rgba(255, 255, 255, 0.88);
-  backdrop-filter: blur(14px) saturate(130%);
-  -webkit-backdrop-filter: blur(14px) saturate(130%);
-  border: 1px solid rgba(30, 61, 44, 0.12);
-  box-shadow: 0 20px 50px -15px rgba(20, 40, 28, 0.08);
-}
-
-.glass-card,
-.zen-card {
-  background: rgba(255, 255, 255, 0.75);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(30, 61, 44, 0.1);
-  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.glass-card:hover,
-.zen-card:hover {
-  background: rgba(255, 255, 255, 0.95);
-  border-color: rgba(30, 61, 44, 0.28);
-  transform: translateY(-3px);
-  box-shadow: 0 16px 36px -12px rgba(20, 40, 28, 0.12);
-}
-
-@media (prefers-reduced-transparency: reduce) {
-  .glass-panel,
-  .zen-glass {
-    background: #ffffff;
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-  }
-  .glass-card,
-  .zen-card {
-    background: #f7f9f5;
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-  }
-}
-
-/* Accessibility: Reduced motion */
 @media (prefers-reduced-motion: reduce) {
   *, ::before, ::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
   }
 }
 
-/* Subtle Pulsing for Zen Presence */
-@keyframes subtleBreath {
-  0%, 100% { transform: scale(1); opacity: 0.85; }
-  50% { transform: scale(1.03); opacity: 1; }
-}
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #e8e4da; }
+::-webkit-scrollbar-thumb { background: #8d897f; border-radius: 0; }
+::-webkit-scrollbar-thumb:hover { background: #4c4a43; }
 
-.zen-breath {
-  animation: subtleBreath 6s infinite ease-in-out;
-}
+.glass-panel,
+.zen-glass { background: #f3f1eb; border: 1px solid rgba(36, 35, 31, 0.15); box-shadow: none; }
+.glass-card,
+.zen-card { background: #fff; border: 1px solid rgba(36, 35, 31, 0.12); }
 
-/* Text underline micro interaction */
-.hover-underline {
-  position: relative;
-}
-.hover-underline::after {
-  content: '';
-  position: absolute;
-  width: 0;
-  height: 1.5px;
-  bottom: -2px;
-  left: 0;
-  background-color: #29523c;
-  transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-}
-.hover-underline:hover::after {
-  width: 100%;
+@media (prefers-reduced-transparency: reduce) {
+  .glass-panel, .zen-glass, .glass-card, .zen-card { backdrop-filter: none; }
 }

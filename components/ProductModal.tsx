@@ -12,6 +12,8 @@ export default function ProductModal() {
 
   useEffect(() => {
     if (selectedProduct) {
+      // Reset the local gallery and quantity whenever a different product opens.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setActiveImage(selectedProduct.image);
       setQuantity(1);
       setIsAdded(false);
@@ -198,4 +200,3 @@ export default function ProductModal() {
     </div>
   );
 }
-

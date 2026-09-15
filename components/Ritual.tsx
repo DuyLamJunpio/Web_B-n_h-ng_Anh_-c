@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Flame, Wind, Sparkles, Heart, Play, Square, RefreshCw } from "lucide-react";
+import { Flame, Heart, Play, Square } from "lucide-react";
 
 export default function Ritual() {
   const [isBreathing, setIsBreathing] = useState(false);
@@ -86,10 +86,10 @@ export default function Ritual() {
         >
           <div className="inline-flex items-center gap-2 text-forest-700 text-xs tracking-[0.3em] uppercase font-semibold">
             <Heart className="w-3.5 h-3.5 text-forest-600" />
-            <span>Nghi Thức An Yên</span>
+            <span>Nghi thức an yên</span>
           </div>
           <h2 className="font-serif text-3xl sm:text-5xl md:text-6xl text-forest-950 font-light leading-tight descender-safe">
-            Khoảnh Khắc Chậm Lại Cho Tâm Hồn
+            Khoảnh khắc chậm lại cho tâm hồn
           </h2>
           <p className="text-forest-800/80 font-light text-sm sm:text-base leading-relaxed max-w-[65ch] mx-auto">
             Đốt một thanh gỗ không đơn thuần là thắp lửa - đó là thời khắc bạn cho phép bản thân dừng lại, hiện diện trọn vẹn và hòa mình cùng thiên nhiên.
@@ -104,7 +104,7 @@ export default function Ritual() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-60px" }}
             transition={{ duration: 0.8 }}
-            className="lg:col-span-7 rounded-2xl overflow-hidden bg-white/95 border border-forest-800/15 shadow-xl flex flex-col justify-between group"
+            className="lg:col-span-7 overflow-hidden bg-white/85 border border-forest-800/15 flex flex-col justify-between group"
           >
             <div className="relative aspect-[16/10] overflow-hidden bg-forest-50">
               {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -116,7 +116,7 @@ export default function Ritual() {
               <div className="absolute inset-0 bg-gradient-to-t from-forest-950/70 via-transparent to-transparent" />
               
               <div className="absolute top-5 left-5 flex items-center gap-2">
-                <span className="px-3 py-1 rounded-full bg-forest-900 text-white text-[10px] font-mono tracking-widest uppercase shadow-md">
+                <span className="px-3 py-1 bg-forest-900 text-white text-[10px] font-mono tracking-widest uppercase">
                   GIAI ĐOẠN KHỞI ĐẦU
                 </span>
               </div>
@@ -144,9 +144,9 @@ export default function Ritual() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-60px" }}
               transition={{ duration: 0.8, delay: 0.15 }}
-              className="p-6 sm:p-7 rounded-2xl bg-white/90 border border-forest-800/15 hover:border-forest-700 transition-all duration-300 flex flex-col sm:flex-row gap-5 items-center group shadow-md"
+              className="p-6 sm:p-7 bg-white/75 border border-forest-800/15 hover:border-forest-700 transition-all duration-300 flex flex-col sm:flex-row gap-5 items-center group"
             >
-              <div className="w-full sm:w-36 aspect-square rounded-xl overflow-hidden flex-shrink-0 bg-forest-50">
+              <div className="w-full sm:w-36 aspect-square overflow-hidden flex-shrink-0 bg-forest-50">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src="https://images.unsplash.com/photo-1507652313519-d4e9174996dd?auto=format&fit=crop&q=80&w=400"
@@ -169,9 +169,9 @@ export default function Ritual() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-60px" }}
               transition={{ duration: 0.8, delay: 0.25 }}
-              className="p-6 sm:p-7 rounded-2xl bg-white/90 border border-forest-800/15 hover:border-forest-700 transition-all duration-300 flex flex-col sm:flex-row gap-5 items-center group shadow-md"
+              className="p-6 sm:p-7 bg-white/75 border border-forest-800/15 hover:border-forest-700 transition-all duration-300 flex flex-col sm:flex-row gap-5 items-center group"
             >
-              <div className="w-full sm:w-36 aspect-square rounded-xl overflow-hidden flex-shrink-0 bg-forest-50">
+              <div className="w-full sm:w-36 aspect-square overflow-hidden flex-shrink-0 bg-forest-50">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src="https://images.unsplash.com/photo-1603006905003-be475563bc59?auto=format&fit=crop&q=80&w=400"
@@ -196,7 +196,7 @@ export default function Ritual() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
-          className="bg-white/95 p-8 sm:p-14 lg:p-16 rounded-2xl text-center max-w-4xl mx-auto space-y-8 border border-forest-800/15 shadow-xl relative overflow-hidden"
+          className="bg-[#d8d1c4] p-8 sm:p-14 lg:p-16 text-center max-w-4xl mx-auto space-y-8 border border-forest-800/15 relative overflow-hidden"
         >
           <div className="space-y-2">
             <span className="text-forest-700 text-xs tracking-[0.25em] uppercase font-mono font-semibold">
@@ -258,7 +258,7 @@ export default function Ritual() {
             {!isBreathing ? (
               <button
                 onClick={startBreath}
-                className="px-8 py-3.5 bg-forest-800 text-white text-xs uppercase tracking-[0.2em] font-semibold rounded-full hover:bg-forest-700 transition-all flex items-center gap-2.5 shadow-xl shadow-forest-900/15 cursor-pointer"
+                className="px-8 py-3.5 bg-forest-800 text-white text-xs uppercase tracking-[0.2em] font-semibold hover:bg-forest-700 transition-all flex items-center gap-2.5 cursor-pointer"
               >
                 <Play className="w-4 h-4 fill-current" />
                 <span>Bắt Đầu Nghi Thức Thở</span>
@@ -266,7 +266,7 @@ export default function Ritual() {
             ) : (
               <button
                 onClick={stopBreath}
-                className="px-8 py-3.5 border border-forest-800/25 hover:border-forest-700 text-forest-800 hover:text-forest-950 text-xs uppercase tracking-[0.2em] font-medium rounded-full transition-all flex items-center gap-2.5 cursor-pointer bg-white shadow-sm"
+                className="px-8 py-3.5 border border-forest-800/25 hover:border-forest-700 text-forest-800 hover:text-forest-950 text-xs uppercase tracking-[0.2em] font-medium transition-all flex items-center gap-2.5 cursor-pointer bg-[#f6f4ee]"
               >
                 <Square className="w-4 h-4 fill-current" />
                 <span>Dừng Lại</span>
@@ -278,4 +278,3 @@ export default function Ritual() {
     </section>
   );
 }
-

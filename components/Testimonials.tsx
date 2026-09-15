@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { TESTIMONIALS } from "@/lib/data";
-import { Star, Quote, Sparkles } from "lucide-react";
+import { Star, Quote } from "lucide-react";
 
 export default function Testimonials() {
   const featured = TESTIMONIALS[0];
@@ -22,10 +22,10 @@ export default function Testimonials() {
       >
         <div className="inline-flex items-center gap-2 text-forest-700 text-xs tracking-[0.3em] uppercase font-mono font-semibold">
           <Quote className="w-3.5 h-3.5" />
-          <span>Cảm Nhận Đồng Điệu</span>
+          <span>Cảm nhận đồng điệu</span>
         </div>
         <h2 className="font-serif text-3xl sm:text-5xl md:text-6xl text-forest-950 font-light leading-tight descender-safe">
-          Lời Thì Thầm Của Sự An Yên
+          Lời thì thầm của sự an yên
         </h2>
         <p className="text-forest-800/80 font-light text-sm sm:text-base leading-relaxed max-w-[65ch]">
           Những sẻ chia chân thực từ những tâm hồn đã chọn đồng hành cùng Trầm & Khói trên hành trình nuôi dưỡng sự tĩnh tại.
@@ -40,7 +40,7 @@ export default function Testimonials() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-60px" }}
           transition={{ duration: 0.8 }}
-          className="lg:col-span-7 p-8 sm:p-12 rounded-2xl bg-white/95 border border-forest-800/15 shadow-xl hover:shadow-2xl hover:border-forest-800/30 transition-all duration-300 flex flex-col justify-between space-y-8 relative group"
+          className="lg:col-span-7 p-8 sm:p-12 bg-white/75 border border-forest-800/15 hover:border-forest-800/30 transition-all duration-300 flex flex-col justify-between space-y-8 relative group"
         >
           <div className="space-y-6">
             <div className="flex items-center justify-between">
@@ -65,7 +65,7 @@ export default function Testimonials() {
               <img
                 src={featured.avatar}
                 alt={featured.author}
-                className="w-14 h-14 rounded-full object-cover border border-forest-800/20 shadow-md"
+                className="w-14 h-14 rounded-none object-cover border border-forest-800/20"
               />
               <div>
                 <span className="text-base font-medium tracking-wide text-forest-950 block">
@@ -77,7 +77,7 @@ export default function Testimonials() {
               </div>
             </div>
 
-            <span className="text-xs text-forest-800 font-serif italic px-3.5 py-1.5 rounded-full bg-forest-50 border border-forest-800/20">
+            <span className="text-xs text-forest-800 font-serif italic px-3.5 py-1.5 bg-forest-50 border border-forest-800/20">
               ✦ {featured.product}
             </span>
           </div>
@@ -92,7 +92,7 @@ export default function Testimonials() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-60px" }}
               transition={{ duration: 0.8, delay: (idx + 1) * 0.15 }}
-              className="p-6 sm:p-7 rounded-2xl bg-white/90 border border-forest-800/10 hover:border-forest-800/25 transition-all duration-300 flex flex-col justify-between space-y-4 shadow-md hover:shadow-xl group"
+              className="p-6 sm:p-7 bg-white/65 border border-forest-800/10 hover:border-forest-800/25 transition-all duration-300 flex flex-col justify-between space-y-4 group"
             >
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
@@ -115,7 +115,7 @@ export default function Testimonials() {
                   <img
                     src={t.avatar}
                     alt={t.author}
-                    className="w-10 h-10 rounded-full object-cover border border-forest-800/20"
+                    className="w-10 h-10 rounded-none object-cover border border-forest-800/20"
                   />
                   <div>
                     <span className="text-xs font-medium text-forest-950 block">
@@ -138,4 +138,3 @@ export default function Testimonials() {
     </section>
   );
 }
-

@@ -69,7 +69,7 @@ export default function CartDrawer() {
               <span className="text-forest-800 flex items-center gap-1.5">
                 <Truck className="w-3.5 h-3.5 text-forest-700" />
                 {remainingForFreeShip === 0 ? (
-                  <span className="text-emerald-700 font-medium">Đủ điều kiện Miễn Phí Vận Chuyển Toàn Quốc!</span>
+                  <span className="text-forest-700 font-semibold">Đủ điều kiện Miễn Phí Vận Chuyển Toàn Quốc!</span>
                 ) : (
                   <span>Mua thêm <strong className="text-forest-900">{remainingForFreeShip.toLocaleString("vi-VN")} đ</strong> để Freeship</span>
                 )}
@@ -174,7 +174,7 @@ export default function CartDrawer() {
               </div>
               <div className="flex justify-between">
                 <span>Vận chuyển:</span>
-                <span className="text-emerald-700 font-medium">
+                <span className="text-forest-700 font-semibold">
                   {remainingForFreeShip === 0 ? "Miễn Phí" : "Tính khi thanh toán"}
                 </span>
               </div>

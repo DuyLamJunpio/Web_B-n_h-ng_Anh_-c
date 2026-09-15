@@ -1,24 +1,17 @@
 import type { Metadata } from "next";
-import { Cormorant_Garamond, Plus_Jakarta_Sans } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import { CartProvider } from "@/lib/CartContext";
 
-const cormorant = Cormorant_Garamond({
-  variable: "--font-cormorant",
-  subsets: ["vietnamese", "latin"],
-  weight: ["300", "400", "500", "600"],
-  style: ["normal", "italic"],
-});
-
-const jakarta = Plus_Jakarta_Sans({
-  variable: "--font-jakarta",
-  subsets: ["vietnamese", "latin"],
-  weight: ["300", "400", "500", "600"],
+const oswald = localFont({
+  variable: "--font-oswald",
+  display: "swap",
+  src: [{ path: "./fonts/Oswald-VariableFont_wght.ttf", weight: "200 700", style: "normal" }],
 });
 
 export const metadata: Metadata = {
-  title: "Trầm & Khói | Trở Về Với Sự Tĩnh Tại",
-  description: "Hành trình thanh tẩy không gian và làm dịu tâm trí",
+  title: "RUNGU | Hương thơm cho những ngày bình thường",
+  description: "Vật phẩm mộc và hương thơm tự nhiên cho những khoảng lặng nhỏ trong ngày.",
 };
 
 export default function RootLayout({
@@ -27,9 +20,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="vi" className="scroll-smooth">
+    <html lang="vi" className="scroll-smooth" data-scroll-behavior="smooth">
       <body
-        className={`${cormorant.variable} ${jakarta.variable} bg-linen-base text-forest-900 font-sans antialiased selection:bg-forest-700 selection:text-white min-h-screen flex flex-col justify-between overflow-x-hidden`}
+        className={`${oswald.variable} bg-linen-base text-forest-900 font-sans antialiased selection:bg-forest-700 selection:text-white min-h-screen flex flex-col justify-between overflow-x-hidden`}
       >
         <CartProvider>
           {children}

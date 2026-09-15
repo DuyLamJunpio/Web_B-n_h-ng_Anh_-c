@@ -1,235 +1,110 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState } from "react";
+import { motion } from "framer-motion";
+import Image from "next/image";
+import { Menu, Search, ShoppingBag, X } from "lucide-react";
 import { useCart } from "@/lib/CartContext";
 import NavigationModal from "./NavigationModal";
 import CartDrawer from "./CartDrawer";
 import ProductModal from "./ProductModal";
-import { Volume2, VolumeX, ShoppingBag, Sparkles } from "lucide-react";
+
+const navItems = [
+  { href: "#collections", label: "Tất cả" },
+  { href: "#collections", label: "Mới & đáng chú ý" },
+  { href: "#collections", label: "Thanh tẩy" },
+  { href: "#collections", label: "Cơ thể & tóc" },
+  { href: "#collections", label: "Hương thơm" },
+  { href: "#collections", label: "Nhà cửa" },
+  { href: "#collections", label: "Quà tặng" },
+  { href: "#about", label: "Thư viện" },
+  { href: "#about", label: "Trải nghiệm" },
+];
 
 export default function Header() {
   const { cartCount, setCartOpen } = useCart();
   const [isNavOpen, setNavOpen] = useState(false);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [isVisible, setIsVisible] = useState(true);
-  const lastScrollY = useRef(0);
+  const [isSearchOpen, setSearchOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
 
-  // Audio Context Ref for 432Hz Ambient Resonance
-  const audioCtxRef = useRef<AudioContext | null>(null);
-  const osc1Ref = useRef<OscillatorNode | null>(null);
-  const osc2Ref = useRef<OscillatorNode | null>(null);
-  const gainNodeRef = useRef<GainNode | null>(null);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-      setIsScrolled(currentScrollY > 30);
-
-      // Auto-hide when scrolling down, show when scrolling up
-      if (currentScrollY > lastScrollY.current && currentScrollY > 120) {
-        setIsVisible(false);
-      } else {
-        setIsVisible(true);
-      }
-      lastScrollY.current = currentScrollY;
-    };
-
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  const toggleSound = () => {
-    if (!isPlaying) {
-      try {
-        const AudioContextClass =
-          window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
-        const ctx = new AudioContextClass();
-        audioCtxRef.current = ctx;
-
-        if (ctx.state === "suspended") {
-          ctx.resume();
-        }
-
-        const osc1 = ctx.createOscillator();
-        const osc2 = ctx.createOscillator();
-        const gainNode = ctx.createGain();
-
-        // 432Hz Ambient Resonance Harmonics
-        osc1.type = "sine";
-        osc1.frequency.setValueAtTime(108, ctx.currentTime);
-
-        osc2.type = "sine";
-        osc2.frequency.setValueAtTime(216, ctx.currentTime);
-
-        gainNode.gain.setValueAtTime(0.01, ctx.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.04, ctx.currentTime + 3);
-
-        osc1.connect(gainNode);
-        osc2.connect(gainNode);
-        gainNode.connect(ctx.destination);
-
-        osc1.start();
-        osc2.start();
-
-        osc1Ref.current = osc1;
-        osc2Ref.current = osc2;
-        gainNodeRef.current = gainNode;
-
-        setIsPlaying(true);
-      } catch (err) {
-        console.error("Audio Context error:", err);
-      }
-    } else {
-      const ctx = audioCtxRef.current;
-      const gainNode = gainNodeRef.current;
-      if (ctx && gainNode) {
-        gainNode.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 1);
-        setTimeout(() => {
-          try {
-            osc1Ref.current?.stop();
-            osc2Ref.current?.stop();
-            ctx.close();
-          } catch {}
-        }, 1000);
-      }
-      setIsPlaying(false);
-    }
+  const handleSearch = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    document.querySelector("#collections")?.scrollIntoView({ behavior: "smooth" });
+    setSearchOpen(false);
   };
 
   return (
     <>
       <motion.header
-        initial={{ y: 0 }}
-        animate={{ y: isVisible ? 0 : -100 }}
-        transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-        className={`fixed top-0 left-0 right-0 z-40 transition-colors duration-500 ${
-          isScrolled
-            ? "bg-white/90 backdrop-blur-xl border-b border-forest-800/10 shadow-lg shadow-forest-900/5 py-3"
-            : "bg-gradient-to-b from-white/90 via-white/50 to-transparent border-b border-forest-800/5 py-5"
-        }`}
+        initial={{ opacity: 0, y: -8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: "easeOut" }}
+        className="absolute inset-x-0 top-0 z-40 text-white"
       >
-        {/* 3-Column Mathematically Centered Grid Layout */}
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-8 lg:px-12 xl:px-16 grid grid-cols-3 items-center w-full">
-          
-          {/* 1. LEFT COLUMN: Hamburger Menu & Quick Navigation Links */}
-          <div className="justify-self-start flex items-center gap-6 sm:gap-8">
-            <button
-              onClick={() => setNavOpen(true)}
-              aria-label="Mở menu điều hướng"
-              className="flex items-center gap-3 text-forest-900 hover:text-forest-700 transition-colors group p-1.5 -ml-1.5 cursor-pointer"
-            >
-              <div className="flex flex-col gap-1.5 w-6">
-                <span className="h-[1.5px] bg-forest-900 group-hover:bg-forest-700 transition-all w-6"></span>
-                <span className="h-[1.5px] bg-forest-900 group-hover:bg-forest-700 transition-all w-4 group-hover:w-6"></span>
-                <span className="h-[1.5px] bg-forest-900 group-hover:bg-forest-700 transition-all w-5 group-hover:w-6"></span>
-              </div>
-              <span className="text-xs uppercase tracking-[0.25em] font-medium hidden sm:inline-block">
-                Danh Mục
-              </span>
-            </button>
-
-            {/* Desktop Direct Quick Links */}
-            <nav className="hidden lg:flex items-center gap-6 text-[11px] uppercase tracking-[0.2em] font-medium text-forest-800/80">
-              <a
-                href="#about"
-                className="hover:text-forest-900 transition-colors hover-underline"
-              >
-                Triết Lý
-              </a>
-              <a
-                href="#collections"
-                className="hover:text-forest-900 transition-colors hover-underline"
-              >
-                Vật Phẩm
-              </a>
-              <a
-                href="#quiz"
-                className="hover:text-forest-900 transition-colors hover-underline"
-              >
-                Trắc Nghiệm
-              </a>
-              <a
-                href="#ritual"
-                className="hover:text-forest-900 transition-colors hover-underline"
-              >
-                Nghi Thức
-              </a>
-            </nav>
-          </div>
-
-          {/* 2. CENTER COLUMN: Mathematically Centered Brand Logo */}
-          <div className="justify-self-center text-center">
-            <a href="#" className="inline-block text-center group cursor-pointer">
-              <span className="font-serif text-2xl sm:text-3xl lg:text-4xl tracking-[0.25em] text-forest-950 font-light block group-hover:text-forest-700 transition-colors whitespace-nowrap">
-                TRẦM & KHÓI
-              </span>
-              <span className="text-[8px] sm:text-[9px] uppercase tracking-[0.45em] text-forest-700 block -mt-0.5 font-sans font-semibold">
-                Aura & Rituals
-              </span>
-            </a>
-          </div>
-
-          {/* 3. RIGHT COLUMN: 432Hz Ambient Sound & Cart Drawer Trigger */}
-          <div className="justify-self-end flex items-center justify-end gap-3 sm:gap-5">
-            {/* 432Hz Sound Synthesizer Button */}
-            <button
-              onClick={toggleSound}
-              title={isPlaying ? "Tắt âm tần 432Hz" : "Bật âm tần thiền 432Hz"}
-              className={`text-xs flex items-center gap-2 border px-3.5 py-1.5 rounded-full transition-all duration-300 cursor-pointer ${
-                isPlaying
-                  ? "border-forest-600 text-forest-800 bg-forest-100 shadow-md shadow-forest-600/10"
-                  : "border-forest-800/15 text-forest-800 hover:text-forest-950 hover:border-forest-700 bg-white/80"
-              }`}
-            >
-              {isPlaying ? (
-                <>
-                  <span className="flex gap-0.5 items-end h-3">
-                    <span className="w-0.5 h-3 bg-forest-700 animate-pulse"></span>
-                    <span className="w-0.5 h-2 bg-forest-700 animate-pulse delay-75"></span>
-                    <span className="w-0.5 h-3.5 bg-forest-700 animate-pulse delay-150"></span>
-                  </span>
-                  <span className="hidden md:inline font-mono text-[11px] font-semibold">432Hz Đang Phát</span>
-                </>
-              ) : (
-                <>
-                  <Sparkles className="w-3.5 h-3.5 text-forest-700" />
-                  <span className="hidden md:inline text-[11px] uppercase tracking-wider font-medium">Âm Tần 432Hz</span>
-                </>
-              )}
-            </button>
-
-            {/* Cart Trigger */}
-            <button
-              onClick={() => setCartOpen(true)}
-              className="relative p-2 text-forest-900 hover:text-forest-700 transition-colors flex items-center gap-2 cursor-pointer group"
-              aria-label="Giỏ hàng"
-            >
-              <div className="relative">
-                <ShoppingBag className="w-5 h-5 text-forest-900 group-hover:text-forest-700 transition-colors" />
-                {cartCount > 0 && (
-                  <span className="absolute -top-1.5 -right-2 w-4 h-4 rounded-full bg-forest-800 text-white flex items-center justify-center text-[10px] font-bold shadow-md shadow-forest-800/30 animate-scale">
-                    {cartCount}
-                  </span>
-                )}
-              </div>
-              <span className="font-serif text-sm tracking-widest hidden sm:inline text-forest-900 group-hover:text-forest-700 transition-colors font-medium">
-                GIỎ HÀNG
-              </span>
-            </button>
-          </div>
-
+        <div className="flex min-h-9 items-center justify-center bg-[#2d2d2b] px-4 text-center text-[11px] tracking-[0.02em]">
+          Miễn phí giao hàng cho đơn từ 1.000.000đ
         </div>
+
+        <div className="mx-auto max-w-[1540px] px-5 sm:px-8 lg:px-12">
+          <div className="relative flex min-h-[72px] items-center justify-between">
+            <div className="hidden items-center gap-7 text-xs font-medium lg:flex">
+              <a href="#about" className="header-link">Cửa hàng</a>
+              <a href="#about" className="header-link">Chăm sóc khách hàng</a>
+            </div>
+
+            <a href="#" aria-label="RUNGU, trang chủ" className="absolute left-1/2 flex -translate-x-1/2 items-center transition-opacity hover:opacity-70">
+              <Image src="/rungu-logo.png" alt="RUNGU" width={2172} height={724} priority className="h-auto w-[165px] brightness-0 invert sm:w-[190px]" />
+            </a>
+
+            <div className="ml-auto flex items-center gap-4 text-xs font-medium sm:gap-6">
+              <a href="#about" className="header-link hidden sm:inline">Đăng ký email</a>
+              <button type="button" onClick={() => setNavOpen(true)} className="header-link hidden sm:inline">Tài khoản</button>
+              <button type="button" onClick={() => setCartOpen(true)} className="header-link">Giỏ hàng ({cartCount})</button>
+              <button type="button" onClick={() => setNavOpen(true)} aria-label="Mở menu" className="header-icon lg:hidden">
+                <Menu className="h-5 w-5" strokeWidth={1.35} />
+              </button>
+            </div>
+          </div>
+
+          <div className="relative hidden min-h-[58px] items-center lg:flex">
+            <nav aria-label="Điều hướng chính" className="absolute left-1/2 flex -translate-x-1/2 items-center gap-3 xl:gap-6">
+              {navItems.map((item) => (
+                <a key={item.label} href={item.href} className="header-nav-link flex h-full items-center whitespace-nowrap px-1 py-5 text-[13px] font-medium leading-none">
+                  {item.label}
+                </a>
+              ))}
+            </nav>
+            <button type="button" onClick={() => setSearchOpen((open) => !open)} className="flex h-10 w-[150px] items-center justify-end gap-2 pl-5 text-xs font-medium leading-none transition-opacity hover:opacity-70" aria-expanded={isSearchOpen}>
+              <Search className="h-5 w-5" strokeWidth={1.25} />
+              <span>Tìm kiếm</span>
+            </button>
+          </div>
+
+          <div className="flex min-h-12 items-center justify-between lg:hidden">
+            <button type="button" onClick={() => setNavOpen(true)} className="text-[10px] font-semibold uppercase tracking-[0.16em] transition-opacity hover:opacity-70">Menu</button>
+            <button type="button" onClick={() => setSearchOpen((open) => !open)} aria-label="Tìm kiếm" className="header-icon">
+              <Search className="h-4 w-4" strokeWidth={1.25} />
+            </button>
+            <button type="button" onClick={() => setCartOpen(true)} aria-label={`Giỏ hàng (${cartCount})`} className="flex items-center gap-2 text-[10px] uppercase tracking-[0.12em] transition-opacity hover:opacity-70">
+              <ShoppingBag className="h-4 w-4" strokeWidth={1.25} />({cartCount})
+            </button>
+          </div>
+        </div>
+
+        {isSearchOpen && (
+          <div className="bg-[#f3f1eb] text-[#252523] shadow-[0_12px_30px_rgba(23,23,20,0.15)]">
+            <form onSubmit={handleSearch} className="mx-auto flex max-w-[1540px] items-center gap-3 px-5 py-4 sm:px-8 lg:px-12">
+              <Search className="h-5 w-5" strokeWidth={1.25} />
+              <label htmlFor="site-search" className="sr-only">Tìm kiếm sản phẩm</label>
+              <input id="site-search" autoFocus type="search" value={searchTerm} onChange={(event) => setSearchTerm(event.target.value)} placeholder="Tìm kiếm sản phẩm" className="min-w-0 flex-1 bg-transparent text-sm outline-none placeholder:text-[#252523]/60" />
+              <button type="button" onClick={() => setSearchOpen(false)} aria-label="Đóng tìm kiếm" className="transition-opacity hover:opacity-60"><X className="h-5 w-5" strokeWidth={1.25} /></button>
+            </form>
+          </div>
+        )}
       </motion.header>
 
-      {/* Fullscreen Navigation Modal */}
       <NavigationModal isOpen={isNavOpen} onClose={() => setNavOpen(false)} />
-
-      {/* Cart Drawer */}
       <CartDrawer />
-
-      {/* Product Quick View Modal */}
       <ProductModal />
     </>
   );

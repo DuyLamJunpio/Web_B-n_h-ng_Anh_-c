@@ -38,7 +38,7 @@ export default function TheRitual() {
             Nghệ Thuật Trải Nghiệm
           </h2>
           <p className="font-sans text-text-dim max-w-xl mx-auto font-light italic">
-            "Để làn khói len lỏi vào từng góc khuất, cuốn đi những muộn phiền..."
+            &quot;Để làn khói len lỏi vào từng góc khuất, cuốn đi những muộn phiền...&quot;
           </p>
         </motion.div>
 

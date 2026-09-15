@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import * as THREE from "three";
-import { Sparkles, Flame, Wind, RotateCcw, ShieldCheck } from "lucide-react";
+import { Sparkles, Flame, Wind } from "lucide-react";
 
 export type SanctuaryItemType = "palosanto" | "candle" | "sage" | "mala";
 
@@ -89,7 +89,7 @@ export default function ZenSanctuary3D() {
     // 1. Scene setup
     const scene = new THREE.Scene();
     sceneRef.current = scene;
-    scene.fog = new THREE.FogExp2(0xf0f4ec, 0.025);
+    scene.fog = new THREE.FogExp2(0x22221e, 0.025);
 
     // 2. Camera setup
     const width = container.clientWidth;
@@ -108,7 +108,7 @@ export default function ZenSanctuary3D() {
     container.replaceChildren(renderer.domElement);
 
     // 4. Lights setup
-    const ambientLight = new THREE.AmbientLight(0xf5efe6, 1.5);
+    const ambientLight = new THREE.AmbientLight(0xf1ece2, 1.5);
     scene.add(ambientLight);
 
     const mainLight = new THREE.DirectionalLight(0xfff7ed, 2.4);
@@ -118,7 +118,7 @@ export default function ZenSanctuary3D() {
     mainLight.shadow.mapSize.height = 1024;
     scene.add(mainLight);
 
-    const rimLight = new THREE.DirectionalLight(0x8fa894, 1.3);
+    const rimLight = new THREE.DirectionalLight(0xb59b70, 1.3);
     rimLight.position.set(-5, 3, -4);
     scene.add(rimLight);
 
@@ -140,10 +140,10 @@ export default function ZenSanctuary3D() {
     pedestal.receiveShadow = true;
     baseGroup.add(pedestal);
 
-    // Ceramic Dish on top of Pedestal - Celadon Earth Glaze
+    // Ceramic Dish on top of Pedestal - Oceanic Earth Glaze
     const dishGeo = new THREE.CylinderGeometry(1.7, 1.45, 0.08, 48);
     const dishMat = new THREE.MeshStandardMaterial({
-      color: 0x8ea894,
+      color: 0x857760,
       roughness: 0.5,
       metalness: 0.15,
     });
@@ -456,7 +456,7 @@ export default function ZenSanctuary3D() {
     // 9. Animation Loop
     // ─────────────────────────────────────────────────────────────
     let animationFrameId: number;
-    let clock = new THREE.Clock();
+    const clock = new THREE.Clock();
 
     const animate = () => {
       animationFrameId = requestAnimationFrame(animate);
@@ -578,10 +578,10 @@ export default function ZenSanctuary3D() {
   const details = ITEM_DETAILS[activeItem];
 
   return (
-    <section id="sanctuary-3d" className="py-24 sm:py-32 relative overflow-hidden bg-linen-alt border-t border-forest-800/10">
+    <section id="sanctuary-3d" className="pt-20 pb-24 sm:pt-28 sm:pb-32 relative overflow-hidden bg-linen-alt">
 
       {/* Subtle background glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[650px] h-[450px] bg-[radial-gradient(ellipse_at_center,rgba(41,82,60,0.08),transparent_70%)] pointer-events-none" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[650px] h-[450px] bg-[radial-gradient(ellipse_at_center,rgba(42,99,158,0.1),transparent_70%)] pointer-events-none" />
 
       <div className="max-w-[1400px] mx-auto px-4 sm:px-8 lg:px-12 xl:px-16 relative z-10">
         {/* Section Header */}
@@ -633,7 +633,7 @@ export default function ZenSanctuary3D() {
         </motion.div>
 
         {/* 3D Canvas Box Frame */}
-        <div className="relative w-full rounded-2xl overflow-hidden bg-gradient-to-b from-[#e8efe6] via-[#edf3ec] to-[#f4f7f2] border border-forest-800/15 shadow-xl">
+        <div className="relative w-full rounded-2xl overflow-hidden bg-gradient-to-b from-[#e2ecf7] via-[#ebf3fa] to-[#f4f8fc] border border-forest-800/15 shadow-xl">
           {/* Main 3D Canvas Area */}
           <div className="relative h-[480px] sm:h-[540px] lg:h-[580px] w-full cursor-grab active:cursor-grabbing">
             {isLoading && (

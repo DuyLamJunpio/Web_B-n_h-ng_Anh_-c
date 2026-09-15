@@ -22,7 +22,7 @@ export default function LoiNgo() {
               Triết lý của Khói & Đất
             </h2>
             <p className="font-sans text-lg md:text-xl font-light leading-relaxed text-text-dim italic">
-              "Từ những cánh rừng cổ thụ đến cao nguyên lộng gió, chúng tôi mang đến những gì nguyên sơ nhất, để bạn tìm thấy khoảng lặng giữa những bộn bề..."
+              &quot;Từ những cánh rừng cổ thụ đến cao nguyên lộng gió, chúng tôi mang đến những gì nguyên sơ nhất, để bạn tìm thấy khoảng lặng giữa những bộn bề...&quot;
             </p>
           </motion.div>
         </div>
