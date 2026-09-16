@@ -4,7 +4,7 @@ import { stories } from "@/lib/storyData";
 
 export default function CategoryBand() {
   return (
-    <section aria-label="Thư viện câu chuyện sản phẩm" className="bg-[#f3f0e8] text-[#282724]">
+    <section id="stories" aria-label="Thư viện câu chuyện sản phẩm" className="scroll-mt-24 bg-[#f3f0e8] text-[#282724]">
       <div className="mx-auto max-w-[1600px] px-5 py-20 sm:px-8 lg:px-12 lg:py-28">
         <div className="mb-12 text-center lg:mb-16">
           <p className="mb-4 text-[11px] font-semibold uppercase tracking-[0.2em] text-[#9d753d]">Thư viện hương thơm</p>

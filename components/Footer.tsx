@@ -16,7 +16,7 @@ export default function Footer() {
   };
 
   return (
-    <footer className="border-t border-[#282723]/15 bg-[#f3f1eb] px-5 pb-8 pt-16 text-[#282723] sm:px-8 lg:px-12">
+    <footer id="contact" className="scroll-mt-12 border-t border-[#282723]/15 bg-[#f3f1eb] px-5 pb-8 pt-16 text-[#282723] sm:px-8 lg:px-12">
       <div className="mx-auto max-w-[1400px]">
         <div className="grid grid-cols-1 gap-12 border-b border-[#282723]/15 pb-16 lg:grid-cols-[1.35fr_0.8fr_0.8fr_1fr] lg:gap-16">
           <div>

@@ -16,6 +16,9 @@ type CartContextType = {
   setCartOpen: (open: boolean) => void;
   clearCart: () => void;
   products: Product[];
+  // Categories & Filtering
+  selectedCategory: string;
+  setSelectedCategory: (category: string) => void;
   // Product Modal
   selectedProduct: Product | null;
   openProductModal: (id: string) => void;
@@ -28,6 +31,7 @@ export function CartProvider({ children, products }: { children: ReactNode; prod
   const [cart, setCart] = useState<CartItem[]>([]);
   const [isCartOpen, setCartOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<string>("all");
 
   const addToCart = (productId: string) => {
     const product = products.find((p) => p.id === productId);
@@ -78,6 +82,8 @@ export function CartProvider({ children, products }: { children: ReactNode; prod
         setCartOpen,
         clearCart,
         products,
+        selectedCategory,
+        setSelectedCategory,
         selectedProduct,
         openProductModal,
         closeProductModal,
