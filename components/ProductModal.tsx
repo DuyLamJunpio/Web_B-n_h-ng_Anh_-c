@@ -96,7 +96,7 @@ export default function ProductModal() {
               <div className="flex items-center gap-1 text-forest-800">
                 <Star className="w-3.5 h-3.5 fill-amber-500 text-amber-500" />
                 <span className="font-semibold">{selectedProduct.rating}</span>
-                <span className="text-forest-600 font-serif">({selectedProduct.reviewsCount} đánh giá)</span>
+                <span className="text-forest-600 font-serif">({selectedProduct.reviewsCount} lượt đã chọn)</span>
               </div>
             </div>
 

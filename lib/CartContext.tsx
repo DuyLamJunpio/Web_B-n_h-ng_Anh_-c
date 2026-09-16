@@ -1,9 +1,9 @@
 "use client";
 
 import React, { createContext, useContext, useState, ReactNode } from "react";
-import { PRODUCTS } from "./data";
+import type { Product } from "./data";
 
-export type Product = typeof PRODUCTS[0];
+export type { Product } from "./data";
 export type CartItem = Product & { qty: number };
 
 type CartContextType = {
@@ -15,6 +15,7 @@ type CartContextType = {
   isCartOpen: boolean;
   setCartOpen: (open: boolean) => void;
   clearCart: () => void;
+  products: Product[];
   // Product Modal
   selectedProduct: Product | null;
   openProductModal: (id: string) => void;
@@ -23,13 +24,13 @@ type CartContextType = {
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
-export function CartProvider({ children }: { children: ReactNode }) {
+export function CartProvider({ children, products }: { children: ReactNode; products: Product[] }) {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [isCartOpen, setCartOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
   const addToCart = (productId: string) => {
-    const product = PRODUCTS.find((p) => p.id === productId);
+    const product = products.find((p) => p.id === productId);
     if (!product) return;
 
     setCart((prev) => {
@@ -57,7 +58,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const clearCart = () => setCart([]);
 
   const openProductModal = (id: string) => {
-    const p = PRODUCTS.find((item) => item.id === id);
+    const p = products.find((item) => item.id === id);
     if (p) setSelectedProduct(p);
   };
   const closeProductModal = () => setSelectedProduct(null);
@@ -76,6 +77,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         isCartOpen,
         setCartOpen,
         clearCart,
+        products,
         selectedProduct,
         openProductModal,
         closeProductModal,

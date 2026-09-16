@@ -1,7 +1,7 @@
 export interface Product {
   id: string;
   name: string;
-  category: 'purify' | 'warmth' | 'energy';
+  category: string;
   categoryName: string;
   price: number;
   originalPrice?: number;

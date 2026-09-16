@@ -3,22 +3,20 @@
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowUpRight, Check, Eye, ShoppingBag } from "lucide-react";
-import { PRODUCTS, Product } from "@/lib/data";
+import type { Product } from "@/lib/data";
 import { useCart } from "@/lib/CartContext";
-
-const filters = [
-  { id: "all", label: "Tất cả" },
-  { id: "purify", label: "Thanh tẩy" },
-  { id: "warmth", label: "Hơi ấm" },
-  { id: "energy", label: "Năng lượng" },
-];
 
 export default function Collections() {
   const [filter, setFilter] = useState("all");
   const [addedId, setAddedId] = useState<string | null>(null);
-  const { addToCart, openProductModal } = useCart();
+  const { addToCart, openProductModal, products } = useCart();
+  const filters = [
+    { id: "all", label: "Tất cả" },
+    ...Array.from(new Map(products.map((product) => [product.category, product.categoryName])).entries())
+      .map(([id, label]) => ({ id, label })),
+  ];
 
-  const products = filter === "all" ? PRODUCTS : PRODUCTS.filter((product) => product.category === filter);
+  const visibleProducts = filter === "all" ? products : products.filter((product) => product.category === filter);
 
   const addProduct = (product: Product) => {
     addToCart(product.id);
@@ -45,7 +43,7 @@ export default function Collections() {
 
         <motion.div layout className="mt-10 grid grid-cols-1 gap-x-5 gap-y-12 md:grid-cols-2 lg:grid-cols-12 lg:gap-y-16">
           <AnimatePresence mode="popLayout">
-            {products.map((product, index) => (
+            {visibleProducts.map((product, index) => (
               <motion.article key={product.id} layout initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 12 }} transition={{ duration: 0.45, delay: index * 0.04 }} className={`${index === 0 ? "lg:col-span-7" : index === 1 ? "lg:col-span-5" : "lg:col-span-4"} group`}>
                 <button type="button" onClick={() => openProductModal(product.id)} className="relative block w-full overflow-hidden bg-[#e4e0d6] text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8d693a]">
                   {/* Product photography comes from the catalog data and remains an actual image, not a CSS mock. */}
