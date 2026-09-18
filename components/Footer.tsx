@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { ArrowUpRight, Check, Send } from "lucide-react";
 
 export default function Footer() {
@@ -35,20 +36,20 @@ export default function Footer() {
           <div className="text-sm">
             <h2 className="text-xs font-semibold uppercase tracking-[0.16em]">Vật phẩm</h2>
             <div className="mt-5 space-y-3 text-[#625f57]">
-              <a href="#collections" className="footer-link">Gỗ Palo Santo</a>
-              <a href="#collections" className="footer-link">Nến thơm</a>
-              <a href="#collections" className="footer-link">Nhang trầm</a>
-              <a href="#collections" className="footer-link">Đồ dùng nghi thức</a>
+              <Link href="/san-pham?category=purify" className="footer-link block hover:text-[#282723]">Gỗ Palo Santo</Link>
+              <Link href="/san-pham?category=warmth" className="footer-link block hover:text-[#282723]">Nến thơm sáp tự nhiên</Link>
+              <Link href="/san-pham?category=purify" className="footer-link block hover:text-[#282723]">Nhang trầm Quảng Nam</Link>
+              <Link href="/san-pham?category=warmth" className="footer-link block hover:text-[#282723]">Khay gốm Bát Tràng</Link>
             </div>
           </div>
 
           <div className="text-sm">
             <h2 className="text-xs font-semibold uppercase tracking-[0.16em]">Khám phá</h2>
             <div className="mt-5 space-y-3 text-[#625f57]">
-              <a href="#collections" className="footer-link">Bộ sưu tập</a>
-              <a href="#about" className="footer-link">Về RUNGU</a>
-              <a href="#about" className="footer-link">Cửa hàng</a>
-              <a href="#about" className="footer-link">Chăm sóc khách hàng</a>
+              <Link href="/san-pham" className="footer-link block hover:text-[#282723]">Tất cả sản phẩm</Link>
+              <Link href="/#about" className="footer-link block hover:text-[#282723]">Về RUNGU</Link>
+              <Link href="/#stories" className="footer-link block hover:text-[#282723]">Thư viện câu chuyện</Link>
+              <Link href="/#contact" className="footer-link block hover:text-[#282723]">Chăm sóc khách hàng</Link>
             </div>
           </div>
 
@@ -58,7 +59,7 @@ export default function Footer() {
               <p>hello@rungu.vn</p>
               <p>0868 238 690</p>
               <p>Hoàn Kiếm, Hà Nội</p>
-              <a href="#about" className="inline-flex items-center gap-2 pt-2 text-[#282723] transition-colors hover:text-[#8d693a]">Theo dõi chúng tôi <ArrowUpRight className="h-4 w-4" strokeWidth={1.25} /></a>
+              <a href="#contact" className="inline-flex items-center gap-2 pt-2 text-[#282723] transition-colors hover:text-[#8d693a]">Tư vấn trực tiếp <ArrowUpRight className="h-4 w-4" strokeWidth={1.25} /></a>
             </div>
           </div>
         </div>

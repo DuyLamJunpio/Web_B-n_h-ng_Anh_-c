@@ -1,14 +1,16 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { useCart } from "@/lib/CartContext";
-import { Star, Check, ShoppingBag, X, Shield, Sparkles, Truck } from "lucide-react";
+import { Star, Check, ShoppingBag, X, Shield, Sparkles, Truck, ArrowRight } from "lucide-react";
 
 export default function ProductModal() {
   const { selectedProduct, closeProductModal, addToCart } = useCart();
   const [activeImage, setActiveImage] = useState<string>("");
   const [quantity, setQuantity] = useState<number>(1);
   const [isAdded, setIsAdded] = useState(false);
+  const [selectedVariantId, setSelectedVariantId] = useState<string>("");
 
   useEffect(() => {
     if (selectedProduct) {
@@ -17,15 +19,21 @@ export default function ProductModal() {
       setActiveImage(selectedProduct.image);
       setQuantity(1);
       setIsAdded(false);
+      setSelectedVariantId(selectedProduct.variants?.find((variant) => variant.available)?.id ?? "");
     }
   }, [selectedProduct]);
 
   if (!selectedProduct) return null;
 
+  const availableVariants = (selectedProduct.variants ?? []).filter((variant) => variant.available);
+  const selectedVariant = availableVariants.find((variant) => variant.id === selectedVariantId);
+  const currentPrice = selectedVariant?.price ?? selectedProduct.price;
+  const canBuy = selectedProduct.inStock !== false
+    && (availableVariants.length > 0 || !(selectedProduct.variants?.length));
+
   const handleAdd = () => {
-    for (let i = 0; i < quantity; i++) {
-      addToCart(selectedProduct.id);
-    }
+    const added = addToCart(selectedProduct.id, selectedVariant?.id, quantity);
+    if (!added) return;
     setIsAdded(true);
     setTimeout(() => {
       setIsAdded(false);
@@ -141,9 +149,36 @@ export default function ProductModal() {
 
           {/* Price, Quantity & Add to Cart Action */}
           <div className="pt-4 border-t border-forest-800/10 space-y-4">
+            {availableVariants.length > 0 && (
+              <div className="space-y-2">
+                <span className="block text-[11px] font-semibold uppercase tracking-wider text-forest-900">
+                  Chọn quy cách / mùi hương
+                </span>
+                <div className="flex flex-wrap gap-2">
+                  {availableVariants.map((variant) => (
+                    <button
+                      key={variant.id}
+                      type="button"
+                      onClick={() => {
+                        setSelectedVariantId(variant.id);
+                        setQuantity(1);
+                      }}
+                      className={`rounded-sm border px-2.5 py-2 text-[11px] transition-colors ${
+                        selectedVariantId === variant.id
+                          ? "border-forest-800 bg-forest-800 text-white"
+                          : "border-forest-800/20 bg-white text-forest-900 hover:border-forest-800"
+                      }`}
+                    >
+                      {variant.label} · còn {variant.stock}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
             <div className="flex items-baseline justify-between">
               <span className="font-serif text-3xl text-forest-800 font-semibold">
-                {(selectedProduct.price * quantity).toLocaleString("vi-VN")} đ
+                {(currentPrice * quantity).toLocaleString("vi-VN")} đ
               </span>
               {selectedProduct.originalPrice && (
                 <span className="text-xs text-forest-400 line-through font-serif">
@@ -163,7 +198,9 @@ export default function ProductModal() {
                 </button>
                 <span className="px-3 text-xs font-semibold text-forest-950">{quantity}</span>
                 <button
-                  onClick={() => setQuantity(quantity + 1)}
+                  onClick={() => setQuantity(selectedVariant && selectedProduct.manageStock
+                    ? Math.min(selectedVariant.stock, quantity + 1)
+                    : quantity + 1)}
                   className="px-3 py-2 text-forest-700 hover:text-forest-950 text-sm transition-colors cursor-pointer"
                 >
                   +
@@ -173,7 +210,8 @@ export default function ProductModal() {
               {/* Add to Cart Button */}
               <button
                 onClick={handleAdd}
-                className="flex-1 py-3 bg-forest-800 hover:bg-forest-700 text-white text-xs font-semibold uppercase tracking-[0.2em] rounded-lg transition-all flex items-center justify-center gap-2 shadow-lg shadow-forest-900/15 cursor-pointer"
+                disabled={!canBuy}
+                className="flex-1 py-3 bg-forest-800 hover:bg-forest-700 disabled:cursor-not-allowed disabled:opacity-50 text-white text-xs font-semibold uppercase tracking-[0.2em] rounded-lg transition-all flex items-center justify-center gap-2 shadow-lg shadow-forest-900/15 cursor-pointer"
               >
                 {isAdded ? (
                   <>
@@ -183,10 +221,21 @@ export default function ProductModal() {
                 ) : (
                   <>
                     <ShoppingBag className="w-4 h-4" />
-                    <span>Thêm Vào Giỏ Hàng</span>
+                    <span>{canBuy ? "Thêm Vào Giỏ Hàng" : "Tạm Hết Hàng"}</span>
                   </>
                 )}
               </button>
+            </div>
+
+            <div className="pt-2 text-center">
+              <Link
+                href={`/san-pham/${selectedProduct.id}`}
+                onClick={closeProductModal}
+                className="inline-flex items-center gap-1.5 text-xs font-medium text-forest-800 hover:text-[#9d753d] transition-colors underline underline-offset-4"
+              >
+                <span>Xem trang chi tiết sản phẩm đầy đủ</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
             </div>
 
             <div className="flex items-center justify-center gap-4 text-[10px] text-forest-600 uppercase tracking-widest pt-1">

@@ -55,6 +55,7 @@ export default function ShopAllPLP() {
   const [selectedPriceRange, setSelectedPriceRange] = useState<string>("all");
   const [selectedBadge, setSelectedBadge] = useState<string>("all");
   const [sortBy, setSortBy] = useState<string>("featured");
+  const [searchQuery, setSearchQuery] = useState<string>("");
   const [isSortMenuOpen, setIsSortMenuOpen] = useState<boolean>(false);
   const [isFilterDrawerOpen, setIsFilterDrawerOpen] = useState<boolean>(false);
   const [gridCols, setGridCols] = useState<2 | 3 | 4>(3);
@@ -64,20 +65,27 @@ export default function ShopAllPLP() {
   const [insertMode, setInsertMode] = useState<boolean>(true);
 
   useEffect(() => {
-    const paramInsert = searchParams.get("insertMode");
-    if (paramInsert !== null) {
-      setInsertMode(paramInsert === "true");
-    }
-    const cat = searchParams.get("category");
-    setSelectedCategory(cat || "all");
+    const timer = window.setTimeout(() => {
+      const paramInsert = searchParams.get("insertMode");
+      if (paramInsert !== null) {
+        setInsertMode(paramInsert === "true");
+      }
+      const cat = searchParams.get("category");
+      setSelectedCategory(cat || "all");
 
-    const collection = searchParams.get("collection");
-    setSelectedBadge(collection || "all");
+      const collection = searchParams.get("collection");
+      setSelectedBadge(collection || "all");
 
-    const sort = searchParams.get("sort");
-    if (sort) {
-      setSortBy(sort);
-    }
+      const q = searchParams.get("q");
+      setSearchQuery(q || "");
+
+      const sort = searchParams.get("sort");
+      if (sort) {
+        setSortBy(sort);
+      }
+    }, 0);
+
+    return () => window.clearTimeout(timer);
   }, [searchParams, setSelectedCategory]);
 
   // Categories list
@@ -106,7 +114,8 @@ export default function ShopAllPLP() {
     (selectedCategory !== "all" ? 1 : 0) +
     selectedScents.length +
     (selectedPriceRange !== "all" ? 1 : 0) +
-    (selectedBadge !== "all" ? 1 : 0);
+    (selectedBadge !== "all" ? 1 : 0) +
+    (searchQuery.trim() ? 1 : 0);
 
   // Clear all filters
   const handleClearFilters = () => {
@@ -115,6 +124,7 @@ export default function ShopAllPLP() {
     setSelectedPriceRange("all");
     setSelectedBadge("all");
     setSortBy("featured");
+    setSearchQuery("");
   };
 
   // Filter and sort products
@@ -159,6 +169,18 @@ export default function ShopAllPLP() {
           if (!match) return false;
         }
 
+        // Search query filter
+        if (searchQuery.trim()) {
+          const q = searchQuery.toLowerCase().trim();
+          const matches =
+            product.name.toLowerCase().includes(q) ||
+            product.categoryName.toLowerCase().includes(q) ||
+            product.notes.toLowerCase().includes(q) ||
+            product.desc.toLowerCase().includes(q) ||
+            product.detail.toLowerCase().includes(q);
+          if (!matches) return false;
+        }
+
         return true;
       })
       .sort((a, b) => {
@@ -167,7 +189,7 @@ export default function ShopAllPLP() {
         if (sortBy === "name-asc") return a.name.localeCompare(b.name, "vi");
         return 0;
       });
-  }, [products, selectedCategory, selectedPriceRange, selectedBadge, selectedScents, sortBy]);
+  }, [products, selectedCategory, selectedPriceRange, selectedBadge, selectedScents, sortBy, searchQuery]);
 
   const handleAddToCart = (product: Product) => {
     addToCart(product.id);
@@ -360,6 +382,13 @@ export default function ShopAllPLP() {
                 <button type="button" onClick={() => toggleScent(scentId)} aria-label="Xóa lọc mùi"><X className="h-3 w-3" /></button>
               </span>
             ))}
+
+            {searchQuery.trim() && (
+              <span className="inline-flex items-center gap-1.5 border border-[#282723]/20 bg-white px-2.5 py-1 text-xs">
+                <span>Tìm kiếm: &ldquo;{searchQuery}&rdquo;</span>
+                <button type="button" onClick={() => setSearchQuery("")} aria-label="Xóa từ khóa tìm kiếm"><X className="h-3 w-3" /></button>
+              </span>
+            )}
 
             <button
               type="button"

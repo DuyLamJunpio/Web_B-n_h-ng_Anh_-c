@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useMemo, useRef } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { ChevronDown, ArrowRight, ArrowUpRight, Menu, Search, ShoppingBag, X } from "lucide-react";
 import { useCart } from "@/lib/CartContext";
 import NavigationModal from "./NavigationModal";
@@ -11,12 +12,46 @@ import CartDrawer from "./CartDrawer";
 import ProductModal from "./ProductModal";
 
 export default function Header() {
-  const { cartCount, setCartOpen, products, setSelectedCategory } = useCart();
+  const router = useRouter();
+  const { cartCount, setCartOpen, products, setSelectedCategory, storefrontContent } = useCart();
   const [isNavOpen, setNavOpen] = useState(false);
   const [isSearchOpen, setSearchOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [isProductsHovered, setIsProductsHovered] = useState(false);
   const dropdownCloseTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const announcement = storefrontContent.announcement[0]
+    || (Object.values(storefrontContent.sales).some((method) => method.enabled && method.free_shipping)
+      ? "Miễn phí giao hàng cho đơn hàng RUNGU"
+      : "Giao hàng toàn quốc");
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && isSearchOpen) {
+        setSearchOpen(false);
+      }
+    };
+    if (isSearchOpen) {
+      document.body.style.overflow = "hidden";
+      window.addEventListener("keydown", handleKeyDown);
+    } else {
+      document.body.style.overflow = "unset";
+    }
+    return () => {
+      document.body.style.overflow = "unset";
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isSearchOpen]);
+
+  const searchResults = useMemo(() => {
+    if (!searchTerm.trim()) return [];
+    const q = searchTerm.toLowerCase().trim();
+    return products.filter((p) =>
+      p.name.toLowerCase().includes(q) ||
+      p.categoryName.toLowerCase().includes(q) ||
+      p.notes.toLowerCase().includes(q) ||
+      p.desc.toLowerCase().includes(q)
+    ).slice(0, 5);
+  }, [searchTerm, products]);
 
   const categories = useMemo(() => {
     const map = new Map<string, { id: string; label: string; count: number; sub: string }>();
@@ -73,7 +108,11 @@ export default function Header() {
 
   const handleSearch = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    navigateTo("collections");
+    if (searchTerm.trim()) {
+      router.push(`/san-pham?q=${encodeURIComponent(searchTerm.trim())}`);
+    } else {
+      router.push("/san-pham");
+    }
     setSearchOpen(false);
   };
 
@@ -86,33 +125,38 @@ export default function Header() {
         className="absolute inset-x-0 top-0 z-40 text-white"
       >
         <div className="flex min-h-9 items-center justify-center bg-[#2d2d2b] px-4 text-center text-[11px] tracking-[0.02em]">
-          Miễn phí giao hàng cho đơn từ 1.000.000đ
+          {announcement}
         </div>
 
         <div className="site-header-main">
           <div className="mx-auto max-w-[1540px] px-5 sm:px-8 lg:px-12">
-            <div className="relative flex min-h-[72px] items-center justify-between">
-              <div className="hidden items-center gap-7 text-xs font-medium lg:flex">
-                <Link href="/san-pham" className="header-link">Cửa hàng</Link>
-                <Link href="/#contact" className="header-link">Chăm sóc khách hàng</Link>
-              </div>
-
-              <Link href="/" aria-label="RUNGU, trang chủ" className="absolute left-1/2 flex -translate-x-1/2 items-center transition-opacity hover:opacity-70">
+            <div className="relative flex min-h-[68px] sm:min-h-[76px] items-center justify-center">
+              <Link href="/" aria-label="RUNGU, trang chủ" className="flex items-center transition-opacity hover:opacity-70">
                 <Image src="/rungu-logo.png" alt="RUNGU" width={2172} height={724} priority className="header-logo h-auto w-[165px] sm:w-[190px]" />
               </Link>
 
-              <div className="ml-auto flex items-center gap-4 text-xs font-medium sm:gap-6">
-                <Link href="/#contact" className="header-link hidden sm:inline">Đăng ký email</Link>
-                <button type="button" onClick={() => setNavOpen(true)} className="header-link hidden sm:inline">Tài khoản</button>
-                <button type="button" onClick={() => setCartOpen(true)} className="header-link">Giỏ hàng ({cartCount})</button>
-                <button type="button" onClick={() => setNavOpen(true)} aria-label="Mở menu" className="header-icon lg:hidden">
+              <div className="absolute right-0 flex items-center lg:hidden">
+                <button type="button" onClick={() => setNavOpen(true)} aria-label="Mở menu" className="header-icon">
                   <Menu className="h-5 w-5" strokeWidth={1.35} />
                 </button>
               </div>
             </div>
 
-            <div className="relative hidden min-h-[58px] items-center lg:flex">
-              <nav aria-label="Điều hướng chính" className="absolute left-1/2 flex -translate-x-1/2 items-center gap-3 xl:gap-7">
+            <div className="relative hidden min-h-[58px] items-center justify-between lg:flex">
+              {/* Bên trái: Trả lại Tìm kiếm về chỗ cũ */}
+              <div className="flex-1 flex items-center justify-start">
+                <button
+                  type="button"
+                  onClick={() => setSearchOpen((open) => !open)}
+                  className="header-link flex items-center gap-2 text-xs font-medium leading-none transition-opacity hover:opacity-70 cursor-pointer"
+                  aria-expanded={isSearchOpen}
+                >
+                  <Search className="h-4 w-4" strokeWidth={1.3} />
+                  <span>Tìm kiếm</span>
+                </button>
+              </div>
+
+              <nav aria-label="Điều hướng chính" className="flex items-center gap-3 xl:gap-7 shrink-0">
                 {/* 1. Sản phẩm (kèm dropdown hover danh mục) */}
                 <div
                   className="relative flex items-center"
@@ -223,10 +267,19 @@ export default function Header() {
                   Liên hệ
                 </Link>
               </nav>
-              <button type="button" onClick={() => setSearchOpen((open) => !open)} className="header-link flex h-10 w-[150px] items-center justify-end gap-2 pl-5 text-xs font-medium leading-none transition-opacity hover:opacity-70" aria-expanded={isSearchOpen}>
-                <Search className="h-5 w-5" strokeWidth={1.25} />
-                <span>Tìm kiếm</span>
-              </button>
+
+              {/* Bên phải: Giỏ hàng thẳng hàng với điều hướng */}
+              <div className="flex-1 flex items-center justify-end text-xs font-medium">
+                <button
+                  type="button"
+                  onClick={() => setCartOpen(true)}
+                  aria-label={`Giỏ hàng (${cartCount})`}
+                  className="header-link flex items-center gap-2 text-xs font-medium leading-none transition-opacity hover:opacity-70 cursor-pointer"
+                >
+                  <ShoppingBag className="h-4 w-4" strokeWidth={1.3} />
+                  <span>Giỏ hàng ({cartCount})</span>
+                </button>
+              </div>
             </div>
 
             <div className="flex min-h-12 items-center justify-between lg:hidden">
@@ -241,17 +294,214 @@ export default function Header() {
           </div>
         </div>
 
-        {isSearchOpen && (
-          <div className="bg-[#f3f1eb] text-[#252523] shadow-[0_12px_30px_rgba(23,23,20,0.15)]">
-            <form onSubmit={handleSearch} className="mx-auto flex max-w-[1540px] items-center gap-3 px-5 py-4 sm:px-8 lg:px-12">
-              <Search className="h-5 w-5" strokeWidth={1.25} />
-              <label htmlFor="site-search" className="sr-only">Tìm kiếm sản phẩm</label>
-              <input id="site-search" autoFocus type="search" value={searchTerm} onChange={(event) => setSearchTerm(event.target.value)} placeholder="Tìm kiếm sản phẩm" className="min-w-0 flex-1 bg-transparent text-sm outline-none placeholder:text-[#252523]/60" />
-              <button type="button" onClick={() => setSearchOpen(false)} aria-label="Đóng tìm kiếm" className="transition-opacity hover:opacity-60"><X className="h-5 w-5" strokeWidth={1.25} /></button>
-            </form>
-          </div>
-        )}
       </motion.header>
+
+      {/* Luxury Fullscreen Search Overlay Modal */}
+      <AnimatePresence>
+        {isSearchOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.24 }}
+            className="fixed inset-0 z-50 flex flex-col bg-[#fbf9f5]/98 backdrop-blur-2xl text-[#24231f] overflow-y-auto"
+          >
+            {/* Top Bar inside Search Modal */}
+            <div className="border-b border-[#24231f]/10 px-6 py-5 sm:px-10 lg:px-14 bg-white/40">
+              <div className="mx-auto flex max-w-[1300px] items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <span className="text-xs font-semibold uppercase tracking-[0.22em] text-[#9d753d]">
+                    Tìm kiếm sản phẩm
+                  </span>
+                  <span className="hidden sm:inline text-xs text-[#77736b]">• RUNGU Fragrance & Rituals</span>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setSearchOpen(false)}
+                  className="group flex items-center gap-2 rounded-full border border-[#24231f]/15 bg-white/70 px-4 py-2 text-xs font-medium text-[#24231f] transition-all hover:bg-[#24231f] hover:text-white cursor-pointer shadow-xs"
+                >
+                  <span>Đóng</span>
+                  <span className="hidden font-mono text-[10px] opacity-60 group-hover:opacity-80 sm:inline">(ESC)</span>
+                  <X className="h-4 w-4" strokeWidth={1.5} />
+                </button>
+              </div>
+            </div>
+
+            {/* Search Content Container */}
+            <div className="mx-auto w-full max-w-[960px] flex-1 px-6 py-10 sm:px-10 sm:py-14">
+              {/* Large Luxury Search Input */}
+              <form onSubmit={handleSearch} className="relative">
+                <div className="relative flex items-center border-b-2 border-[#24231f]/20 pb-4 transition-colors focus-within:border-[#9d753d]">
+                  <Search className="h-6 w-6 sm:h-8 sm:w-8 text-[#9d753d] shrink-0 mr-4" strokeWidth={1.4} />
+                  <input
+                    id="site-search"
+                    autoFocus
+                    type="search"
+                    value={searchTerm}
+                    onChange={(event) => setSearchTerm(event.target.value)}
+                    placeholder="Tìm kiếm theo tên sản phẩm, loại gỗ, tầng hương..."
+                    className="w-full bg-transparent text-xl sm:text-3xl font-light text-[#24231f] placeholder:text-[#24231f]/35 focus:outline-none tracking-tight"
+                  />
+                  {searchTerm && (
+                    <button
+                      type="button"
+                      onClick={() => setSearchTerm("")}
+                      className="p-2 text-[#77736b] hover:text-[#24231f] cursor-pointer"
+                      aria-label="Xóa nội dung"
+                    >
+                      <X className="h-5 w-5" />
+                    </button>
+                  )}
+                  <button
+                    type="submit"
+                    className="ml-3 hidden sm:inline-flex items-center gap-1.5 rounded-full bg-[#24231f] px-5 py-2.5 text-xs font-semibold uppercase tracking-wider text-white transition-all hover:bg-[#9d753d] shadow-sm cursor-pointer"
+                  >
+                    <span>Tìm kiếm</span>
+                    <ArrowRight className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+              </form>
+
+              {/* Suggestions when input is empty */}
+              {!searchTerm.trim() && (
+                <div className="mt-10">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#77736b]">
+                    Từ khóa tìm kiếm phổ biến
+                  </p>
+                  <div className="mt-4 flex flex-wrap gap-2.5">
+                    {[
+                      "Gỗ Trắc đỏ",
+                      "Palo Santo",
+                      "Xô thơm trắng",
+                      "Nến thơm thảo mộc",
+                      "Khay xông trầm",
+                      "Trầm hương tự nhiên",
+                      "Chuông thiền 432Hz",
+                    ].map((tag) => (
+                      <button
+                        key={tag}
+                        type="button"
+                        onClick={() => setSearchTerm(tag)}
+                        className="rounded-full border border-[#24231f]/15 bg-white/70 px-4 py-2 text-xs text-[#24231f] transition-all hover:border-[#9d753d] hover:bg-[#9d753d] hover:text-white cursor-pointer shadow-xs"
+                      >
+                        {tag}
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Featured Categories */}
+                  <div className="mt-12 border-t border-[#24231f]/10 pt-8">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#77736b]">
+                      Khám phá danh mục nổi bật
+                    </p>
+                    <div className="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-3">
+                      {categories
+                        .filter((c) => c.id !== "all")
+                        .slice(0, 4)
+                        .map((cat) => (
+                          <button
+                            key={cat.id}
+                            type="button"
+                            onClick={() => {
+                              setSelectedCategory(cat.id);
+                              setSearchOpen(false);
+                              router.push(`/san-pham?category=${cat.id}`);
+                            }}
+                            className="group flex flex-col items-start rounded-xl border border-[#24231f]/10 bg-white/70 p-4 text-left transition-all hover:border-[#9d753d] hover:bg-white hover:shadow-sm cursor-pointer"
+                          >
+                            <span className="text-xs font-medium text-[#24231f] group-hover:text-[#9d753d] transition-colors">
+                              {cat.label}
+                            </span>
+                            <span className="mt-1 text-[11px] text-[#77736b]">{cat.count} sản phẩm</span>
+                          </button>
+                        ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Real-time search results */}
+              {searchTerm.trim().length > 0 && (
+                <div className="mt-10">
+                  <div className="flex items-center justify-between pb-4 border-b border-[#24231f]/10">
+                    <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#77736b]">
+                      {searchResults.length > 0
+                        ? `Tìm thấy ${searchResults.length} sản phẩm phù hợp`
+                        : "Không tìm thấy sản phẩm phù hợp"}
+                    </p>
+                    {searchResults.length > 0 && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          router.push(`/san-pham?q=${encodeURIComponent(searchTerm.trim())}`);
+                          setSearchOpen(false);
+                        }}
+                        className="text-xs font-semibold text-[#9d753d] hover:text-[#24231f] flex items-center gap-1 transition-colors cursor-pointer"
+                      >
+                        <span>Xem tất cả kết quả</span>
+                        <ArrowRight className="h-3.5 w-3.5" />
+                      </button>
+                    )}
+                  </div>
+
+                  {searchResults.length > 0 ? (
+                    <div className="mt-6 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+                      {searchResults.map((item) => (
+                        <Link
+                          key={item.id}
+                          href={`/san-pham/${item.id}`}
+                          onClick={() => setSearchOpen(false)}
+                          className="group flex flex-col rounded-xl border border-[#24231f]/10 bg-white p-3 transition-all hover:border-[#9d753d] hover:shadow-md cursor-pointer"
+                        >
+                          <div className="relative aspect-square w-full overflow-hidden rounded-lg bg-[#ece7dd]">
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img
+                              src={item.image}
+                              alt={item.name}
+                              className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                            />
+                          </div>
+                          <span className="mt-2.5 text-[10px] font-semibold uppercase tracking-wider text-[#9d753d]">
+                            {item.categoryName}
+                          </span>
+                          <h4 className="mt-1 line-clamp-2 text-xs font-medium text-[#24231f] group-hover:text-[#9d753d] leading-snug">
+                            {item.name}
+                          </h4>
+                          <span className="mt-2 text-xs font-semibold text-[#8d693a]">
+                            {item.price.toLocaleString("vi-VN")} đ
+                          </span>
+                        </Link>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="py-14 text-center">
+                      <p className="text-base text-[#24231f]">
+                        Không tìm thấy sản phẩm nào khớp với &ldquo;<span className="font-medium text-[#9d753d]">{searchTerm}</span>&rdquo;
+                      </p>
+                      <p className="mt-2 text-xs text-[#77736b]">
+                        Thử tìm kiếm với từ khóa khác như: Palo Santo, Xô thơm, Trầm hương, Gỗ trắc...
+                      </p>
+                      <div className="mt-6 flex justify-center gap-2">
+                        {["Palo Santo", "Trầm hương", "Xô thơm"].map((tag) => (
+                          <button
+                            key={tag}
+                            type="button"
+                            onClick={() => setSearchTerm(tag)}
+                            className="rounded-full border border-[#24231f]/15 bg-white px-3.5 py-1.5 text-xs text-[#24231f] hover:border-[#9d753d] hover:text-[#9d753d] cursor-pointer"
+                          >
+                            {tag}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <NavigationModal isOpen={isNavOpen} onClose={() => setNavOpen(false)} />
       <CartDrawer />
