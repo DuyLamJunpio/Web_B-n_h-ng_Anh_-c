@@ -23,7 +23,7 @@ export default async function StoryPage({ params }: { params: Promise<{ slug: st
           <Image src={story.image} alt={story.imageAlt} fill priority sizes="100vw" className="object-cover opacity-75" />
           <div className="absolute inset-0 bg-gradient-to-t from-[#171714]/80 via-[#171714]/10 to-transparent" />
           <div className="relative mx-auto w-full max-w-[1600px] px-5 pb-16 pt-40 sm:px-8 lg:px-12 lg:pb-24">
-            <Link href="/#collections" className="mb-12 inline-flex text-xs uppercase tracking-[0.18em] text-white/75 transition-colors hover:text-white">← Quay lại thư viện</Link>
+            <Link href="/#stories" className="mb-12 inline-flex text-xs uppercase tracking-[0.18em] text-white/75 transition-colors hover:text-white">← Quay lại thư viện câu chuyện</Link>
             <p className="mb-5 text-xs uppercase tracking-[0.2em] text-[#d5b27d]">{story.route}</p>
             <h1 className="max-w-[900px] text-5xl font-medium leading-[0.94] tracking-[-0.05em] sm:text-7xl lg:text-[clamp(5rem,11vw,11rem)]">{story.title}</h1>
             <p className="mt-5 max-w-[560px] text-xl leading-tight text-white/85 sm:text-2xl">{story.product}</p>
@@ -32,7 +32,7 @@ export default async function StoryPage({ params }: { params: Promise<{ slug: st
 
         <section className="mx-auto grid max-w-[1300px] gap-12 px-5 py-20 sm:px-8 lg:grid-cols-[0.7fr_1.3fr] lg:gap-24 lg:py-32">
           <div>
-            <p className="text-xs uppercase tracking-[0.18em] text-[#9d753d]">Câu chuyện {stories.indexOf(story) + 1} / 04</p>
+            <p className="text-xs uppercase tracking-[0.18em] text-[#9d753d]">Câu chuyện 0{stories.indexOf(story) + 1} / 0{stories.length}</p>
             <h2 className="mt-6 text-4xl font-medium leading-[1] tracking-[-0.04em] sm:text-5xl">{story.detail}</h2>
           </div>
           <div>
@@ -79,7 +79,7 @@ export default async function StoryPage({ params }: { params: Promise<{ slug: st
               <p className="text-xs uppercase tracking-[0.18em] text-[#9d753d]">Tiếp tục khám phá</p>
               <h2 className="mt-4 text-4xl font-medium tracking-[-0.04em]">Những lối đi khác</h2>
             </div>
-            <Link href="/#collections" className="text-sm underline decoration-[#9d753d] underline-offset-8 transition-colors hover:text-[#9d753d]">Xem toàn bộ vật phẩm →</Link>
+            <Link href="/san-pham" className="text-sm underline decoration-[#9d753d] underline-offset-8 transition-colors hover:text-[#9d753d]">Xem toàn bộ vật phẩm tại /san-pham →</Link>
           </div>
         </section>
       </main>

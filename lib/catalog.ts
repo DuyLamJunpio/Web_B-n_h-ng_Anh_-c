@@ -4,6 +4,7 @@ import { PRODUCTS, type Product } from "@/lib/data";
 
 type StorefrontProduct = {
   id: number | string;
+  slug?: string;
   name?: string;
   category?: string;
   description?: string | null;
@@ -17,9 +18,53 @@ type StorefrontProduct = {
   in_stock?: boolean;
   total_stock?: number;
   images?: string[];
+  manage_stock?: boolean;
+  variants?: Array<{
+    id: number | string;
+    size?: string | null;
+    color?: string | null;
+    sku?: string | null;
+    stock?: number;
+    available?: boolean;
+    price?: number;
+  }>;
 };
 
 type StorefrontResponse = { products?: StorefrontProduct[] };
+
+export type SalesMethod = {
+  enabled: boolean;
+  free_shipping: boolean;
+  shipping_fee: number;
+  free_shipping_min_items: number | null;
+};
+
+export type StorefrontContent = {
+  banners: Array<{
+    id: number;
+    media: string;
+    media_type: "image" | "video";
+    poster?: string | null;
+    mobile?: string | null;
+    alt?: string | null;
+    heading?: string | null;
+    subheading?: string | null;
+    cta_label?: string | null;
+    cta_link?: string | null;
+  }>;
+  collections: Array<{
+    id: number;
+    title: string;
+    subtitle?: string | null;
+    image?: string | null;
+    cta_label?: string | null;
+    cta_link?: string | null;
+    product_slugs: string[];
+  }>;
+  announcement: string[];
+  headings: Record<string, string>;
+  sales: Record<string, SalesMethod>;
+};
 
 const CATALOG_TAG = "rungu-catalog";
 
@@ -47,6 +92,7 @@ function toProduct(product: StorefrontProduct, apiUrl: string): Product {
 
   return {
     id: String(product.id),
+    slug: product.slug,
     name: product.name?.trim() || "Sản phẩm RỪNG U",
     category: slugify(categoryName),
     categoryName,
@@ -70,6 +116,22 @@ function toProduct(product: StorefrontProduct, apiUrl: string): Product {
       ? ["Sản phẩm đang tạm hết hàng"]
       : ["Sản phẩm đang có hàng", `Tồn kho hiển thị: ${Number(product.total_stock) || 0}`],
     usage: "Xem hướng dẫn sử dụng và bảo quản trong phần mô tả sản phẩm.",
+    manageStock: Boolean(product.manage_stock),
+    inStock: product.in_stock !== false,
+    variants: (product.variants ?? []).map((variant) => {
+      const label = [variant.size, variant.color].filter(Boolean).join(" / ") || variant.sku || "Mặc định";
+
+      return {
+        id: String(variant.id),
+        label,
+        size: variant.size,
+        color: variant.color,
+        sku: variant.sku,
+        stock: Number(variant.stock) || 0,
+        available: variant.available !== false,
+        price: Number(variant.price) || Number(product.price) || 0,
+      };
+    }),
   };
 }
 
@@ -91,5 +153,50 @@ export async function getCatalogProducts(): Promise<Product[]> {
     return products.length ? products : PRODUCTS;
   } catch {
     return PRODUCTS;
+  }
+}
+
+/** Nội dung và chính sách bán hàng được quản trị từ QLBH. */
+export async function getStorefrontContent(): Promise<StorefrontContent> {
+  const apiUrl = process.env.QLBH_API_URL?.replace(/\/+$/, "");
+  const fallback: StorefrontContent = {
+    banners: [],
+    collections: [],
+    announcement: [],
+    headings: {},
+    sales: {
+      cod: { enabled: true, free_shipping: true, shipping_fee: 0, free_shipping_min_items: null },
+      bank_transfer: { enabled: true, free_shipping: true, shipping_fee: 0, free_shipping_min_items: null },
+    },
+  };
+
+  if (!apiUrl) return fallback;
+
+  try {
+    const response = await fetch(`${apiUrl}/api/storefront/content`, {
+      headers: { Accept: "application/json" },
+      next: { revalidate: 60, tags: [CATALOG_TAG] },
+    });
+
+    if (!response.ok) return fallback;
+    const payload = (await response.json()) as Partial<StorefrontContent>;
+
+    return {
+      banners: (payload.banners ?? []).map((banner) => ({
+        ...banner,
+        media: imageUrl(banner.media, apiUrl),
+        poster: banner.poster ? imageUrl(banner.poster, apiUrl) : null,
+        mobile: banner.mobile ? imageUrl(banner.mobile, apiUrl) : null,
+      })),
+      collections: (payload.collections ?? []).map((collection) => ({
+        ...collection,
+        image: collection.image ? imageUrl(collection.image, apiUrl) : null,
+      })),
+      announcement: payload.announcement ?? [],
+      headings: payload.headings ?? {},
+      sales: Object.keys(payload.sales ?? {}).length ? payload.sales! : fallback.sales,
+    };
+  } catch {
+    return fallback;
   }
 }

@@ -20,15 +20,23 @@ import type { Product } from "@/lib/data";
 import { useCart } from "@/lib/CartContext";
 
 export default function ProductDetailView({ product, relatedProducts }: { product: Product; relatedProducts: Product[] }) {
-  const { addToCart, setCartOpen } = useCart();
+  const { addToCart, setCartOpen, storefrontContent } = useCart();
   const [activeImage, setActiveImage] = useState<string>(product.image);
   const [quantity, setQuantity] = useState<number>(1);
   const [isAdded, setIsAdded] = useState(false);
+  const availableVariants = (product.variants ?? []).filter((variant) => variant.available);
+  const [selectedVariantId, setSelectedVariantId] = useState<string>(availableVariants[0]?.id ?? "");
+  const selectedVariant = availableVariants.find((variant) => variant.id === selectedVariantId);
+  const currentPrice = selectedVariant?.price ?? product.price;
+  const canBuy = product.inStock !== false && (availableVariants.length > 0 || !(product.variants?.length));
+
+  const shippingMessage = Object.values(storefrontContent.sales).some((method) => method.enabled && method.free_shipping)
+    ? "Miễn phí giao hàng"
+    : "Phí giao hàng tính theo phương thức thanh toán";
 
   const handleAddToCart = () => {
-    for (let i = 0; i < quantity; i++) {
-      addToCart(product.id);
-    }
+    const added = addToCart(product.id, selectedVariant?.id, quantity);
+    if (!added) return;
     setIsAdded(true);
     setCartOpen(true);
     window.setTimeout(() => setIsAdded(false), 1800);
@@ -121,7 +129,7 @@ export default function ProductDetailView({ product, relatedProducts }: { produc
             {/* Price Box */}
             <div className="mt-6 flex items-baseline gap-3 border-y border-[#282723]/15 py-4">
               <span className="text-3xl font-light tracking-tight text-[#24231f]">
-                {(product.price * quantity).toLocaleString("vi-VN")}đ
+                {(currentPrice * quantity).toLocaleString("vi-VN")}đ
               </span>
               {product.originalPrice && (
                 <span className="text-sm text-[#77736b] line-through">
@@ -179,6 +187,33 @@ export default function ProductDetailView({ product, relatedProducts }: { produc
               </div>
             )}
 
+            {availableVariants.length > 0 && (
+              <div className="mt-6 space-y-2">
+                <span className="block text-xs font-semibold uppercase tracking-[0.16em] text-[#24231f]">
+                  Chọn quy cách / mùi hương
+                </span>
+                <div className="flex flex-wrap gap-2">
+                  {availableVariants.map((variant) => (
+                    <button
+                      key={variant.id}
+                      type="button"
+                      onClick={() => {
+                        setSelectedVariantId(variant.id);
+                        setQuantity(1);
+                      }}
+                      className={`border px-3 py-2 text-xs transition-colors ${
+                        selectedVariantId === variant.id
+                          ? "border-[#282723] bg-[#282723] text-white"
+                          : "border-[#282723]/25 bg-white text-[#24231f] hover:border-[#282723]"
+                      }`}
+                    >
+                      {variant.label} · còn {variant.stock}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* Quantity Selector & Add to Cart Button */}
             <div className="mt-8 space-y-4 pt-4 border-t border-[#282723]/15">
               <div className="flex gap-4">
@@ -195,7 +230,9 @@ export default function ProductDetailView({ product, relatedProducts }: { produc
                   <span className="px-4 text-xs font-semibold text-[#24231f]">{quantity}</span>
                   <button
                     type="button"
-                    onClick={() => setQuantity(quantity + 1)}
+                    onClick={() => setQuantity(selectedVariant && product.manageStock
+                      ? Math.min(selectedVariant.stock, quantity + 1)
+                      : quantity + 1)}
                     className="px-3.5 py-3 text-sm transition-colors hover:bg-[#ede8dd]"
                     aria-label="Tăng số lượng"
                   >
@@ -207,7 +244,8 @@ export default function ProductDetailView({ product, relatedProducts }: { produc
                 <button
                   type="button"
                   onClick={handleAddToCart}
-                  className="flex-1 border border-[#282723] bg-[#282723] py-3 px-6 text-xs font-semibold uppercase tracking-[0.18em] text-white transition-all hover:bg-black flex items-center justify-center gap-2 shadow-sm"
+                  disabled={!canBuy}
+                  className="flex-1 border border-[#282723] bg-[#282723] py-3 px-6 text-xs font-semibold uppercase tracking-[0.18em] text-white transition-all hover:bg-black disabled:cursor-not-allowed disabled:opacity-50 flex items-center justify-center gap-2 shadow-sm"
                 >
                   {isAdded ? (
                     <>
@@ -217,7 +255,7 @@ export default function ProductDetailView({ product, relatedProducts }: { produc
                   ) : (
                     <>
                       <ShoppingBag className="h-4 w-4" strokeWidth={1.5} />
-                      <span>Thêm vào giỏ hàng</span>
+                      <span>{canBuy ? "Thêm vào giỏ hàng" : "Tạm hết hàng"}</span>
                     </>
                   )}
                 </button>
@@ -227,7 +265,7 @@ export default function ProductDetailView({ product, relatedProducts }: { produc
               <div className="flex items-center justify-between border-t border-[#282723]/10 pt-3 text-[11px] text-[#77736b]">
                 <span className="flex items-center gap-1.5">
                   <Truck className="h-3.5 w-3.5 text-[#9d753d]" />
-                  Miễn phí giao hàng từ 1.000.000đ
+                  {shippingMessage}
                 </span>
                 <span>•</span>
                 <span className="flex items-center gap-1.5">

@@ -18,8 +18,7 @@ export default function HeroSection() {
           playsInline
           className="w-full h-full object-cover opacity-60"
         >
-          {/* Using a placeholder abstract smoke video */}
-          <source src="https://cdn.pixabay.com/video/2020/05/25/40141-426581971_large.mp4" type="video/mp4" />
+          <source src="/videos/0918.mp4" type="video/mp4" />
         </video>
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/20 to-charcoal"></div>
       </div>

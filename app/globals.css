@@ -39,9 +39,9 @@
   --color-amber: #9d753d;
   --color-text: #24231f;
   --color-text-dim: #77736b;
-  --font-serif: var(--font-oswald);
-  --font-sans: var(--font-oswald);
-  --font-mono: var(--font-oswald);
+  --font-serif: var(--font-cormorant);
+  --font-sans: var(--font-cormorant);
+  --font-mono: var(--font-cormorant);
 }
 
 :root {
@@ -57,7 +57,23 @@ body {
   min-height: 100vh;
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-oswald), Arial, sans-serif;
+  font-family: var(--font-cormorant), Georgia, serif;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-cormorant), Georgia, serif !important;
+}
+
+nav,
+nav *,
+.site-header-main a,
+.site-header-main button {
+  font-family: var(--font-cormorant), Georgia, serif !important;
 }
 
 ::selection { background: #9d753d; color: #f7f5f0; }
@@ -128,16 +144,26 @@ button, a { -webkit-tap-highlight-color: transparent; }
   min-width: 250px;
   align-items: center;
   justify-content: center;
-  gap: 1rem;
-  border: 1px solid rgb(255 255 255 / 0.75);
-  padding: 0.85rem 1.35rem;
-  color: white;
+  gap: 0.75rem;
+  border: 1px solid #ffffff;
+  padding: 0.85rem 1.75rem;
+  background-color: #ffffff;
+  color: #000000 !important;
   font-size: 0.75rem;
-  font-weight: 500;
-  transition: background-color 220ms ease, color 220ms ease, transform 220ms ease;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  transition: background-color 220ms ease, color 220ms ease, transform 220ms ease, border-color 220ms ease;
 }
-.hero-cta:hover { background: white; color: #24231f; transform: translateY(-1px); }
-.hero-cta:active { transform: scale(0.985); }
+.hero-cta:hover {
+  background-color: #f3f0e8;
+  color: #000000 !important;
+  border-color: #f3f0e8;
+  transform: translateY(-1px);
+}
+.hero-cta:active {
+  transform: scale(0.985);
+}
 
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(14px); }

@@ -109,7 +109,7 @@ export default function Ritual() {
             <div className="relative aspect-[16/10] overflow-hidden bg-forest-50">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src="https://images.unsplash.com/photo-1544816155-12df9643f363?auto=format&fit=crop&q=80&w=1000"
+                src="https://images.unsplash.com/photo-1544816155-12df9643f363?auto=format&fit=crop&q=85&w=1400"
                 alt="Tĩnh Tâm & Khởi Đầu"
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000 filter brightness-95"
               />
@@ -128,10 +128,10 @@ export default function Ritual() {
                 <span>BƯỚC ĐẦU TIÊN</span>
               </div>
               <h3 className="font-serif text-3xl sm:text-4xl text-forest-950 font-light descender-safe">
-                Lắng Dịu Không Gian &amp; Mở Luồng Khí
+                Tạo Khoảng Trống Cho Tâm Trí
               </h3>
-              <p className="text-forest-800/80 text-sm sm:text-base font-light leading-relaxed max-w-[60ch]">
-                Khởi động căn phòng bằng việc giảm bớt ánh sáng gắt, mở nhẹ cửa sổ để dòng không khí thanh sạch được lưu thông tự nhiên. Một tâm thế thong thả sẽ giúp hương thơm thẩm thấu trọn vẹn hơn.
+              <p className="text-forest-800/85 text-sm sm:text-base font-light leading-relaxed">
+                Mở hé cửa sổ để làn gió đối lưu. Hãy ngồi thoải mái, đặt tay lên ngực và lắng nghe hơi thở tự nhiên của bạn trong 60 giây trước khi bắt đầu nghi thức thanh lọc không gian.
               </p>
             </div>
           </motion.div>
@@ -149,7 +149,7 @@ export default function Ritual() {
               <div className="w-full sm:w-36 aspect-square overflow-hidden flex-shrink-0 bg-forest-50">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src="https://images.unsplash.com/photo-1507652313519-d4e9174996dd?auto=format&fit=crop&q=80&w=400"
+                  src="https://images.unsplash.com/photo-1507652313519-d4e9174996dd?auto=format&fit=crop&q=85&w=800"
                   alt="Khơi Lửa & Đón Khói"
                   className="w-full h-full object-cover group-hover:scale-108 transition-transform duration-700"
                 />
@@ -174,7 +174,7 @@ export default function Ritual() {
               <div className="w-full sm:w-36 aspect-square overflow-hidden flex-shrink-0 bg-forest-50">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src="https://images.unsplash.com/photo-1603006905003-be475563bc59?auto=format&fit=crop&q=80&w=400"
+                  src="https://images.unsplash.com/photo-1603006905003-be475563bc59?auto=format&fit=crop&q=85&w=800"
                   alt="Tận Hưởng Sự Tĩnh Lặng"
                   className="w-full h-full object-cover group-hover:scale-108 transition-transform duration-700"
                 />
