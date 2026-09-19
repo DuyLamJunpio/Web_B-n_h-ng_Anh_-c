@@ -10,34 +10,34 @@ import { useCart } from "@/lib/CartContext";
 const fallbackStories = [
   {
     eyebrow: "",
-    title: "Ngàn lẻ một câu chuyện về những nốt hương",
-    description: "Một sự sáng tạo dựa trên những nguyên liệu tự nhiên để đánh thức giác quan. Và đưa bạn vào một hành trình mới....",
+    title: "Câu chuyện về hoa cỏ",
+    description: "Mỗi loại hoa, cỏ lại có mỗi mùi hương riêng. Chúng mình để tự nhiên xoa dịu tâm hồn bạn bằng chính những mùi hương mộc mạc đó",
     cta: "Khám phá ngay bộ sưu tập",
     image: "/videos/0918.mp4",
     poster: "/videos/palo-santo-poster.jpg",
-    alt: "Ngàn lẻ một câu chuyện về những nốt hương",
+    alt: "Câu chuyện về hoa cỏ - RUNGU",
     mediaType: "video" as const,
     ctaLink: "/san-pham",
   },
   {
-    eyebrow: "Nghi thức & Không gian",
-    title: "Gỗ thánh Palo Santo nguyên bản",
-    description: "Khói thơm từ gỗ Palo Santo Nam Mỹ và thảo mộc nguyên bản giúp thanh lọc không gian sống.",
+    eyebrow: "Palo Santo",
+    title: "Câu chuyện về gỗ thiêng",
+    description: "Gỗ Palo santo - hay còn được gọi là: gỗ thánh. Được khai thác trong những cánh rừng già ở Peru. Palo Santo ủ một lớp tinh dầu thơm trong từng thớ gỗ. Chờ toả hương",
     cta: "Khám phá danh mục sản phẩm",
     image: "/videos/palo-santo-hero.mp4",
     poster: "/videos/palo-santo-poster.jpg",
-    alt: "Gỗ Palo Santo tự nhiên và làn khói thơm dịu nhẹ",
+    alt: "Câu chuyện về gỗ thiêng - Gỗ Palo Santo tự nhiên",
     mediaType: "video" as const,
     ctaLink: "/san-pham",
   },
   {
-    eyebrow: "Tĩnh lặng thuần khiết",
-    title: "Một khoảng lặng vừa đủ",
-    description: "Chạm vào gỗ, lửa và những nốt hương trầm nguyên sơ giữa nhịp sống vội vã.",
+    eyebrow: "",
+    title: "Câu chuyện về sự giao thoa giữa âm nhạc và nghệ thuật",
+    description: "Âm nhạc là cơn gió mát xoa dịu tâm hồn bạn",
     cta: "Đọc câu chuyện văn hóa",
     image: "/videos/smoke-1080p.webm",
     poster: "/videos/palo-santo-poster.jpg",
-    alt: "Làn khói thiền định và ánh sáng ấm áp",
+    alt: "Câu chuyện về sự giao thoa giữa âm nhạc và nghệ thuật - RUNGU",
     mediaType: "video" as const,
     ctaLink: "/#stories",
   },
@@ -277,17 +277,17 @@ export default function HeroVideo() {
           className="max-w-3xl"
         >
           {story.eyebrow ? (
-            <p className="mb-3 text-[11px] font-medium tracking-[0.14em] uppercase text-[#d5b27d]">{story.eyebrow}</p>
+            <p className="mb-3.5 text-xs sm:text-sm font-semibold tracking-[0.2em] uppercase text-[#e5caa1] drop-shadow-sm">{story.eyebrow}</p>
           ) : null}
-          <h1 className="text-balance text-4xl font-light leading-[1.05] tracking-[-0.04em] sm:text-5xl lg:text-6xl text-white">
+          <h1 className="text-balance text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-normal leading-[1.08] tracking-[-0.03em] text-white drop-shadow-md">
             {story.title}
           </h1>
-          <p className="mx-auto mt-4 max-w-xl text-sm leading-6 text-white/85 sm:text-base font-light">
+          <p className="mx-auto mt-5 max-w-2xl text-base sm:text-lg lg:text-xl leading-relaxed text-white/95 font-light drop-shadow-sm">
             {story.description}
           </p>
           <Link
             href={story.ctaLink}
-            className="hero-cta group mt-7 inline-flex items-center gap-2.5 border border-white bg-white px-7 py-3.5 text-xs font-semibold uppercase tracking-[0.18em] !text-black transition-all hover:border-[#f3f1eb] hover:bg-[#f3f1eb] hover:!text-black"
+            className="hero-cta group mt-8 inline-flex items-center gap-2.5 border border-white bg-white px-8 py-4 text-sm font-semibold uppercase tracking-[0.16em] !text-black transition-all hover:border-[#f3f1eb] hover:bg-[#f3f1eb] hover:!text-black shadow-lg"
           >
             <span className="!text-black font-semibold">{story.cta}</span>
             <ArrowRight className="h-4 w-4 !text-black transition-transform duration-200 group-hover:translate-x-1" strokeWidth={1.5} />

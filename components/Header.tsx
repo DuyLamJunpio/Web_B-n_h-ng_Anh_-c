@@ -124,7 +124,7 @@ export default function Header() {
         transition={{ duration: 0.5, ease: "easeOut" }}
         className="absolute inset-x-0 top-0 z-40 text-white"
       >
-        <div className="flex min-h-9 items-center justify-center bg-[#2d2d2b] px-4 text-center text-[11px] tracking-[0.02em]">
+        <div className="flex min-h-9 items-center justify-center bg-[#2d2d2b] px-4 text-center text-xs tracking-[0.03em] font-medium">
           {announcement}
         </div>
 
@@ -148,15 +148,15 @@ export default function Header() {
                 <button
                   type="button"
                   onClick={() => setSearchOpen((open) => !open)}
-                  className="header-link flex items-center gap-2 text-xs font-medium leading-none transition-opacity hover:opacity-70 cursor-pointer"
+                  className="header-link flex items-center gap-2 text-sm font-medium leading-none transition-opacity hover:opacity-70 cursor-pointer"
                   aria-expanded={isSearchOpen}
                 >
-                  <Search className="h-4 w-4" strokeWidth={1.3} />
+                  <Search className="h-4 w-4" strokeWidth={1.4} />
                   <span>Tìm kiếm</span>
                 </button>
               </div>
 
-              <nav aria-label="Điều hướng chính" className="flex items-center gap-3 xl:gap-7 shrink-0">
+              <nav aria-label="Điều hướng chính" className="flex items-center gap-4 xl:gap-8 shrink-0">
                 {/* 1. Sản phẩm (kèm dropdown hover danh mục) */}
                 <div
                   className="relative flex items-center"
@@ -165,7 +165,7 @@ export default function Header() {
                 >
                   <Link
                     href="/san-pham"
-                    className="header-nav-link group flex h-full items-center gap-1.5 whitespace-nowrap px-2 py-5 text-[13px] font-medium leading-none focus-visible:outline-none"
+                    className="header-nav-link group flex h-full items-center gap-1.5 whitespace-nowrap px-2 py-5 text-[15px] font-medium leading-none focus-visible:outline-none"
                     aria-expanded={isProductsHovered}
                   >
                     <span>Sản phẩm</span>
@@ -238,7 +238,7 @@ export default function Header() {
                 {/* 2. Mới đáng chú ý */}
                 <Link
                   href="/san-pham?collection=new"
-                  className="header-nav-link flex h-full items-center whitespace-nowrap px-2 py-5 text-[13px] font-medium leading-none"
+                  className="header-nav-link flex h-full items-center whitespace-nowrap px-2 py-5 text-[15px] font-medium leading-none"
                 >
                   Mới đáng chú ý
                 </Link>
@@ -246,7 +246,7 @@ export default function Header() {
                 {/* 3. Khuyến mại */}
                 <Link
                   href="/san-pham?collection=sale"
-                  className="header-nav-link flex h-full items-center whitespace-nowrap px-2 py-5 text-[13px] font-medium leading-none"
+                  className="header-nav-link flex h-full items-center whitespace-nowrap px-2 py-5 text-[15px] font-medium leading-none"
                 >
                   Khuyến mại
                 </Link>
@@ -254,7 +254,7 @@ export default function Header() {
                 {/* 4. Câu chuyện */}
                 <Link
                   href="/#stories"
-                  className="header-nav-link flex h-full items-center whitespace-nowrap px-2 py-5 text-[13px] font-medium leading-none"
+                  className="header-nav-link flex h-full items-center whitespace-nowrap px-2 py-5 text-[15px] font-medium leading-none"
                 >
                   Câu chuyện
                 </Link>
@@ -262,21 +262,21 @@ export default function Header() {
                 {/* 5. Liên hệ */}
                 <Link
                   href="/#contact"
-                  className="header-nav-link flex h-full items-center whitespace-nowrap px-2 py-5 text-[13px] font-medium leading-none"
+                  className="header-nav-link flex h-full items-center whitespace-nowrap px-2 py-5 text-[15px] font-medium leading-none"
                 >
                   Liên hệ
                 </Link>
               </nav>
 
               {/* Bên phải: Giỏ hàng thẳng hàng với điều hướng */}
-              <div className="flex-1 flex items-center justify-end text-xs font-medium">
+              <div className="flex-1 flex items-center justify-end text-sm font-medium">
                 <button
                   type="button"
                   onClick={() => setCartOpen(true)}
                   aria-label={`Giỏ hàng (${cartCount})`}
-                  className="header-link flex items-center gap-2 text-xs font-medium leading-none transition-opacity hover:opacity-70 cursor-pointer"
+                  className="header-link flex items-center gap-2 text-sm font-medium leading-none transition-opacity hover:opacity-70 cursor-pointer"
                 >
-                  <ShoppingBag className="h-4 w-4" strokeWidth={1.3} />
+                  <ShoppingBag className="h-4 w-4" strokeWidth={1.4} />
                   <span>Giỏ hàng ({cartCount})</span>
                 </button>
               </div>
