@@ -72,18 +72,18 @@ export default function Collections() {
             transition={{ duration: 0.6 }}
             className="max-w-2xl"
           >
-            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#9d753d] mb-3">
+            <p className="text-xs sm:text-sm font-semibold uppercase tracking-[0.2em] text-[#9d753d] mb-3.5">
               Tuyển chọn tự nhiên · Thủ công tinh xảo
             </p>
-            <h2 className="text-4xl font-light leading-[1.05] tracking-[-0.045em] sm:text-5xl lg:text-6xl">
+            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-normal leading-[1.12] tracking-[-0.03em] text-[#24231f]">
               {managedCollection?.title || "Những vật phẩm cho đời sống thường nhật"}
             </h2>
-            <p className="mt-4 max-w-xl text-sm leading-relaxed text-[#625f57] sm:text-base">
+            <p className="mt-4 max-w-xl text-base sm:text-lg leading-relaxed text-[#55524a]">
               {managedCollection?.subtitle || "Gỗ, khói, ánh sáng và những nốt hương được chọn để ở lại thật lâu trong không gian của bạn."}
             </p>
           </motion.div>
 
-          <div className="hidden md:flex items-center gap-2 text-xs font-medium tracking-wider text-[#8c887f]">
+          <div className="hidden md:flex items-center gap-2 text-sm font-medium tracking-wider text-[#8c887f]">
             <span>HIỂN THỊ</span>
             <span className="font-semibold text-[#282723]">{visibleProducts.length}</span>
             <span>/ {products.length} VẬT PHẨM</span>
@@ -91,7 +91,7 @@ export default function Collections() {
         </div>
 
         {/* Filter Pill Tabs */}
-        <div className="mt-8 flex flex-wrap items-center gap-2 pb-2">
+        <div className="mt-8 flex flex-wrap items-center gap-2.5 pb-2">
           {filters.map((item) => {
             const count = getFilterCount(item.id);
             const isSelected = selectedCategory === item.id;
@@ -101,7 +101,7 @@ export default function Collections() {
                 key={item.id}
                 type="button"
                 onClick={() => setSelectedCategory(item.id)}
-                className={`group inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs font-medium transition-all duration-300 ${
+                className={`group inline-flex items-center gap-2 rounded-full px-4.5 py-2.5 text-sm font-medium transition-all duration-300 cursor-pointer ${
                   isSelected
                     ? "bg-[#282723] text-white shadow-sm"
                     : "bg-white/60 text-[#625f57] hover:bg-white hover:text-[#282723] border border-[#282723]/10"
@@ -109,7 +109,7 @@ export default function Collections() {
               >
                 <span>{item.label}</span>
                 <span
-                  className={`text-[10px] rounded-full px-1.5 py-0.5 transition-colors ${
+                  className={`text-xs rounded-full px-2 py-0.5 transition-colors ${
                     isSelected
                       ? "bg-white/20 text-white"
                       : "bg-[#282723]/5 text-[#8c887f] group-hover:bg-[#282723]/10 group-hover:text-[#282723]"
@@ -200,12 +200,12 @@ export default function Collections() {
 
                     {/* Product Typography Information */}
                     <div className="pt-5">
-                      <div className="flex items-center justify-between text-[10px] uppercase tracking-[0.16em] text-[#8c887f]">
+                      <div className="flex items-center justify-between text-xs uppercase tracking-[0.16em] text-[#8c887f] font-medium">
                         <span>{product.categoryName}</span>
                         <span>{product.origin.split("(")[0].trim()}</span>
                       </div>
 
-                      <h3 className="mt-2 text-lg sm:text-xl font-medium leading-snug tracking-[-0.02em]">
+                      <h3 className="mt-2 text-xl sm:text-2xl font-semibold leading-snug tracking-[-0.02em] text-[#24231f]">
                         <Link
                           href={`/san-pham/${product.id}`}
                           className="transition-colors hover:text-[#9d753d] line-clamp-1"
@@ -214,26 +214,26 @@ export default function Collections() {
                         </Link>
                       </h3>
 
-                      <p className="mt-1.5 text-xs leading-relaxed text-[#625f57] line-clamp-2">
+                      <p className="mt-2 text-sm leading-relaxed text-[#55524a] line-clamp-2">
                         {product.notes}
                       </p>
 
                       {/* Rating & Review */}
-                      <div className="mt-3 flex items-center gap-1.5 text-xs text-[#77736b]">
+                      <div className="mt-3.5 flex items-center gap-2 text-sm text-[#77736b]">
                         <div className="flex items-center text-[#9d753d]">
-                          <Star className="h-3.5 w-3.5 fill-[#9d753d]" />
+                          <Star className="h-4 w-4 fill-[#9d753d]" />
                         </div>
-                        <span className="font-medium text-[#282723]">{product.rating}</span>
-                        <span className="text-[#a09c94]">({product.reviewsCount} đánh giá)</span>
+                        <span className="font-semibold text-[#24231f]">{product.rating}</span>
+                        <span className="text-[#99948a]">({product.reviewsCount} đánh giá)</span>
                       </div>
                     </div>
                   </div>
 
                   {/* Price & Add to Cart Footer */}
-                  <div className="mt-5 flex items-center justify-between pt-4 border-t border-[#282723]/10">
+                  <div className="mt-6 flex items-center justify-between pt-4.5 border-t border-[#282723]/10">
                     <div>
                       <div className="flex items-baseline gap-2">
-                        <span className="text-base font-medium text-[#282723]">
+                        <span className="text-lg sm:text-xl font-bold text-[#24231f]">
                           {product.price.toLocaleString("vi-VN")}đ
                         </span>
                         {product.originalPrice && product.originalPrice > product.price && (
@@ -242,13 +242,13 @@ export default function Collections() {
                           </span>
                         )}
                       </div>
-                      <p className="text-[10px] text-[#8c887f] mt-0.5">Miễn phí vận chuyển</p>
+                      <p className="text-xs text-[#8c887f] mt-0.5">Miễn phí vận chuyển</p>
                     </div>
 
                     <button
                       type="button"
                       onClick={() => addProduct(product)}
-                      className={`inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-xs font-medium transition-all duration-300 ${
+                      className={`inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium transition-all duration-300 cursor-pointer ${
                         addedId === product.id
                           ? "bg-emerald-700 text-white shadow-sm"
                           : "bg-[#282723] text-white hover:bg-[#9d753d] shadow-sm"
@@ -256,12 +256,12 @@ export default function Collections() {
                     >
                       {addedId === product.id ? (
                         <>
-                          <Check className="h-3.5 w-3.5" />
+                          <Check className="h-4 w-4" />
                           <span>Đã thêm</span>
                         </>
                       ) : (
                         <>
-                          <ShoppingBag className="h-3.5 w-3.5" />
+                          <ShoppingBag className="h-4 w-4" />
                           <span>Thêm vào giỏ</span>
                         </>
                       )}

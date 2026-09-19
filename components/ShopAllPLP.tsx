@@ -220,21 +220,21 @@ export default function ShopAllPLP() {
         <div className="absolute inset-0 bg-gradient-to-b from-[#181715]/65 via-[#181715]/40 to-[#181715]/90" />
 
         <div className="relative mx-auto w-full max-w-[1540px] px-5 pb-12 pt-36 sm:px-8 lg:px-12 sm:pb-16">
-          <div className="flex flex-wrap items-center gap-2 text-[11px] uppercase tracking-[0.22em] text-[#d5b27d]">
+          <div className="flex flex-wrap items-center gap-2 text-xs uppercase tracking-[0.2em] font-semibold text-[#d5b27d]">
             <Link href="/" className="transition-opacity hover:opacity-75">Trang chủ</Link>
             <span>/</span>
             <span>Cửa hàng</span>
           </div>
 
-          <h1 className="mt-4 text-4xl font-light tracking-[-0.045em] sm:text-5xl lg:text-6xl text-white">
+          <h1 className="mt-4 text-4xl font-normal tracking-[-0.03em] sm:text-5xl lg:text-6xl text-white">
             Tất cả sản phẩm
           </h1>
 
           <div className="mt-4 flex flex-col justify-between gap-4 border-t border-white/20 pt-4 sm:flex-row sm:items-end">
-            <p className="max-w-2xl text-sm leading-6 text-white/85 sm:text-base">
+            <p className="max-w-2xl text-base sm:text-lg leading-relaxed text-white/90">
               Các công thức tự nhiên cho không gian, thân thể và tâm trí. Tuyển chọn từ gỗ Palo Santo Peru ngã đổ tự nhiên, xô thơm trắng California, nhang trầm xứ Quảng và sáp đậu nành thủ công.
             </p>
-            <span className="font-mono text-xs uppercase tracking-[0.16em] text-white/70">
+            <span className="font-mono text-xs sm:text-sm uppercase tracking-[0.16em] text-white/80">
               {filteredProducts.length} trên {products.length} công thức
             </span>
           </div>
@@ -472,11 +472,11 @@ export default function ShopAllPLP() {
 
                     {/* Content Box */}
                     <div className="flex flex-1 flex-col p-5 sm:p-6">
-                      <div className="text-[10px] font-medium uppercase tracking-[0.18em] text-[#9d753d]">
+                      <div className="text-xs font-semibold uppercase tracking-[0.18em] text-[#9d753d]">
                         {product.categoryName}
                       </div>
 
-                      <h3 className="mt-2 text-base font-medium leading-snug tracking-[-0.02em] text-[#24231f]">
+                      <h3 className="mt-2 text-lg sm:text-xl font-semibold leading-snug tracking-[-0.02em] text-[#24231f]">
                         <Link
                           href={`/san-pham/${product.id}`}
                           className="text-left transition-colors hover:text-[#9d753d]"
@@ -486,13 +486,13 @@ export default function ShopAllPLP() {
                       </h3>
 
                       {/* Origin & Format line */}
-                      <p className="mt-1 text-xs text-[#77736b]">
+                      <p className="mt-1 text-sm text-[#77736b]">
                         {product.origin}
                       </p>
 
                       {/* Aromatic Profile */}
-                      <div className="mt-3 border-t border-[#282723]/10 pt-3 text-xs leading-relaxed text-[#625f57]">
-                        <span className="text-[#24231f] font-medium">Nốt hương: </span>
+                      <div className="mt-3 border-t border-[#282723]/10 pt-3 text-sm leading-relaxed text-[#504c44]">
+                        <span className="text-[#24231f] font-semibold">Nốt hương: </span>
                         {product.notes}
                       </div>
 
@@ -500,11 +500,11 @@ export default function ShopAllPLP() {
                       <div className="mt-auto pt-6">
                         <div className="flex items-center justify-between border-t border-[#282723]/15 pt-4">
                           <div className="flex items-baseline gap-2">
-                            <span className="text-sm font-medium tracking-tight">
+                            <span className="text-base sm:text-lg font-bold text-[#24231f] tracking-tight">
                               {product.price.toLocaleString("vi-VN")}đ
                             </span>
                             {product.originalPrice && product.originalPrice > product.price && (
-                              <span className="text-xs text-[#77736b] line-through">
+                              <span className="text-xs sm:text-sm text-[#77736b] line-through">
                                 {product.originalPrice.toLocaleString("vi-VN")}đ
                               </span>
                             )}
@@ -513,16 +513,16 @@ export default function ShopAllPLP() {
                           <button
                             type="button"
                             onClick={() => handleAddToCart(product)}
-                            className="inline-flex items-center gap-1.5 text-xs font-medium uppercase tracking-[0.12em] text-[#24231f] transition-colors hover:text-[#9d753d]"
+                            className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold uppercase tracking-[0.12em] text-[#24231f] transition-colors hover:text-[#9d753d] cursor-pointer"
                           >
                             {addedId === product.id ? (
                               <>
-                                <Check className="h-3.5 w-3.5 text-[#66705a]" />
+                                <Check className="h-4 w-4 text-[#66705a]" />
                                 <span className="text-[#66705a]">Đã thêm</span>
                               </>
                             ) : (
                               <>
-                                <ShoppingBag className="h-3.5 w-3.5" strokeWidth={1.25} />
+                                <ShoppingBag className="h-4 w-4" strokeWidth={1.25} />
                                 <span>Thêm vào giỏ</span>
                               </>
                             )}
@@ -546,23 +546,23 @@ export default function ShopAllPLP() {
                       </div>
                       <div className="flex flex-1 flex-col justify-between p-6 sm:p-8 md:w-1/2">
                         <div>
-                          <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#9d753d]">
+                          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#9d753d]">
                             Nghi thức thường nhật
                           </p>
-                          <h4 className="mt-3 text-2xl font-light leading-tight tracking-[-0.03em] sm:text-3xl text-[#24231f]">
+                          <h4 className="mt-3 text-2xl font-normal leading-tight tracking-[-0.03em] sm:text-3xl text-[#24231f]">
                             Một khoảng lặng vừa đủ trong ngày
                           </h4>
-                          <p className="mt-4 text-xs leading-relaxed text-[#5e5a52] sm:text-sm">
+                          <p className="mt-4 text-sm sm:text-base leading-relaxed text-[#4e4a42]">
                             Hương thơm không phải là thứ để che lấp, mà là cách chúng ta thiết lập lại không gian và tìm về với sự tĩnh tại bên trong.
                           </p>
                         </div>
                         <div className="mt-6 pt-4 border-t border-[#282723]/15">
                           <Link
                             href="/story/tay-tang-huyen-bi"
-                            className="inline-flex items-center gap-2 text-xs font-medium uppercase tracking-[0.14em] text-[#24231f] transition-colors hover:text-[#9d753d]"
+                            className="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.14em] text-[#24231f] transition-colors hover:text-[#9d753d]"
                           >
                             <span>Khám phá câu chuyện Tây Tạng</span>
-                            <ArrowRight className="h-3.5 w-3.5" strokeWidth={1.25} />
+                            <ArrowRight className="h-4 w-4" strokeWidth={1.25} />
                           </Link>
                         </div>
                       </div>
@@ -573,26 +573,26 @@ export default function ShopAllPLP() {
                   {showEditorial2 && (
                     <article className="col-span-1 flex flex-col justify-between overflow-hidden border border-[#282723]/15 bg-[#ded8cb] p-6 sm:col-span-2 sm:p-10 lg:col-span-2">
                       <div>
-                        <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#9d753d]">
+                        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#9d753d]">
                           Dịch vụ đồng hành
                         </p>
-                        <h4 className="mt-3 text-2xl font-light leading-tight tracking-[-0.03em] sm:text-3xl text-[#24231f]">
+                        <h4 className="mt-3 text-2xl font-normal leading-tight tracking-[-0.03em] sm:text-3xl text-[#24231f]">
                           Tư vấn nốt hương riêng cho không gian sống
                         </h4>
-                        <p className="mt-4 max-w-xl text-xs leading-relaxed text-[#5e5a52] sm:text-sm">
+                        <p className="mt-4 max-w-xl text-sm sm:text-base leading-relaxed text-[#4e4a42]">
                           Mỗi góc nhỏ có một nhịp thở riêng. Đội ngũ RUNGU sẵn sàng lắng nghe nhu cầu của bạn để gợi ý sự kết hợp hài hòa nhất giữa Palo Santo, nến sáp và nhang trầm cho phòng khách, phòng ngủ hoặc bàn trà.
                         </p>
                       </div>
 
-                      <div className="mt-8 flex flex-wrap items-center gap-6 border-t border-[#282723]/15 pt-6 text-xs">
+                      <div className="mt-8 flex flex-wrap items-center gap-6 border-t border-[#282723]/15 pt-6 text-sm">
                         <a
                           href="#contact"
-                          className="inline-flex items-center gap-2 border border-[#282723] px-4 py-2 uppercase tracking-[0.12em] transition-colors hover:bg-[#282723] hover:text-white"
+                          className="inline-flex items-center gap-2 border border-[#282723] px-5 py-2.5 uppercase tracking-[0.12em] font-medium transition-colors hover:bg-[#282723] hover:text-white"
                         >
                           <span>Gửi tin nhắn tư vấn</span>
-                          <ArrowUpRight className="h-3.5 w-3.5" strokeWidth={1.25} />
+                          <ArrowUpRight className="h-4 w-4" strokeWidth={1.25} />
                         </a>
-                        <span className="text-[#625f57]">Hotline: 0868 238 690</span>
+                        <span className="text-[#504c44] font-medium">Hotline: 0868 238 690</span>
                       </div>
                     </article>
                   )}
@@ -604,7 +604,7 @@ export default function ShopAllPLP() {
 
         {/* 4. PROGRESS BAR & BOTTOM CONSULTATION (Aesop PLP Footer) */}
         <div className="mt-20 border-t border-[#282723]/15 pt-12 text-center">
-          <p className="text-xs uppercase tracking-[0.16em] text-[#77736b]">
+          <p className="text-xs sm:text-sm uppercase tracking-[0.16em] text-[#77736b]">
             Đang hiển thị {filteredProducts.length} trên {products.length} công thức
           </p>
 
@@ -616,22 +616,22 @@ export default function ShopAllPLP() {
           </div>
 
           <div className="mx-auto mt-16 max-w-2xl border border-[#282723]/15 bg-[#faf8f5] p-8 text-center">
-            <h4 className="text-xl font-light tracking-tight text-[#24231f]">
+            <h4 className="text-2xl font-normal tracking-tight text-[#24231f]">
               Cần sự hỗ trợ để chọn lựa món quà hoặc công thức phù hợp?
             </h4>
-            <p className="mt-3 text-xs leading-relaxed text-[#625f57] sm:text-sm">
+            <p className="mt-3 text-sm sm:text-base leading-relaxed text-[#504c44]">
               Chúng tôi hân hạnh đồng hành cùng bạn qua tư vấn trực tiếp, hỗ trợ gói quà mộc kèm thiệp viết tay theo yêu cầu.
             </p>
             <div className="mt-6 flex flex-wrap justify-center gap-4">
               <a
                 href="#contact"
-                className="border border-[#282723] px-6 py-2.5 text-xs font-medium uppercase tracking-[0.16em] transition-colors hover:bg-[#282723] hover:text-white"
+                className="border border-[#282723] px-6 py-3 text-xs sm:text-sm font-semibold uppercase tracking-[0.16em] transition-colors hover:bg-[#282723] hover:text-white cursor-pointer"
               >
                 Liên hệ chúng tôi
               </a>
               <Link
                 href="/story/tay-tang-huyen-bi"
-                className="border border-[#282723]/30 px-6 py-2.5 text-xs font-medium uppercase tracking-[0.16em] text-[#625f57] transition-colors hover:border-[#282723] hover:text-[#282723]"
+                className="border border-[#282723]/30 px-6 py-3 text-xs sm:text-sm font-semibold uppercase tracking-[0.16em] text-[#504c44] transition-colors hover:border-[#282723] hover:text-[#282723]"
               >
                 Đọc thư viện câu chuyện
               </Link>

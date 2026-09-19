@@ -97,34 +97,34 @@ export default function ProductModal() {
         {/* Right: Product Details */}
         <div className="md:col-span-7 space-y-5 flex flex-col justify-between text-left">
           <div className="space-y-3">
-            <div className="flex items-center justify-between text-xs">
+            <div className="flex items-center justify-between text-xs sm:text-sm">
               <span className="text-forest-700 tracking-[0.2em] uppercase font-semibold">
                 {selectedProduct.categoryName} • {selectedProduct.origin}
               </span>
               <div className="flex items-center gap-1 text-forest-800">
-                <Star className="w-3.5 h-3.5 fill-amber-500 text-amber-500" />
-                <span className="font-semibold">{selectedProduct.rating}</span>
-                <span className="text-forest-600 font-serif">({selectedProduct.reviewsCount} lượt đã chọn)</span>
+                <Star className="w-4 h-4 fill-amber-500 text-amber-500" />
+                <span className="font-semibold text-sm">{selectedProduct.rating}</span>
+                <span className="text-forest-600 font-serif text-xs sm:text-sm">({selectedProduct.reviewsCount} lượt đã chọn)</span>
               </div>
             </div>
 
-            <h3 className="font-serif text-2xl sm:text-3xl text-forest-950 font-light">
+            <h3 className="font-serif text-2xl sm:text-3xl text-forest-950 font-semibold tracking-[-0.02em]">
               {selectedProduct.name}
             </h3>
 
-            <p className="text-xs text-forest-700 italic font-serif">
+            <p className="text-sm text-forest-700 italic font-serif">
               ✦ {selectedProduct.notes}
             </p>
 
-            <p className="text-forest-800/90 text-xs sm:text-sm font-light leading-relaxed">
+            <p className="text-forest-800 text-sm sm:text-base leading-relaxed">
               {selectedProduct.detail || selectedProduct.desc}
             </p>
 
             {/* Scent Pyramid Box */}
             {selectedProduct.scentPyramid && (
-              <div className="p-3.5 bg-forest-50/70 rounded-xl border border-forest-800/10 space-y-1.5 text-xs text-forest-800">
-                <div className="text-[11px] font-medium text-forest-900 uppercase tracking-wider flex items-center gap-1.5">
-                  <Sparkles className="w-3.5 h-3.5 text-forest-700" />
+              <div className="p-4 bg-forest-50/70 rounded-xl border border-forest-800/10 space-y-2 text-sm text-forest-800">
+                <div className="text-xs font-semibold text-forest-900 uppercase tracking-wider flex items-center gap-1.5">
+                  <Sparkles className="w-4 h-4 text-forest-700" />
                   <span>Tầng Hương Tự Nhiên</span>
                 </div>
                 <div><strong className="text-forest-950">Hương đầu:</strong> {selectedProduct.scentPyramid.top}</div>
@@ -135,11 +135,11 @@ export default function ProductModal() {
 
             {/* Benefits list */}
             {selectedProduct.benefits && (
-              <div className="space-y-1.5 pt-1 text-xs text-forest-800">
-                <span className="text-forest-900 font-medium block">Công dụng chính:</span>
+              <div className="space-y-2 pt-1 text-sm text-forest-800">
+                <span className="text-forest-900 font-semibold block">Công dụng chính:</span>
                 {selectedProduct.benefits.map((b, i) => (
                   <div key={i} className="flex items-center gap-2 text-forest-800">
-                    <Check className="w-3.5 h-3.5 text-forest-700 flex-shrink-0" />
+                    <Check className="w-4 h-4 text-forest-700 flex-shrink-0" />
                     <span>{b}</span>
                   </div>
                 ))}
@@ -151,7 +151,7 @@ export default function ProductModal() {
           <div className="pt-4 border-t border-forest-800/10 space-y-4">
             {availableVariants.length > 0 && (
               <div className="space-y-2">
-                <span className="block text-[11px] font-semibold uppercase tracking-wider text-forest-900">
+                <span className="block text-xs font-semibold uppercase tracking-wider text-forest-900">
                   Chọn quy cách / mùi hương
                 </span>
                 <div className="flex flex-wrap gap-2">
@@ -163,7 +163,7 @@ export default function ProductModal() {
                         setSelectedVariantId(variant.id);
                         setQuantity(1);
                       }}
-                      className={`rounded-sm border px-2.5 py-2 text-[11px] transition-colors ${
+                      className={`rounded-sm border px-3 py-2 text-xs font-medium transition-colors ${
                         selectedVariantId === variant.id
                           ? "border-forest-800 bg-forest-800 text-white"
                           : "border-forest-800/20 bg-white text-forest-900 hover:border-forest-800"
@@ -177,11 +177,11 @@ export default function ProductModal() {
             )}
 
             <div className="flex items-baseline justify-between">
-              <span className="font-serif text-3xl text-forest-800 font-semibold">
+              <span className="font-serif text-3xl text-forest-800 font-bold">
                 {(currentPrice * quantity).toLocaleString("vi-VN")} đ
               </span>
               {selectedProduct.originalPrice && (
-                <span className="text-xs text-forest-400 line-through font-serif">
+                <span className="text-sm text-forest-400 line-through font-serif">
                   {(selectedProduct.originalPrice * quantity).toLocaleString("vi-VN")} đ
                 </span>
               )}
@@ -192,16 +192,16 @@ export default function ProductModal() {
               <div className="flex items-center border border-forest-800/20 rounded-lg bg-forest-50/60">
                 <button
                   onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                  className="px-3 py-2 text-forest-700 hover:text-forest-950 text-sm transition-colors cursor-pointer"
+                  className="px-3.5 py-2 text-forest-700 hover:text-forest-950 text-base transition-colors cursor-pointer"
                 >
                   -
                 </button>
-                <span className="px-3 text-xs font-semibold text-forest-950">{quantity}</span>
+                <span className="px-3 text-sm font-semibold text-forest-950">{quantity}</span>
                 <button
                   onClick={() => setQuantity(selectedVariant && selectedProduct.manageStock
                     ? Math.min(selectedVariant.stock, quantity + 1)
                     : quantity + 1)}
-                  className="px-3 py-2 text-forest-700 hover:text-forest-950 text-sm transition-colors cursor-pointer"
+                  className="px-3.5 py-2 text-forest-700 hover:text-forest-950 text-base transition-colors cursor-pointer"
                 >
                   +
                 </button>
@@ -211,7 +211,7 @@ export default function ProductModal() {
               <button
                 onClick={handleAdd}
                 disabled={!canBuy}
-                className="flex-1 py-3 bg-forest-800 hover:bg-forest-700 disabled:cursor-not-allowed disabled:opacity-50 text-white text-xs font-semibold uppercase tracking-[0.2em] rounded-lg transition-all flex items-center justify-center gap-2 shadow-lg shadow-forest-900/15 cursor-pointer"
+                className="flex-1 py-3.5 bg-forest-800 hover:bg-forest-700 disabled:cursor-not-allowed disabled:opacity-50 text-white text-xs sm:text-sm font-semibold uppercase tracking-[0.18em] rounded-lg transition-all flex items-center justify-center gap-2 shadow-lg shadow-forest-900/15 cursor-pointer"
               >
                 {isAdded ? (
                   <>

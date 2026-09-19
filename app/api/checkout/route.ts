@@ -29,7 +29,15 @@ export async function POST(request: NextRequest) {
         const result = await response.json();
         return NextResponse.json(result, { status: response.status });
       } catch (proxyError) {
-        console.warn("QLBH proxy failed, falling back to standalone order processing:", proxyError);
+        console.error("QLBH proxy failed:", proxyError);
+
+        return NextResponse.json(
+          {
+            success: false,
+            error: "Hệ thống đặt hàng đang tạm thời không kết nối được. Vui lòng thử lại sau ít phút.",
+          },
+          { status: 502 },
+        );
       }
     }
 
