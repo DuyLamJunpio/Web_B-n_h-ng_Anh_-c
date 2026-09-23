@@ -132,9 +132,14 @@ button, a { -webkit-tap-highlight-color: transparent; }
 }
 
 .header-link,
-.header-nav-link,
 .footer-link {
   font-size: 1.02rem;
+  transition: color 220ms ease, opacity 220ms ease, border-color 220ms ease, font-weight 220ms ease;
+}
+
+.header-nav-link {
+  font-size: 0.92rem;
+  letter-spacing: -0.01em;
   transition: color 220ms ease, opacity 220ms ease, border-color 220ms ease, font-weight 220ms ease;
 }
 

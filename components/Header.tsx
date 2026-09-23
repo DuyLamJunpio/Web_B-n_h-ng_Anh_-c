@@ -106,6 +106,15 @@ export default function Header() {
     }
   };
 
+  const handleAnchorClick = (e: React.MouseEvent<HTMLAnchorElement>, targetId: string) => {
+    setIsProductsHovered(false);
+    const el = document.getElementById(targetId);
+    if (el) {
+      e.preventDefault();
+      el.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
   const handleSearch = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (searchTerm.trim()) {
@@ -156,7 +165,7 @@ export default function Header() {
                 </button>
               </div>
 
-              <nav aria-label="Điều hướng chính" className="flex items-center gap-4 xl:gap-8 shrink-0">
+              <nav aria-label="Điều hướng chính" className="flex items-center gap-1.5 lg:gap-2.5 xl:gap-4 2xl:gap-6 shrink-0">
                 {/* 1. Sản phẩm (kèm dropdown hover danh mục) */}
                 <div
                   className="relative flex items-center"
@@ -165,12 +174,12 @@ export default function Header() {
                 >
                   <Link
                     href="/san-pham"
-                    className="header-nav-link group flex h-full items-center gap-1.5 whitespace-nowrap px-2 py-5 text-[15px] font-medium leading-none focus-visible:outline-none"
+                    className="header-nav-link group flex h-full items-center gap-1 whitespace-nowrap px-1.5 xl:px-2.5 py-5 font-medium leading-none focus-visible:outline-none"
                     aria-expanded={isProductsHovered}
                   >
                     <span>Sản phẩm</span>
                     <ChevronDown
-                      className={`h-3.5 w-3.5 transition-transform duration-200 ${isProductsHovered ? "rotate-180 text-[#9d753d]" : ""}`}
+                      className={`h-3 w-3 transition-transform duration-200 ${isProductsHovered ? "rotate-180 text-[#9d753d]" : ""}`}
                       strokeWidth={1.5}
                     />
                   </Link>
@@ -235,34 +244,68 @@ export default function Header() {
                   </AnimatePresence>
                 </div>
 
-                {/* 2. Mới đáng chú ý */}
+                {/* 2. Sáng tạo */}
                 <Link
-                  href="/san-pham?collection=new"
-                  className="header-nav-link flex h-full items-center whitespace-nowrap px-2 py-5 text-[15px] font-medium leading-none"
+                  href="/san-pham?category=sang-tao"
+                  className="header-nav-link flex h-full items-center whitespace-nowrap px-1.5 xl:px-2.5 py-5 font-medium leading-none"
                 >
-                  Mới đáng chú ý
+                  Sáng tạo
                 </Link>
 
-                {/* 3. Khuyến mại */}
+                {/* 3. Hương thơm */}
                 <Link
-                  href="/san-pham?collection=sale"
-                  className="header-nav-link flex h-full items-center whitespace-nowrap px-2 py-5 text-[15px] font-medium leading-none"
+                  href="/san-pham?category=huong-thom"
+                  className="header-nav-link flex h-full items-center whitespace-nowrap px-1.5 xl:px-2.5 py-5 font-medium leading-none"
                 >
-                  Khuyến mại
+                  Hương thơm
                 </Link>
 
-                {/* 4. Câu chuyện */}
+                {/* 4. Gỗ hoa cỏ */}
+                <Link
+                  href="/san-pham?category=go-hoa-co"
+                  className="header-nav-link flex h-full items-center whitespace-nowrap px-1.5 xl:px-2.5 py-5 font-medium leading-none"
+                >
+                  Gỗ hoa cỏ
+                </Link>
+
+                {/* 5. Đất và Đá */}
+                <Link
+                  href="/san-pham?category=dat-va-da"
+                  className="header-nav-link flex h-full items-center whitespace-nowrap px-1.5 xl:px-2.5 py-5 font-medium leading-none"
+                >
+                  Đất và Đá
+                </Link>
+
+                {/* 6. Phụ kiện */}
+                <Link
+                  href="/san-pham?category=phu-kien"
+                  className="header-nav-link flex h-full items-center whitespace-nowrap px-1.5 xl:px-2.5 py-5 font-medium leading-none"
+                >
+                  Phụ kiện
+                </Link>
+
+                {/* 7. Quà tặng */}
+                <Link
+                  href="/san-pham?category=qua-tang"
+                  className="header-nav-link flex h-full items-center whitespace-nowrap px-1.5 xl:px-2.5 py-5 font-medium leading-none"
+                >
+                  Quà tặng
+                </Link>
+
+                {/* 8. Thư viện */}
                 <Link
                   href="/#stories"
-                  className="header-nav-link flex h-full items-center whitespace-nowrap px-2 py-5 text-[15px] font-medium leading-none"
+                  onClick={(e) => handleAnchorClick(e, "stories")}
+                  className="header-nav-link flex h-full items-center whitespace-nowrap px-1.5 xl:px-2.5 py-5 font-medium leading-none"
                 >
-                  Câu chuyện
+                  Thư viện
                 </Link>
 
-                {/* 5. Liên hệ */}
+                {/* 9. Liên hệ */}
                 <Link
                   href="/#contact"
-                  className="header-nav-link flex h-full items-center whitespace-nowrap px-2 py-5 text-[15px] font-medium leading-none"
+                  onClick={(e) => handleAnchorClick(e, "contact")}
+                  className="header-nav-link flex h-full items-center whitespace-nowrap px-1.5 xl:px-2.5 py-5 font-medium leading-none"
                 >
                   Liên hệ
                 </Link>

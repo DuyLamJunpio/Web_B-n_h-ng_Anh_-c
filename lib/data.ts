@@ -42,8 +42,8 @@ export const PRODUCTS: Product[] = [
   {
     id: 'p1',
     name: 'Gỗ Palo Santo Nam Mỹ (Set 5 Thanh)',
-    category: 'purify',
-    categoryName: 'Thanh Tẩy',
+    category: 'go-hoa-co',
+    categoryName: 'Gỗ hoa cỏ',
     price: 180000,
     originalPrice: 220000,
     rating: 4.9,
@@ -77,8 +77,8 @@ export const PRODUCTS: Product[] = [
   {
     id: 'p2',
     name: 'Bó Xô Thơm Trắng White Sage California',
-    category: 'purify',
-    categoryName: 'Thanh Tẩy',
+    category: 'huong-thom',
+    categoryName: 'Hương thơm',
     price: 210000,
     originalPrice: 250000,
     rating: 4.8,
@@ -111,8 +111,8 @@ export const PRODUCTS: Product[] = [
   {
     id: 'p3',
     name: 'Nến Thơm Sáp Đậu Nành "Rừng Sương Mù"',
-    category: 'warmth',
-    categoryName: 'Hơi Ấm',
+    category: 'huong-thom',
+    categoryName: 'Hương thơm',
     price: 350000,
     originalPrice: 420000,
     rating: 5.0,
@@ -145,8 +145,8 @@ export const PRODUCTS: Product[] = [
   {
     id: 'p4',
     name: 'Vòng Tay Gỗ Bách Xanh Tây Tạng (Hạt 10mm)',
-    category: 'energy',
-    categoryName: 'Năng Lượng',
+    category: 'phu-kien',
+    categoryName: 'Phụ kiện',
     price: 450000,
     originalPrice: 550000,
     rating: 4.9,
@@ -180,8 +180,8 @@ export const PRODUCTS: Product[] = [
   {
     id: 'p5',
     name: 'Nhang Trầm Hương Tự Nhiên Không Tăm (50 Nén)',
-    category: 'purify',
-    categoryName: 'Thanh Tẩy',
+    category: 'go-hoa-co',
+    categoryName: 'Gỗ hoa cỏ',
     price: 290000,
     originalPrice: 340000,
     rating: 5.0,
@@ -214,8 +214,8 @@ export const PRODUCTS: Product[] = [
   {
     id: 'p6',
     name: 'Khay Gốm Thô Hỏa Biến Men Tro',
-    category: 'warmth',
-    categoryName: 'Hơi Ấm',
+    category: 'dat-va-da',
+    categoryName: 'Đất và Đá',
     price: 220000,
     originalPrice: 260000,
     rating: 4.8,
@@ -243,6 +243,72 @@ export const PRODUCTS: Product[] = [
     variants: [
       { id: 'p6-v1', label: 'Khay tròn men tro (Đường kính 12cm)', stock: 32, available: true, price: 220000 },
       { id: 'p6-v2', label: 'Khay bầu dục hỏa biến (Dài 18cm)', stock: 18, available: true, price: 280000 }
+    ]
+  },
+  {
+    id: 'p7',
+    name: 'Đèn Xông Gỗ Mộc Khắc Tay Nghệ Nhân "Thiền Viên"',
+    category: 'sang-tao',
+    categoryName: 'Sáng tạo',
+    price: 480000,
+    originalPrice: 560000,
+    rating: 4.9,
+    reviewsCount: 52,
+    badge: 'Độc bản thủ công',
+    notes: 'Gỗ tần bì nguyên khối, ánh sáng vàng ấm',
+    scentPyramid: {
+      top: 'Ánh sáng êm dịu vỗ về',
+      middle: 'Gỗ mộc ấm áp khuếch tán',
+      base: 'Tĩnh lặng thuần khiết'
+    },
+    origin: 'Xưởng mộc thủ công Hà Nội',
+    image: 'https://images.unsplash.com/photo-1544816155-12df9643f363?auto=format&fit=crop&q=85&w=1400',
+    gallery: [
+      'https://images.unsplash.com/photo-1544816155-12df9643f363?auto=format&fit=crop&q=85&w=1400',
+      'https://images.unsplash.com/photo-1518241353330-0f7941c2d9b5?auto=format&fit=crop&q=85&w=1400'
+    ],
+    desc: 'Đèn xông tinh dầu chế tác thủ công từ thân gỗ mộc tự nhiên, lan tỏa hương thơm dịu nhẹ cùng ánh sáng ấm áp cho bàn trà.',
+    detail: 'Chạm khắc tỉ mỉ từng chi tiết bởi nghệ nhân lâu năm. Khay đốt hợp kim cách nhiệt an toàn tuyệt đối.',
+    benefits: ['Khuếch tán tinh dầu tự nhiên đều khắp phòng', 'Ánh đèn ngủ thư thái dễ chịu', 'Tác phẩm trang trí mang đậm tính nghệ thuật'],
+    usage: 'Nhỏ 3-5 giọt tinh dầu lên khay chứa nước ấm, bật đèn hoặc thắp nến tealight bên dưới.',
+    manageStock: true,
+    inStock: true,
+    variants: [
+      { id: 'p7-v1', label: 'Bản gỗ tần bì sáng', stock: 18, available: true, price: 480000 },
+      { id: 'p7-v2', label: 'Bản gỗ óc chó sẫm màu', stock: 12, available: true, price: 560000 }
+    ]
+  },
+  {
+    id: 'p8',
+    name: 'Hộp Quà Tặng Mộc Hương An Yên (Set Gift Box Cao Cấp)',
+    category: 'qua-tang',
+    categoryName: 'Quà tặng',
+    price: 680000,
+    originalPrice: 790000,
+    rating: 5.0,
+    reviewsCount: 89,
+    badge: 'Quà tặng trang nhã',
+    notes: 'Trọn bộ Palo Santo, nến thơm & khay gốm',
+    scentPyramid: {
+      top: 'Thanh khiết khởi đầu ngày mới',
+      middle: 'Gỗ thông trầm ấm an yên',
+      base: 'Gắn kết yêu thương vẹn tròn'
+    },
+    origin: 'RUNGU Tuyển chọn đóng gói thủ công',
+    image: 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?auto=format&fit=crop&q=85&w=1400',
+    gallery: [
+      'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?auto=format&fit=crop&q=85&w=1400',
+      'https://images.unsplash.com/photo-1608571423902-eed4a5ad8108?auto=format&fit=crop&q=85&w=1400'
+    ],
+    desc: 'Hộp quà gói ghém tình thân với đầy đủ vật phẩm thanh tẩy và vỗ về tâm hồn: Palo Santo, nến thơm sáp tự nhiên và đế gốm mộc.',
+    detail: 'Hộp giấy mỹ thuật thân thiện môi trường, thắt dây cói tự nhiên kèm thiệp viết tay mộc mạc.',
+    benefits: ['Món quà ý nghĩa tặng người trân quý', 'Đầy đủ trọn bộ nghi thức sử dụng ngay', 'Thiết kế tinh tế sang trọng'],
+    usage: 'Tặng kèm cẩm nang hướng dẫn các nghi thức mùi hương chi tiết bên trong hộp.',
+    manageStock: true,
+    inStock: true,
+    variants: [
+      { id: 'p8-v1', label: 'Set Mộc Nhiên (Palo Santo + Đế gốm + Nến 100g)', stock: 25, available: true, price: 680000 },
+      { id: 'p8-v2', label: 'Set Đại Viên Mãn (Palo Santo + Xô thơm + Nến 200g + Khay men tro)', stock: 15, available: true, price: 950000 }
     ]
   }
 ];
