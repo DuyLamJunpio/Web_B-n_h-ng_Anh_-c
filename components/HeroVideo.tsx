@@ -286,7 +286,7 @@ export default function HeroVideo() {
           ) : null}
           <h1
             style={{ color: "#ffffff" }}
-            className="text-balance text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-normal leading-[1.08] tracking-[-0.03em] !text-white drop-shadow-[0_4px_24px_rgba(0,0,0,0.85)]"
+            className="text-balance text-3xl sm:text-4xl md:text-5xl lg:text-[3.5rem] font-normal leading-[1.12] tracking-[-0.03em] !text-white drop-shadow-[0_4px_24px_rgba(0,0,0,0.85)]"
           >
             {story.title}
           </h1>
