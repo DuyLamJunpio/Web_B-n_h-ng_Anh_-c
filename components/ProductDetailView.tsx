@@ -47,8 +47,9 @@ export default function ProductDetailView({ product, relatedProducts }: { produc
   return (
     <main className="min-h-screen bg-[#f3f0e8] text-[#24231f]">
       {/* 1. BREADCRUMBS */}
+      {/* 1. BREADCRUMBS */}
       <div className="border-b border-[#282723]/10 bg-[#ebe7dd]/50 px-5 pt-28 pb-4 sm:px-8 lg:px-12 sm:pt-36">
-        <div className="mx-auto flex max-w-[1400px] flex-wrap items-center gap-2 text-xs uppercase tracking-[0.16em] text-[#77736b]">
+        <div className="mx-auto flex max-w-[1400px] flex-wrap items-center justify-center sm:justify-start gap-2 text-xs uppercase tracking-[0.16em] text-[#77736b]">
           <Link href="/" className="transition-colors hover:text-[#24231f]">Trang chủ</Link>
           <span>/</span>
           <Link href="/san-pham" className="transition-colors hover:text-[#24231f]">Sản phẩm</Link>
@@ -82,7 +83,7 @@ export default function ProductDetailView({ product, relatedProducts }: { produc
 
             {/* Thumbnail Strip */}
             {images.length > 1 && (
-              <div className="flex gap-4 overflow-x-auto pb-2">
+              <div className="flex gap-4 overflow-x-auto justify-center sm:justify-start pb-2">
                 {images.map((img, idx) => (
                   <button
                     key={idx}
@@ -103,9 +104,9 @@ export default function ProductDetailView({ product, relatedProducts }: { produc
           </div>
 
           {/* Right: Formulation Details & Purchase (5 Cols) */}
-          <div className="flex flex-col lg:col-span-5 text-left">
+          <div className="flex flex-col lg:col-span-5 text-center sm:text-left items-center sm:items-start">
             {/* Category & Origin */}
-            <div className="flex items-center justify-between text-xs">
+            <div className="flex flex-col sm:flex-row items-center justify-center sm:justify-between gap-1 text-xs w-full">
               <span className="uppercase tracking-[0.2em] text-[#9d753d] font-semibold">
                 {product.categoryName} • {product.origin}
               </span>
@@ -127,7 +128,7 @@ export default function ProductDetailView({ product, relatedProducts }: { produc
             </p>
 
             {/* Price Box */}
-            <div className="mt-6 flex items-baseline gap-3 border-y border-[#282723]/15 py-4">
+            <div className="mt-6 flex items-baseline justify-center sm:justify-start gap-3 border-y border-[#282723]/15 py-4 w-full">
               <span className="text-3xl font-light tracking-tight text-[#24231f]">
                 {(currentPrice * quantity).toLocaleString("vi-VN")}đ
               </span>
@@ -146,7 +147,7 @@ export default function ProductDetailView({ product, relatedProducts }: { produc
 
             {/* Scent Pyramid Block (Aesop Olfactory Analysis) */}
             {product.scentPyramid && (
-              <div className="mt-6 border border-[#282723]/15 bg-[#faf8f5] p-5 space-y-3">
+              <div className="mt-6 border border-[#282723]/15 bg-[#faf8f5] p-5 space-y-3 w-full text-left">
                 <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-[#9d753d]">
                   <Sparkles className="h-4 w-4" strokeWidth={1.5} />
                   <span>Cấu trúc tầng hương tự nhiên</span>
@@ -161,8 +162,8 @@ export default function ProductDetailView({ product, relatedProducts }: { produc
 
             {/* Key Benefits */}
             {product.benefits && product.benefits.length > 0 && (
-              <div className="mt-6 space-y-2">
-                <span className="text-xs font-semibold uppercase tracking-[0.16em] text-[#24231f] block">
+              <div className="mt-6 space-y-2 w-full text-left">
+                <span className="text-xs font-semibold uppercase tracking-[0.16em] text-[#24231f] block text-center sm:text-left">
                   Đặc tính & Công dụng
                 </span>
                 <div className="space-y-1.5 text-xs text-[#5e5a52]">
@@ -178,7 +179,7 @@ export default function ProductDetailView({ product, relatedProducts }: { produc
 
             {/* Usage Instructions */}
             {product.usage && (
-              <div className="mt-6 flex items-start gap-3 border-l-2 border-[#9d753d] bg-[#faf8f5]/70 p-4 text-xs text-[#5e5a52]">
+              <div className="mt-6 flex items-start gap-3 border-l-2 border-[#9d753d] bg-[#faf8f5]/70 p-4 text-xs text-[#5e5a52] w-full text-left">
                 <Flame className="h-4 w-4 text-[#9d753d] shrink-0 mt-0.5" />
                 <div>
                   <span className="font-semibold text-[#24231f] block">Hướng dẫn nghi thức:</span>
@@ -188,11 +189,11 @@ export default function ProductDetailView({ product, relatedProducts }: { produc
             )}
 
             {availableVariants.length > 0 && (
-              <div className="mt-6 space-y-2">
+              <div className="mt-6 space-y-2 w-full text-center sm:text-left">
                 <span className="block text-xs font-semibold uppercase tracking-[0.16em] text-[#24231f]">
                   Chọn quy cách / mùi hương
                 </span>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap justify-center sm:justify-start gap-2">
                   {availableVariants.map((variant) => (
                     <button
                       key={variant.id}
@@ -215,14 +216,14 @@ export default function ProductDetailView({ product, relatedProducts }: { produc
             )}
 
             {/* Quantity Selector & Add to Cart Button */}
-            <div className="mt-8 space-y-4 pt-4 border-t border-[#282723]/15">
-              <div className="flex gap-4">
+            <div className="mt-8 space-y-4 pt-4 border-t border-[#282723]/15 w-full">
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                 {/* Quantity Control */}
-                <div className="flex items-center border border-[#282723]/25 bg-white">
+                <div className="flex items-center justify-center border border-[#282723]/25 bg-white">
                   <button
                     type="button"
                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    className="px-3.5 py-3 text-sm transition-colors hover:bg-[#ede8dd]"
+                    className="px-4 py-3 text-sm transition-colors hover:bg-[#ede8dd]"
                     aria-label="Giảm số lượng"
                   >
                     -
@@ -233,7 +234,7 @@ export default function ProductDetailView({ product, relatedProducts }: { produc
                     onClick={() => setQuantity(selectedVariant && product.manageStock
                       ? Math.min(selectedVariant.stock, quantity + 1)
                       : quantity + 1)}
-                    className="px-3.5 py-3 text-sm transition-colors hover:bg-[#ede8dd]"
+                    className="px-4 py-3 text-sm transition-colors hover:bg-[#ede8dd]"
                     aria-label="Tăng số lượng"
                   >
                     +
@@ -245,7 +246,7 @@ export default function ProductDetailView({ product, relatedProducts }: { produc
                   type="button"
                   onClick={handleAddToCart}
                   disabled={!canBuy}
-                  className="flex-1 border border-[#282723] bg-[#282723] py-3 px-6 text-xs font-semibold uppercase tracking-[0.18em] text-white transition-all hover:bg-black disabled:cursor-not-allowed disabled:opacity-50 flex items-center justify-center gap-2 shadow-sm"
+                  className="flex-1 border border-[#282723] bg-[#282723] py-3.5 px-6 text-xs font-semibold uppercase tracking-[0.18em] text-white transition-all hover:bg-black disabled:cursor-not-allowed disabled:opacity-50 flex items-center justify-center gap-2 shadow-sm"
                 >
                   {isAdded ? (
                     <>
@@ -262,7 +263,7 @@ export default function ProductDetailView({ product, relatedProducts }: { produc
               </div>
 
               {/* Assurances */}
-              <div className="flex items-center justify-between border-t border-[#282723]/10 pt-3 text-[11px] text-[#77736b]">
+              <div className="flex flex-wrap items-center justify-center sm:justify-between gap-2 border-t border-[#282723]/10 pt-3 text-[11px] text-[#77736b]">
                 <span className="flex items-center gap-1.5">
                   <Truck className="h-3.5 w-3.5 text-[#9d753d]" />
                   {shippingMessage}
@@ -282,7 +283,7 @@ export default function ProductDetailView({ product, relatedProducts }: { produc
       {relatedProducts.length > 0 && (
         <section className="border-t border-[#282723]/15 bg-[#faf8f5] px-5 py-16 sm:px-8 lg:px-12 sm:py-24">
           <div className="mx-auto max-w-[1400px]">
-            <div className="mb-10 flex flex-wrap items-end justify-between gap-4">
+            <div className="mb-10 flex flex-col sm:flex-row items-center sm:items-end justify-between gap-4 text-center sm:text-left">
               <div>
                 <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#9d753d]">
                   Gợi ý kết hợp
@@ -315,7 +316,7 @@ export default function ProductDetailView({ product, relatedProducts }: { produc
                     />
                   </Link>
 
-                  <div className="mt-4 flex flex-1 flex-col">
+                  <div className="mt-4 flex flex-1 flex-col text-center sm:text-left items-center sm:items-start">
                     <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#9d753d]">
                       {item.categoryName}
                     </span>
@@ -326,7 +327,7 @@ export default function ProductDetailView({ product, relatedProducts }: { produc
                     </h4>
                     <p className="mt-1 text-xs text-[#77736b] line-clamp-2">{item.notes}</p>
 
-                    <div className="mt-auto flex items-center justify-between pt-4 border-t border-[#282723]/10">
+                    <div className="mt-auto flex items-center justify-between pt-4 border-t border-[#282723]/10 w-full">
                       <span className="text-xs font-medium">{item.price.toLocaleString("vi-VN")}đ</span>
                       <Link
                         href={`/san-pham/${item.id}`}

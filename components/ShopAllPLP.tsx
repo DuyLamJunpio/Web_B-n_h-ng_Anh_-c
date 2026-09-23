@@ -225,22 +225,22 @@ export default function ShopAllPLP() {
         />
         <div className="absolute inset-0 bg-gradient-to-b from-[#181715]/65 via-[#181715]/40 to-[#181715]/90" />
 
-        <div className="relative mx-auto w-full max-w-[1540px] px-5 pb-12 pt-36 sm:px-8 lg:px-12 sm:pb-16">
-          <div className="flex flex-wrap items-center gap-2 text-xs uppercase tracking-[0.2em] font-semibold text-[#d5b27d]">
+        <div className="relative mx-auto w-full max-w-[1540px] px-5 pb-12 pt-36 sm:px-8 lg:px-12 sm:pb-16 text-center sm:text-left flex flex-col items-center sm:items-start">
+          <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 text-xs uppercase tracking-[0.2em] font-semibold text-[#d5b27d] mx-auto sm:mx-0">
             <Link href="/" className="transition-opacity hover:opacity-75">Trang chủ</Link>
             <span>/</span>
             <span>Cửa hàng</span>
           </div>
 
-          <h1 className="mt-4 text-4xl font-normal tracking-[-0.03em] sm:text-5xl lg:text-6xl text-white">
+          <h1 className="mt-4 text-3xl sm:text-5xl lg:text-6xl font-normal tracking-[-0.03em] text-white mx-auto sm:mx-0">
             Tất cả sản phẩm
           </h1>
 
-          <div className="mt-4 flex flex-col justify-between gap-4 border-t border-white/20 pt-4 sm:flex-row sm:items-end">
-            <p className="max-w-2xl text-base sm:text-lg leading-relaxed text-white/90">
+          <div className="mt-4 flex flex-col justify-between gap-4 border-t border-white/20 pt-4 sm:flex-row sm:items-end w-full">
+            <p className="max-w-2xl text-sm sm:text-lg leading-relaxed text-white/90 mx-auto sm:mx-0">
               Các công thức tự nhiên cho không gian, thân thể và tâm trí. Tuyển chọn từ gỗ Palo Santo Peru ngã đổ tự nhiên, xô thơm trắng California, nhang trầm xứ Quảng và sáp đậu nành thủ công.
             </p>
-            <span className="font-mono text-xs sm:text-sm uppercase tracking-[0.16em] text-white/80">
+            <span className="font-mono text-xs sm:text-sm uppercase tracking-[0.16em] text-white/80 mx-auto sm:mx-0">
               {filteredProducts.length} trên {products.length} công thức
             </span>
           </div>
@@ -365,7 +365,7 @@ export default function ShopAllPLP() {
       {/* Active filters badges banner */}
       {activeFiltersCount > 0 && (
         <div className="border-b border-[#282723]/10 bg-[#ebe7dd]/70 px-5 py-2 sm:px-8 lg:px-12">
-          <div className="mx-auto flex max-w-[1540px] flex-wrap items-center gap-2 text-xs">
+          <div className="mx-auto flex max-w-[1540px] flex-wrap items-center justify-center sm:justify-start gap-2 text-xs">
             <span className="text-[11px] text-[#77736b]">Đang lọc theo:</span>
 
             {selectedCategory !== "all" && (
@@ -399,7 +399,7 @@ export default function ShopAllPLP() {
             <button
               type="button"
               onClick={handleClearFilters}
-              className="ml-auto inline-flex items-center gap-1 text-[11px] font-medium text-[#8d693a] underline underline-offset-4 hover:text-[#282723]"
+              className="sm:ml-auto inline-flex items-center gap-1 text-[11px] font-medium text-[#8d693a] underline underline-offset-4 hover:text-[#282723]"
             >
               <RotateCcw className="h-3 w-3" />
               <span>Xóa tất cả</span>
@@ -477,7 +477,7 @@ export default function ShopAllPLP() {
                     </div>
 
                     {/* Content Box */}
-                    <div className="flex flex-1 flex-col p-5 sm:p-6">
+                    <div className="flex flex-1 flex-col p-5 sm:p-6 items-center text-center sm:items-start sm:text-left">
                       <div className="text-xs font-semibold uppercase tracking-[0.18em] text-[#9d753d]">
                         {product.categoryName}
                       </div>
@@ -485,7 +485,7 @@ export default function ShopAllPLP() {
                       <h3 className="mt-2 text-lg sm:text-xl font-semibold leading-snug tracking-[-0.02em] text-[#24231f]">
                         <Link
                           href={`/san-pham/${product.id}`}
-                          className="text-left transition-colors hover:text-[#9d753d]"
+                          className="transition-colors hover:text-[#9d753d]"
                         >
                           {product.name}
                         </Link>
@@ -497,14 +497,14 @@ export default function ShopAllPLP() {
                       </p>
 
                       {/* Aromatic Profile */}
-                      <div className="mt-3 border-t border-[#282723]/10 pt-3 text-sm leading-relaxed text-[#504c44]">
+                      <div className="mt-3 w-full border-t border-[#282723]/10 pt-3 text-sm leading-relaxed text-[#504c44]">
                         <span className="text-[#24231f] font-semibold">Nốt hương: </span>
                         {product.notes}
                       </div>
 
                       {/* Price & Add to Cart (Aesop Minimalist Bar) */}
-                      <div className="mt-auto pt-6">
-                        <div className="flex items-center justify-between border-t border-[#282723]/15 pt-4">
+                      <div className="mt-auto pt-6 w-full">
+                        <div className="flex flex-col sm:flex-row items-center justify-between border-t border-[#282723]/15 pt-4 gap-3 sm:gap-0">
                           <div className="flex items-baseline gap-2">
                             <span className="text-base sm:text-lg font-bold text-[#24231f] tracking-tight">
                               {product.price.toLocaleString("vi-VN")}đ
@@ -519,7 +519,7 @@ export default function ShopAllPLP() {
                           <button
                             type="button"
                             onClick={() => handleAddToCart(product)}
-                            className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold uppercase tracking-[0.12em] text-[#24231f] transition-colors hover:text-[#9d753d] cursor-pointer"
+                            className="inline-flex items-center justify-center gap-1.5 text-xs sm:text-sm font-semibold uppercase tracking-[0.12em] text-[#24231f] transition-colors hover:text-[#9d753d] cursor-pointer w-full sm:w-auto py-2 sm:py-0 border border-[#282723]/20 sm:border-0"
                           >
                             {addedId === product.id ? (
                               <>
@@ -550,7 +550,7 @@ export default function ShopAllPLP() {
                           className="object-cover object-center"
                         />
                       </div>
-                      <div className="flex flex-1 flex-col justify-between p-6 sm:p-8 md:w-1/2">
+                      <div className="flex flex-1 flex-col justify-between p-6 sm:p-8 md:w-1/2 items-center text-center sm:items-start sm:text-left">
                         <div>
                           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#9d753d]">
                             Nghi thức thường nhật
@@ -562,7 +562,7 @@ export default function ShopAllPLP() {
                             Hương thơm không phải là thứ để che lấp, mà là cách chúng ta thiết lập lại không gian và tìm về với sự tĩnh tại bên trong.
                           </p>
                         </div>
-                        <div className="mt-6 pt-4 border-t border-[#282723]/15">
+                        <div className="mt-6 pt-4 border-t border-[#282723]/15 w-full flex justify-center sm:justify-start">
                           <Link
                             href="/story/tay-tang-huyen-bi"
                             className="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.14em] text-[#24231f] transition-colors hover:text-[#9d753d]"
@@ -577,7 +577,7 @@ export default function ShopAllPLP() {
 
                   {/* EDITORIAL CARD 2 (insertMode: Tư vấn chọn vật phẩm) */}
                   {showEditorial2 && (
-                    <article className="col-span-1 flex flex-col justify-between overflow-hidden border border-[#282723]/15 bg-[#ded8cb] p-6 sm:col-span-2 sm:p-10 lg:col-span-2">
+                    <article className="col-span-1 flex flex-col justify-between overflow-hidden border border-[#282723]/15 bg-[#ded8cb] p-6 sm:col-span-2 sm:p-10 lg:col-span-2 items-center text-center sm:items-start sm:text-left">
                       <div>
                         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#9d753d]">
                           Dịch vụ đồng hành
@@ -590,7 +590,7 @@ export default function ShopAllPLP() {
                         </p>
                       </div>
 
-                      <div className="mt-8 flex flex-wrap items-center gap-6 border-t border-[#282723]/15 pt-6 text-sm">
+                      <div className="mt-8 flex flex-wrap items-center justify-center sm:justify-start gap-4 sm:gap-6 border-t border-[#282723]/15 pt-6 text-sm w-full">
                         <a
                           href="#contact"
                           className="inline-flex items-center gap-2 border border-[#282723] px-5 py-2.5 uppercase tracking-[0.12em] font-medium transition-colors hover:bg-[#282723] hover:text-white"

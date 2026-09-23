@@ -200,15 +200,15 @@ export default function HeroVideo() {
         </motion.div>
       </AnimatePresence>
 
-      {/* Hero Video & Sound Controls (Play/Pause & Sound on/off) - Góc dưới bên trái */}
-      <div className="absolute bottom-6 left-4 sm:bottom-8 sm:left-8 lg:left-12 z-30 flex items-center gap-2">
+      {/* Hero Video & Sound Controls (Play/Pause & Sound on/off) */}
+      <div className="absolute top-20 right-4 sm:top-auto sm:bottom-8 sm:left-8 lg:left-12 z-30 flex items-center gap-2">
         {story.mediaType === "video" && (
           <button
             type="button"
             onClick={togglePlay}
             aria-label={isPlaying ? "Tạm dừng video" : "Phát video"}
             title={isPlaying ? "Tạm dừng video" : "Phát video"}
-            className="group flex items-center gap-2 rounded-full border border-white/30 bg-white/15 px-3 py-2 text-xs text-white backdrop-blur-md transition-all hover:border-white/60 hover:bg-white/30 cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white"
+            className="group flex items-center gap-2 rounded-full border border-white/30 bg-black/40 sm:bg-white/15 px-3 py-2 text-xs text-white backdrop-blur-md transition-all hover:border-white/60 hover:bg-white/30 cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white"
           >
             {isPlaying ? (
               <>
@@ -232,7 +232,7 @@ export default function HeroVideo() {
           className={`group flex items-center gap-2 rounded-full border px-3 py-2 text-xs backdrop-blur-md transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#d8b879] ${
             isSoundOn
               ? "border-[#d8b879] bg-[#d8b879]/30 text-[#f7e4c6]"
-              : "border-white/30 bg-white/15 text-white hover:border-white/60 hover:bg-white/30"
+              : "border-white/30 bg-black/40 sm:bg-white/15 text-white hover:border-white/60 hover:bg-white/30"
           }`}
         >
           {isSoundOn ? (
@@ -249,12 +249,12 @@ export default function HeroVideo() {
         </button>
       </div>
 
-      {/* Story Navigation Arrows */}
+      {/* Story Navigation Arrows (Desktop & Tablet) */}
       <button
         type="button"
         onClick={() => moveStory(-1)}
         aria-label="Câu chuyện trước"
-        className="hero-arrow left-4 sm:left-8 lg:left-16 cursor-pointer"
+        className="hero-arrow hidden sm:flex left-4 sm:left-8 lg:left-16 cursor-pointer"
       >
         <ArrowLeft className="h-7 w-7" strokeWidth={1.2} />
       </button>
@@ -262,43 +262,43 @@ export default function HeroVideo() {
         type="button"
         onClick={() => moveStory(1)}
         aria-label="Câu chuyện tiếp theo"
-        className="hero-arrow right-4 sm:right-8 lg:left-auto lg:right-16 cursor-pointer"
+        className="hero-arrow hidden sm:flex right-4 sm:right-8 lg:left-auto lg:right-16 cursor-pointer"
       >
         <ArrowRight className="h-7 w-7" strokeWidth={1.2} />
       </button>
 
-      {/* Hero Content Overlay */}
-      <div className="relative z-10 flex min-h-[100dvh] items-end justify-center px-6 pb-16 pt-40 text-center sm:pb-20 lg:pb-14">
+      {/* Hero Content Overlay - Perfectly Centered on Mobile & Desktop */}
+      <div className="relative z-10 flex min-h-[100dvh] items-end justify-center px-5 pb-20 pt-28 text-center sm:pb-20 lg:pb-14">
         <motion.div
           key={story.title}
           initial={reduceMotion ? false : { opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: reduceMotion ? 0 : 0.7, ease: [0.16, 1, 0.3, 1] }}
-          className="max-w-3xl"
+          className="max-w-3xl w-full mx-auto flex flex-col items-center justify-center text-center"
         >
           {story.eyebrow ? (
             <p
               style={{ color: "#ffffff" }}
-              className="mb-3.5 text-xs sm:text-sm font-semibold tracking-[0.2em] uppercase !text-white drop-shadow-sm"
+              className="mb-3 text-xs sm:text-sm font-semibold tracking-[0.2em] uppercase !text-white drop-shadow-sm mx-auto"
             >
               {story.eyebrow}
             </p>
           ) : null}
           <h1
             style={{ color: "#ffffff" }}
-            className="text-balance text-3xl sm:text-4xl md:text-5xl lg:text-[3.5rem] font-normal leading-[1.12] tracking-[-0.03em] !text-white drop-shadow-[0_4px_24px_rgba(0,0,0,0.85)]"
+            className="text-balance text-2xl sm:text-4xl md:text-5xl lg:text-[3.5rem] font-normal leading-[1.15] tracking-[-0.03em] !text-white drop-shadow-[0_4px_24px_rgba(0,0,0,0.85)] mx-auto"
           >
             {story.title}
           </h1>
           <p
             style={{ color: "#ffffff" }}
-            className="mx-auto mt-5 max-w-2xl text-base sm:text-lg lg:text-xl leading-relaxed !text-white font-light drop-shadow-[0_2px_12px_rgba(0,0,0,0.85)]"
+            className="mx-auto mt-4 sm:mt-5 max-w-2xl text-sm sm:text-lg lg:text-xl leading-relaxed !text-white font-light drop-shadow-[0_2px_12px_rgba(0,0,0,0.85)]"
           >
             {story.description}
           </p>
           <Link
             href={story.ctaLink}
-            className="hero-cta group mt-8 inline-flex items-center gap-2.5 border border-white bg-white px-8 py-4 text-sm font-semibold uppercase tracking-[0.16em] !text-black transition-all hover:border-[#f3f1eb] hover:bg-[#f3f1eb] hover:!text-black shadow-lg"
+            className="hero-cta group mt-6 sm:mt-8 inline-flex items-center justify-center gap-2.5 border border-white bg-white px-7 sm:px-8 py-3.5 sm:py-4 text-xs sm:text-sm font-semibold uppercase tracking-[0.16em] !text-black transition-all hover:border-[#f3f1eb] hover:bg-[#f3f1eb] hover:!text-black shadow-lg mx-auto"
           >
             <span className="!text-black font-semibold">{story.cta}</span>
             <ArrowRight className="h-4 w-4 !text-black transition-transform duration-200 group-hover:translate-x-1" strokeWidth={1.5} />
@@ -306,7 +306,7 @@ export default function HeroVideo() {
         </motion.div>
 
         {/* Story Pagination Indicators */}
-        <div className="absolute bottom-6 left-1/2 flex -translate-x-1/2 items-center gap-2 sm:bottom-8" aria-label="Chọn câu chuyện">
+        <div className="absolute bottom-5 left-1/2 flex -translate-x-1/2 items-center gap-2 sm:bottom-8" aria-label="Chọn câu chuyện">
           {stories.map((item, index) => (
             <button
               key={item.title}
@@ -316,7 +316,7 @@ export default function HeroVideo() {
               aria-current={activeStory === index ? "true" : undefined}
               className="p-2 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white cursor-pointer"
             >
-              <span className={`block h-px transition-all duration-300 ${activeStory === index ? "w-12 bg-white" : "w-6 bg-white/45 hover:bg-white/70"}`} />
+              <span className={`block h-px transition-all duration-300 ${activeStory === index ? "w-10 sm:w-12 bg-white" : "w-5 sm:w-6 bg-white/45 hover:bg-white/70"}`} />
             </button>
           ))}
         </div>

@@ -139,14 +139,47 @@ export default function Header() {
 
         <div className="site-header-main">
           <div className="mx-auto max-w-[1540px] px-5 sm:px-8 lg:px-12">
-            <div className="relative flex min-h-[68px] sm:min-h-[76px] items-center justify-center">
-              <Link href="/" aria-label="RUNGU, trang chủ" className="flex items-center transition-opacity hover:opacity-70">
-                <Image src="/rungu-logo.png" alt="RUNGU" width={2172} height={724} priority className="header-logo h-auto w-[165px] sm:w-[190px]" />
+            <div className="relative flex min-h-[64px] sm:min-h-[76px] items-center justify-center">
+              {/* Mobile Left: Menu Toggle Button */}
+              <div className="absolute left-0 flex items-center lg:hidden">
+                <button
+                  type="button"
+                  onClick={() => setNavOpen(true)}
+                  aria-label="Mở menu điều hướng"
+                  className="header-icon flex items-center gap-1.5 p-1 transition-opacity hover:opacity-70"
+                >
+                  <Menu className="h-5 w-5" strokeWidth={1.35} />
+                  <span className="hidden sm:inline text-xs font-semibold uppercase tracking-[0.16em]">Menu</span>
+                </button>
+              </div>
+
+              {/* Centered Brand Logo */}
+              <Link href="/" aria-label="RUNGU, trang chủ" className="flex items-center transition-opacity hover:opacity-70 mx-auto">
+                <Image src="/rungu-logo.png" alt="RUNGU" width={2172} height={724} priority className="header-logo h-auto w-[150px] sm:w-[190px]" />
               </Link>
 
-              <div className="absolute right-0 flex items-center lg:hidden">
-                <button type="button" onClick={() => setNavOpen(true)} aria-label="Mở menu" className="header-icon">
-                  <Menu className="h-5 w-5" strokeWidth={1.35} />
+              {/* Mobile Right: Search & Cart Buttons */}
+              <div className="absolute right-0 flex items-center gap-3.5 sm:gap-4 lg:hidden">
+                <button
+                  type="button"
+                  onClick={() => setSearchOpen(true)}
+                  aria-label="Tìm kiếm sản phẩm"
+                  className="header-icon p-1 transition-opacity hover:opacity-70"
+                >
+                  <Search className="h-5 w-5" strokeWidth={1.35} />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setCartOpen(true)}
+                  aria-label={`Giỏ hàng (${cartCount})`}
+                  className="header-icon relative flex items-center p-1 transition-opacity hover:opacity-70"
+                >
+                  <ShoppingBag className="h-5 w-5" strokeWidth={1.35} />
+                  {cartCount > 0 && (
+                    <span className="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#9d753d] px-1 text-[10px] font-bold leading-none text-white">
+                      {cartCount}
+                    </span>
+                  )}
                 </button>
               </div>
             </div>
@@ -323,16 +356,6 @@ export default function Header() {
                   <span>Giỏ hàng ({cartCount})</span>
                 </button>
               </div>
-            </div>
-
-            <div className="flex min-h-12 items-center justify-between lg:hidden">
-              <button type="button" onClick={() => setNavOpen(true)} className="text-[10px] font-semibold uppercase tracking-[0.16em] transition-opacity hover:opacity-70">Menu</button>
-              <button type="button" onClick={() => setSearchOpen((open) => !open)} aria-label="Tìm kiếm" className="header-icon">
-                <Search className="h-4 w-4" strokeWidth={1.25} />
-              </button>
-              <button type="button" onClick={() => setCartOpen(true)} aria-label={`Giỏ hàng (${cartCount})`} className="flex items-center gap-2 text-[10px] uppercase tracking-[0.12em] transition-opacity hover:opacity-70">
-                <ShoppingBag className="h-4 w-4" strokeWidth={1.25} />({cartCount})
-              </button>
             </div>
           </div>
         </div>
