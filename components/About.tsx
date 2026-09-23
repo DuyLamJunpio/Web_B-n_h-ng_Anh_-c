@@ -2,7 +2,19 @@
 
 import { useRef, useState } from "react";
 import { motion } from "framer-motion";
-import { CheckCircle2, Lock, Mail, Pause, Phone, Play, Send, Sparkles, Volume2, VolumeX } from "lucide-react";
+import {
+  CheckCircle2,
+  Gift,
+  Lock,
+  Mail,
+  Pause,
+  Phone,
+  Play,
+  Send,
+  Sparkles,
+  Volume2,
+  VolumeX,
+} from "lucide-react";
 
 export default function About() {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -38,14 +50,13 @@ export default function About() {
     if (!phone || !email) return;
 
     setLoading(true);
-    // Simulate async submission and save to local storage
     setTimeout(() => {
       try {
         const stored = JSON.parse(localStorage.getItem("rungu_subscribers") || "[]");
         stored.push({ phone, email, date: new Date().toISOString() });
         localStorage.setItem("rungu_subscribers", JSON.stringify(stored));
       } catch {
-        // ignore storage errors
+        // ignore
       }
       setLoading(false);
       setSubmitted(true);
@@ -55,44 +66,53 @@ export default function About() {
   };
 
   return (
-    <section id="about" className="relative overflow-hidden bg-[#e8e4da] px-5 py-24 text-[#282723] sm:px-8 sm:py-32 lg:px-12">
-      <div className="mx-auto max-w-[1500px]">
-        <div className="grid grid-cols-1 gap-14 lg:grid-cols-[1fr_1.1fr] lg:items-center lg:gap-20 xl:gap-24">
-          {/* Left Column: Subscribe / Receive Messages from RUNGU */}
+    <section
+      id="about"
+      aria-label="Bản tin và kết nối thành viên"
+      className="border-b border-[#282723]/15 bg-[#e8e4da] text-[#282723] overflow-hidden"
+    >
+      <div className="grid grid-cols-1 lg:grid-cols-[1.15fr_1fr] xl:grid-cols-[53%_47%] min-h-[640px] lg:min-h-[760px]">
+        {/* ============================================================ */}
+        {/* LEFT COLUMN: Spacious Membership Form & Brand Story (To, rõ, tràn viền lề trái) */}
+        {/* ============================================================ */}
+        <div className="flex flex-col justify-center px-6 py-14 sm:px-12 sm:py-20 lg:px-16 xl:px-24">
           <motion.div
-            initial={{ opacity: 0, x: -24 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, amount: 0.25 }}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.2 }}
             transition={{ duration: 0.7, ease: "easeOut" }}
+            className="max-w-2xl w-full mx-auto lg:mx-0"
           >
             <div className="inline-flex items-center gap-2 rounded-full bg-[#282723]/5 px-4 py-2 text-xs sm:text-sm font-semibold uppercase tracking-[0.2em] text-[#9d753d] border border-[#282723]/10 mb-6">
               <Sparkles className="h-4 w-4" />
               <span>Bản tin & Kết nối thành viên</span>
             </div>
 
-            <h2 className="text-4xl font-normal leading-[1.08] tracking-[-0.035em] sm:text-5xl lg:text-6xl text-[#282723]">
+            <h2 className="text-4xl font-normal leading-[1.08] tracking-[-0.035em] sm:text-5xl lg:text-6xl xl:text-7xl text-[#282723]">
               Nhận tin nhắn từ RUNGU
             </h2>
 
-            <p className="mt-5 text-base sm:text-lg leading-relaxed text-[#4e4a42] max-w-xl">
+            <p className="mt-6 text-base sm:text-lg lg:text-xl leading-relaxed text-[#4e4a42]">
               Để lại số điện thoại và email để là người đầu tiên lắng nghe những câu chuyện nốt hương mới, nhận ưu đãi riêng tư và lời mời tham gia các buổi trải nghiệm mùi hương thủ công.
             </p>
 
-            {/* Subscription Form */}
-            <div className="mt-8 max-w-xl">
+            {/* Form Section - Sized up to comfortably fill space */}
+            <div className="mt-8 sm:mt-10">
               {submitted ? (
-                <div className="rounded-2xl bg-emerald-900/10 border border-emerald-800/20 p-6 text-emerald-900 transition-all animate-fadeIn">
-                  <div className="flex items-start gap-3.5">
-                    <CheckCircle2 className="h-6 w-6 text-emerald-700 shrink-0 mt-0.5" />
+                <div className="rounded-2xl bg-emerald-900/10 border border-emerald-800/20 p-8 text-emerald-900 transition-all animate-fadeIn">
+                  <div className="flex items-start gap-4">
+                    <CheckCircle2 className="h-7 w-7 text-emerald-700 shrink-0 mt-0.5" />
                     <div>
-                      <h3 className="text-lg font-semibold text-emerald-950">Đăng ký nhận tin nhắn thành công!</h3>
-                      <p className="text-sm sm:text-base text-emerald-800/90 mt-1.5 leading-relaxed">
+                      <h3 className="text-xl font-semibold text-emerald-950">
+                        Đăng ký nhận tin nhắn thành công!
+                      </h3>
+                      <p className="text-base text-emerald-800/90 mt-2 leading-relaxed">
                         Cảm ơn bạn đã đồng hành. RUNGU sẽ sớm gửi thông điệp bình an cùng nốt hương tuyển chọn đến bạn.
                       </p>
                       <button
                         type="button"
                         onClick={() => setSubmitted(false)}
-                        className="mt-4 text-sm font-medium underline text-emerald-900 hover:text-emerald-700"
+                        className="mt-5 text-sm font-semibold underline text-emerald-900 hover:text-emerald-700 cursor-pointer"
                       >
                         Đăng ký thông tin khác
                       </button>
@@ -100,11 +120,11 @@ export default function About() {
                   </div>
                 </div>
               ) : (
-                <form onSubmit={handleSubmit} className="space-y-4">
+                <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
                   {/* Phone Input */}
                   <div className="relative">
-                    <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 text-[#8c887f]">
-                      <Phone className="h-4 w-4" />
+                    <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-5 text-[#8c887f]">
+                      <Phone className="h-5 w-5" />
                     </div>
                     <input
                       type="tel"
@@ -112,14 +132,14 @@ export default function About() {
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
                       placeholder="Số điện thoại của bạn (Zalo / SMS)"
-                      className="w-full rounded-xl bg-white/85 border border-[#282723]/15 pl-11 pr-4 py-3.5 text-base text-[#282723] placeholder:text-[#8c887f] focus:bg-white focus:border-[#9d753d] focus:outline-none focus:ring-1 focus:ring-[#9d753d] transition-all shadow-sm"
+                      className="w-full rounded-xl bg-white border border-[#282723]/15 pl-13 pr-5 py-4 sm:py-4.5 text-base sm:text-lg text-[#282723] placeholder:text-[#8c887f] focus:border-[#9d753d] focus:outline-none focus:ring-2 focus:ring-[#9d753d]/20 transition-all shadow-sm"
                     />
                   </div>
 
                   {/* Email Input */}
                   <div className="relative">
-                    <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 text-[#8c887f]">
-                      <Mail className="h-4 w-4" />
+                    <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-5 text-[#8c887f]">
+                      <Mail className="h-5 w-5" />
                     </div>
                     <input
                       type="email"
@@ -127,7 +147,7 @@ export default function About() {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="Địa chỉ email nhận tin"
-                      className="w-full rounded-xl bg-white/85 border border-[#282723]/15 pl-11 pr-4 py-3.5 text-base text-[#282723] placeholder:text-[#8c887f] focus:bg-white focus:border-[#9d753d] focus:outline-none focus:ring-1 focus:ring-[#9d753d] transition-all shadow-sm"
+                      className="w-full rounded-xl bg-white border border-[#282723]/15 pl-13 pr-5 py-4 sm:py-4.5 text-base sm:text-lg text-[#282723] placeholder:text-[#8c887f] focus:border-[#9d753d] focus:outline-none focus:ring-2 focus:ring-[#9d753d]/20 transition-all shadow-sm"
                     />
                   </div>
 
@@ -135,85 +155,89 @@ export default function About() {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-[#282723] hover:bg-[#9d753d] text-white py-4 px-6 text-sm font-semibold uppercase tracking-[0.16em] transition-all duration-300 shadow-md hover:shadow-lg disabled:opacity-75 cursor-pointer"
+                    className="w-full inline-flex items-center justify-center gap-3 rounded-xl bg-[#282723] hover:bg-[#9d753d] text-white py-4.5 sm:py-5 px-8 text-sm sm:text-base font-semibold uppercase tracking-[0.16em] transition-all duration-300 shadow-md hover:shadow-xl disabled:opacity-75 cursor-pointer"
                   >
                     {loading ? (
                       <span>Đang gửi thông tin...</span>
                     ) : (
                       <>
                         <span>Đăng ký nhận tin nhắn từ RUNGU</span>
-                        <Send className="h-4 w-4" />
+                        <Send className="h-4 w-4 sm:h-5 sm:w-5" />
                       </>
                     )}
                   </button>
                 </form>
               )}
 
-              {/* Privacy / Trust reassurance */}
-              <div className="mt-5 flex items-center gap-2 text-xs sm:text-sm text-[#6c675e]">
-                <Lock className="h-4 w-4 text-[#9d753d] shrink-0" />
-                <span>Bảo mật tuyệt đối. RUNGU cam kết không gửi thư rác hay làm phiền bạn.</span>
+              {/* Exclusive Perks Bar */}
+              <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4 border-t border-[#282723]/15 pt-6 text-xs sm:text-sm text-[#504c44]">
+                <div className="flex items-center gap-2.5">
+                  <Gift className="h-4 w-4 text-[#9d753d] shrink-0" />
+                  <span>Ưu đãi đặc quyền cho thành viên mới</span>
+                </div>
+                <div className="flex items-center gap-2.5">
+                  <Lock className="h-4 w-4 text-[#9d753d] shrink-0" />
+                  <span>Bảo mật tuyệt đối, không gửi thư rác</span>
+                </div>
               </div>
             </div>
           </motion.div>
+        </div>
 
-          {/* Right Column: High-Definition Ambient Ritual Video */}
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.2 }}
-            transition={{ duration: 0.8, ease: "easeOut" }}
-            className="relative aspect-[4/5] sm:aspect-[1/1] lg:aspect-[0.95/1] min-h-[460px] sm:min-h-[540px] lg:min-h-[600px] overflow-hidden rounded-3xl bg-[#201f1c] shadow-[0_30px_70px_-15px_rgba(0,0,0,0.25)] border border-[#282723]/10 group"
+        {/* ============================================================ */}
+        {/* RIGHT COLUMN: Full-screen edge-to-edge Ambient Video (So le với 3 video phía trên) */}
+        {/* ============================================================ */}
+        <div className="relative min-h-[520px] sm:min-h-[580px] lg:min-h-full bg-[#181715] flex flex-col justify-between p-6 sm:p-10 lg:p-12 overflow-hidden group/video">
+          {/* Background Video - Edge to edge */}
+          <video
+            ref={videoRef}
+            autoPlay
+            loop
+            muted={isMuted}
+            playsInline
+            poster="/videos/palo-santo-poster.jpg"
+            className="absolute inset-0 h-full w-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-[1.02]"
           >
-            {/* The Video Element */}
-            <video
-              ref={videoRef}
-              autoPlay
-              loop
-              muted={isMuted}
-              playsInline
-              poster="/videos/palo-santo-poster.jpg"
-              className="h-full w-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-[1.02]"
-            >
-              <source src="/videos/palo-santo-hero.mp4" type="video/mp4" />
-            </video>
+            <source src="/videos/palo-santo-hero.mp4" type="video/mp4" />
+          </video>
 
-            {/* Subtle bottom gradient only for text readability - Không dùng nền bóng đen bao phủ video */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none" />
+          {/* Cinematic Gradient Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-black/30 pointer-events-none" />
 
-            {/* Live Status Pill at Top-Left */}
-            <div className="absolute top-5 left-5 z-10 flex items-center gap-2 rounded-full bg-white/15 backdrop-blur-md px-3.5 py-1.5 border border-white/25 text-white text-xs font-medium tracking-wider uppercase">
+          {/* Top Live Status Pill */}
+          <div className="relative z-10 flex items-center justify-between">
+            <div className="flex items-center gap-2 rounded-full bg-white/15 backdrop-blur-md px-4 py-2 border border-white/25 text-white text-xs sm:text-sm font-medium tracking-wider uppercase">
               <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
               <span>Nghi thức khói thơm tự nhiên</span>
             </div>
+          </div>
 
-            {/* Quote Caption */}
-            <div className="absolute bottom-16 left-5 right-5 z-10 text-white sm:bottom-20 sm:left-6 sm:right-6">
-              <p className="max-w-md text-base sm:text-lg font-normal leading-relaxed text-white drop-shadow-md">
-                &ldquo;Mỗi nốt hương gửi đi là một lời chúc an yên dành riêng cho bạn.&rdquo;
-              </p>
-              <span className="mt-2 block text-xs tracking-[0.16em] uppercase text-[#e5caa1] font-semibold drop-shadow-sm">
-                — RUNGU Fragrance Rituals
-              </span>
-            </div>
+          {/* Bottom Overlay: Quote Caption & Video Controls */}
+          <div className="relative z-10 mt-auto pt-24 text-white">
+            <p className="max-w-lg text-lg sm:text-xl lg:text-2xl font-normal leading-relaxed text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.85)]">
+              &ldquo;Mỗi nốt hương gửi đi là một lời chúc an yên dành riêng cho bạn.&rdquo;
+            </p>
+            <span className="mt-3 block text-xs sm:text-sm tracking-[0.18em] uppercase text-[#e5caa1] font-semibold drop-shadow-sm">
+              — RUNGU Fragrance Rituals
+            </span>
 
-            {/* Video Controls (Tạm dừng & Bật âm thanh) - Góc dưới bên trái */}
-            <div className="absolute bottom-5 left-5 z-20 flex items-center gap-2">
+            {/* Video Controls (Tạm dừng & Âm thanh) */}
+            <div className="mt-8 flex items-center gap-3">
               <button
                 type="button"
                 onClick={togglePlay}
                 aria-label={isPlaying ? "Tạm dừng video" : "Phát video"}
-                className="group flex items-center gap-1.5 rounded-full border border-white/30 bg-white/15 px-3.5 py-1.5 text-xs text-white backdrop-blur-md transition-all hover:bg-white hover:text-black cursor-pointer"
+                className="group flex items-center gap-2 rounded-full border border-white/30 bg-black/40 px-4 py-2 text-xs sm:text-sm text-white backdrop-blur-md transition-all hover:bg-white hover:text-black cursor-pointer"
               >
                 {isPlaying ? (
                   <>
-                    <Pause className="h-3.5 w-3.5" />
-                    <span className="text-xs font-medium">Tạm dừng</span>
+                    <Pause className="h-4 w-4" />
+                    <span className="font-medium">Tạm dừng</span>
                   </>
                 ) : (
                   <>
-                    <Play className="h-3.5 w-3.5 fill-current ml-0.5" />
-                    <span className="text-xs font-medium">Phát video</span>
+                    <Play className="h-4 w-4 fill-current ml-0.5" />
+                    <span className="font-medium">Phát video</span>
                   </>
                 )}
               </button>
@@ -222,26 +246,26 @@ export default function About() {
                 type="button"
                 onClick={toggleMute}
                 aria-label={isMuted ? "Bật âm thanh" : "Tắt âm thanh"}
-                className={`group flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-xs backdrop-blur-md transition-all cursor-pointer ${
+                className={`group flex items-center gap-2 rounded-full border px-4 py-2 text-xs sm:text-sm backdrop-blur-md transition-all cursor-pointer ${
                   !isMuted
                     ? "border-[#d5b27d] bg-[#d5b27d]/30 text-[#f7e4c6]"
-                    : "border-white/30 bg-white/15 text-white hover:bg-white hover:text-black"
+                    : "border-white/30 bg-black/40 text-white hover:bg-white hover:text-black"
                 }`}
               >
                 {!isMuted ? (
                   <>
-                    <Volume2 className="h-3.5 w-3.5 text-[#e5caa1] animate-pulse" />
-                    <span className="text-xs font-medium">Tắt tiếng</span>
+                    <Volume2 className="h-4 w-4 text-[#e5caa1] animate-pulse" />
+                    <span className="font-medium">Tắt tiếng</span>
                   </>
                 ) : (
                   <>
-                    <VolumeX className="h-3.5 w-3.5" />
-                    <span className="text-xs font-medium">Bật âm thanh</span>
+                    <VolumeX className="h-4 w-4" />
+                    <span className="font-medium">Bật âm thanh</span>
                   </>
                 )}
               </button>
             </div>
-          </motion.div>
+          </div>
         </div>
       </div>
     </section>
