@@ -71,7 +71,7 @@ export default function About() {
       aria-label="Bản tin và kết nối thành viên"
       className="border-b border-[#282723]/15 bg-[#e8e4da] text-[#282723] overflow-hidden"
     >
-      <div className="grid grid-cols-1 lg:grid-cols-[1.15fr_1fr] xl:grid-cols-[53%_47%] min-h-[640px] lg:min-h-[760px]">
+      <div className="grid grid-cols-1 lg:grid-cols-2 min-h-[640px] lg:min-h-[740px]">
         {/* ============================================================ */}
         {/* LEFT COLUMN: Spacious Membership Form & Brand Story (To, rõ, tràn viền lề trái) */}
         {/* ============================================================ */}
