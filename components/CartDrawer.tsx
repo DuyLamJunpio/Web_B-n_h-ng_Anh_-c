@@ -1,8 +1,8 @@
 "use client";
 
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { useCart } from "@/lib/CartContext";
-import { ArrowLeft, ArrowRight, Check, CheckCircle2, Copy, QrCode, ShoppingBag, Trash2, Truck, X } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, CheckCircle2, Copy, ShoppingBag, Trash2, Truck, X } from "lucide-react";
 
 type CheckoutForm = {
   customer_name: string;
@@ -21,6 +21,34 @@ type CheckoutResult = {
   shipping_fee: number;
   message?: string;
 };
+
+type CheckoutQuote = {
+  ok: true;
+  subtotal: number;
+  shipping_fee: number;
+  total_amount: number;
+};
+
+type QuoteSnapshot = { key: string; data: CheckoutQuote };
+type CheckoutAttempt = { fingerprint: string; ref: string };
+const CHECKOUT_ATTEMPT_KEY = "rungu-checkout-attempt";
+
+async function requestQuote(items: Array<{ variant_id: number; quantity: number }>, paymentMethod: string, signal?: AbortSignal): Promise<CheckoutQuote> {
+  const response = await fetch("/api/checkout/quote", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Accept: "application/json" },
+    body: JSON.stringify({ items, payment_method: paymentMethod }),
+    signal,
+  });
+  const payload = await response.json().catch(() => null);
+  if (!response.ok || !payload?.ok) {
+    throw new Error(payload?.error || "Không kiểm tra được giá và tồn kho. Vui lòng thử lại.");
+  }
+  if (![payload.subtotal, payload.shipping_fee, payload.total_amount].every((value) => Number.isSafeInteger(value) && value >= 0)) {
+    throw new Error("Hệ thống đặt hàng trả về số tiền không hợp lệ.");
+  }
+  return payload as CheckoutQuote;
+}
 
 const initialForm: CheckoutForm = {
   customer_name: "",
@@ -48,9 +76,18 @@ export default function CartDrawer() {
     clearCart,
     storefrontContent,
   } = useCart();
+  const configuredBank = storefrontContent.sales.bank_transfer?.bank;
+  const bank = configuredBank
+    && /^[A-Za-z0-9]+$/.test(configuredBank.code)
+    && /^[0-9]+$/.test(configuredBank.account_number)
+    && configuredBank.account_name.trim()
+    ? configuredBank
+    : null;
   const enabledMethods = useMemo(
-    () => Object.entries(storefrontContent.sales).filter(([, config]) => config.enabled),
-    [storefrontContent.sales],
+    () => Object.entries(storefrontContent.sales).filter(([key, config]) =>
+      config.enabled && (key !== "bank_transfer" || Boolean(bank)),
+    ),
+    [storefrontContent.sales, bank],
   );
   const defaultPaymentMethod = enabledMethods.some(([key]) => key === "cod")
     ? "cod"
@@ -63,6 +100,70 @@ export default function CartDrawer() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [result, setResult] = useState<CheckoutResult | null>(null);
+  const [quote, setQuote] = useState<QuoteSnapshot | null>(null);
+  const [quoteLoading, setQuoteLoading] = useState(false);
+  const [quoteError, setQuoteError] = useState("");
+  const checkoutAttempt = useRef<CheckoutAttempt | null>(null);
+
+  const orderItems = useMemo(
+    () => cart.map((item) => ({ variant_id: Number(item.variantId), quantity: item.qty })),
+    [cart],
+  );
+  const quoteKey = JSON.stringify([form.payment_method, orderItems]);
+  const validVariants = cart.length > 0 && orderItems.every((item) =>
+    Number.isSafeInteger(item.variant_id) && item.variant_id > 0
+      && Number.isInteger(item.quantity) && item.quantity > 0 && item.quantity <= 100,
+  );
+  const currentQuote = quote?.key === quoteKey ? quote.data : null;
+
+  const getCheckoutRef = (fingerprint: string) => {
+    let previous = checkoutAttempt.current;
+    if (!previous) {
+      try {
+        previous = JSON.parse(window.sessionStorage.getItem(CHECKOUT_ATTEMPT_KEY) || "null") as CheckoutAttempt | null;
+      } catch {
+        previous = null;
+      }
+    }
+    if (previous?.fingerprint === fingerprint && typeof previous.ref === "string") {
+      checkoutAttempt.current = previous;
+      return previous.ref;
+    }
+
+    const attempt = { fingerprint, ref: window.crypto.randomUUID() };
+    checkoutAttempt.current = attempt;
+    try {
+      window.sessionStorage.setItem(CHECKOUT_ATTEMPT_KEY, JSON.stringify(attempt));
+    } catch {
+      // The in-memory ref still keeps retries in this tab idempotent.
+    }
+    return attempt.ref;
+  };
+
+  useEffect(() => {
+    if (!checkoutMode || result) return;
+    if (!validVariants) {
+      setQuote(null);
+      setQuoteError("Giỏ hàng có sản phẩm không còn hợp lệ. Vui lòng xóa và thêm lại từ trang sản phẩm.");
+      return;
+    }
+
+    const controller = new AbortController();
+    setQuote(null);
+    setQuoteLoading(true);
+    setQuoteError("");
+    requestQuote(orderItems, form.payment_method, controller.signal)
+      .then((data) => setQuote({ key: quoteKey, data }))
+      .catch((quoteFailure) => {
+        if (!controller.signal.aborted) {
+          setQuoteError(quoteFailure instanceof Error ? quoteFailure.message : "Không kiểm tra được đơn hàng.");
+        }
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setQuoteLoading(false);
+      });
+    return () => controller.abort();
+  }, [checkoutMode, result, validVariants, quoteKey, orderItems, form.payment_method]);
 
   const itemCount = cart.reduce((sum, item) => sum + item.qty, 0);
   const salesMethod = storefrontContent.sales[form.payment_method];
@@ -78,6 +179,8 @@ export default function CartDrawer() {
     window.setTimeout(() => {
       setCheckoutMode(false);
       setError("");
+      setQuoteError("");
+      setQuote(null);
       if (result) {
         setResult(null);
         setForm({ ...initialForm, payment_method: defaultPaymentMethod });
@@ -105,24 +208,46 @@ export default function CartDrawer() {
       return;
     }
 
+    if (!enabledMethods.some(([key]) => key === form.payment_method)) {
+      setError("Hình thức thanh toán này chưa sẵn sàng. Vui lòng chọn cách thanh toán khác.");
+      return;
+    }
+
+    if (!validVariants || !currentQuote || quoteLoading) {
+      setError("Đang kiểm tra giá và tồn kho. Vui lòng chờ rồi xác nhận lại.");
+      return;
+    }
+
     setSubmitting(true);
     try {
+      // Recheck immediately before creating the order. If anything changed, ask
+      // the customer to review the new amount rather than silently charging it.
+      const latestQuote = await requestQuote(orderItems, form.payment_method);
+      if (latestQuote.subtotal !== currentQuote.subtotal
+        || latestQuote.shipping_fee !== currentQuote.shipping_fee
+        || latestQuote.total_amount !== currentQuote.total_amount) {
+        setQuote({ key: quoteKey, data: latestQuote });
+        setError("Giá hoặc phí giao hàng vừa thay đổi. Vui lòng kiểm tra tổng tiền mới và xác nhận lại.");
+        return;
+      }
+
+      const checkoutDetails = {
+        customer_name: form.customer_name.trim(),
+        customer_phone: form.customer_phone.trim(),
+        customer_email: form.customer_email.trim() || null,
+        province: form.province.trim(),
+        ward: form.ward.trim(),
+        address: form.address.trim(),
+        note: form.note.trim() || null,
+        payment_method: form.payment_method,
+        expected_total_amount: currentQuote.total_amount,
+        items: orderItems,
+      };
+      const checkoutRef = getCheckoutRef(JSON.stringify(checkoutDetails));
       const response = await fetch("/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json", Accept: "application/json" },
-        body: JSON.stringify({
-          ...form,
-          customer_email: form.customer_email || null,
-          note: form.note || null,
-          total_amount: grandTotal,
-          items: cart.map((item) => ({
-            product_id: item.id,
-            variant_id: item.variantId || `${item.id}-default`,
-            name: item.name,
-            price: item.price,
-            quantity: item.qty,
-          })),
-        }),
+        body: JSON.stringify({ ...checkoutDetails, checkout_ref: checkoutRef }),
       });
       const payload = await response.json();
 
@@ -135,10 +260,16 @@ export default function CartDrawer() {
 
       setResult({
         order_code: payload.order_code,
-        total_amount: Number(payload.total_amount) || grandTotal,
-        shipping_fee: Number(payload.shipping_fee) || estimatedShipping,
+        total_amount: Number(payload.total_amount),
+        shipping_fee: Number(payload.shipping_fee),
         message: payload.message,
       });
+      checkoutAttempt.current = null;
+      try {
+        window.sessionStorage.removeItem(CHECKOUT_ATTEMPT_KEY);
+      } catch {
+        // Session storage may be unavailable in private browsing.
+      }
       clearCart();
     } catch (checkoutError) {
       setError(checkoutError instanceof Error ? checkoutError.message : "Không thể tạo đơn hàng.");
@@ -187,36 +318,25 @@ export default function CartDrawer() {
               </p>
             </div>
 
-            {form.payment_method === "bank_transfer" ? (
+            {form.payment_method === "bank_transfer" && bank ? (
               <div className="mt-6 border border-forest-800/15 bg-[#faf8f4] p-4 text-left">
                 <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-forest-900 mb-3">
-                  <QrCode className="h-4 w-4 text-[#8d693a]" />
-                  <span>Quét mã VietQR chuyển khoản</span>
+                  <span>Thông tin chuyển khoản</span>
                 </div>
 
-                <div className="flex flex-col sm:flex-row items-center gap-4">
-                  <div className="relative aspect-square w-40 overflow-hidden rounded-lg border border-forest-800/10 bg-white p-2 shadow-sm shrink-0">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={`https://img.vietqr.io/image/MB-0868238690-compact2.png?amount=${result.total_amount}&addInfo=${result.order_code}&accountName=RUNGU%20BOTANICAL`}
-                      alt={`Mã QR thanh toán đơn hàng ${result.order_code}`}
-                      className="h-full w-full object-contain"
-                    />
-                  </div>
-
-                  <div className="flex-1 space-y-2 text-xs text-forest-800">
+                <div className="space-y-2 text-xs text-forest-800">
                     <div>
                       <span className="text-[11px] text-forest-500 block">Ngân hàng</span>
-                      <strong className="text-forest-900">MB Bank (Ngân hàng Quân Đội)</strong>
+                      <strong className="text-forest-900">{bank.code}</strong>
                     </div>
 
                     <div>
                       <span className="text-[11px] text-forest-500 block">Số tài khoản</span>
                       <div className="flex items-center gap-2">
-                        <strong className="font-mono text-forest-900">0868 238 690</strong>
+                        <strong className="font-mono text-forest-900">{bank.account_number}</strong>
                         <button
                           type="button"
-                          onClick={() => copyToClipboard("0868238690", "stk")}
+                          onClick={() => copyToClipboard(bank.account_number, "stk")}
                           className="inline-flex items-center gap-1 rounded bg-white px-2 py-0.5 text-[10px] border border-forest-800/20 text-forest-700 hover:text-forest-950"
                         >
                           {copiedField === "stk" ? <Check className="h-3 w-3 text-green-600" /> : <Copy className="h-3 w-3" />}
@@ -227,7 +347,7 @@ export default function CartDrawer() {
 
                     <div>
                       <span className="text-[11px] text-forest-500 block">Chủ tài khoản</span>
-                      <strong className="text-forest-900">RUNGU BOTANICAL</strong>
+                      <strong className="text-forest-900">{bank.account_name}</strong>
                     </div>
 
                     <div>
@@ -244,11 +364,10 @@ export default function CartDrawer() {
                         </button>
                       </div>
                     </div>
-                  </div>
                 </div>
 
                 <p className="mt-3 text-[11px] text-forest-600 border-t border-forest-800/10 pt-2.5">
-                  ✦ Hệ thống sẽ tự động xác nhận đơn và gửi tin nhắn cập nhật trạng thái ngay khi nhận được thanh toán.
+                  Sau khi chuyển khoản, cửa hàng sẽ đối soát giao dịch và xác nhận đơn. Vui lòng giữ lại biên lai để được hỗ trợ khi cần.
                 </p>
               </div>
             ) : (
@@ -257,12 +376,7 @@ export default function CartDrawer() {
                   <Truck className="h-4 w-4 text-[#8d693a]" />
                   <span>Hình thức: Thanh toán khi nhận hàng (COD)</span>
                 </div>
-                <p className="text-forest-700 leading-relaxed">
-                  Đơn hàng của bạn sẽ được nghệ nhân RUNGU chuẩn bị và đóng gói mộc mạc cẩn thận. Bạn có thể kiểm tra sản phẩm trước khi thanh toán cho nhân viên giao hàng.
-                </p>
-                <p className="text-forest-600 text-[11px] pt-1">
-                  Thời gian giao hàng dự kiến từ 2-4 ngày làm việc. Cần hỗ trợ khẩn cấp, vui lòng liên hệ hotline <strong>0868 238 690</strong>.
-                </p>
+                <p className="text-forest-700 leading-relaxed">Cửa hàng sẽ xác nhận đơn trước khi giao. Bạn thanh toán khi nhận hàng.</p>
               </div>
             )}
 
@@ -303,12 +417,16 @@ export default function CartDrawer() {
                 ))}
               </fieldset>
 
+              {enabledMethods.length === 0 && <p role="alert" className="border border-red-200 bg-red-50 p-3 text-xs text-red-700">Chưa có hình thức thanh toán nào sẵn sàng. Vui lòng liên hệ cửa hàng.</p>}
+              {quoteLoading && <p className="text-xs text-forest-600">Đang kiểm tra giá và tồn kho mới nhất...</p>}
+              {quoteError && <p role="alert" className="border border-red-200 bg-red-50 p-3 text-xs leading-5 text-red-700">{quoteError}</p>}
               {error && <p role="alert" className="border border-red-200 bg-red-50 p-3 text-xs leading-5 text-red-700">{error}</p>}
             </div>
 
             <div className="space-y-3 border-t border-forest-800/10 pt-4">
-              <Summary subtotal={cartTotal} shipping={estimatedShipping} total={grandTotal} />
-              <button type="submit" disabled={submitting || enabledMethods.length === 0} className="w-full bg-forest-800 py-3.5 text-xs font-semibold uppercase tracking-[0.2em] text-white disabled:cursor-not-allowed disabled:opacity-50">
+              <Summary subtotal={currentQuote?.subtotal ?? cartTotal} shipping={currentQuote?.shipping_fee ?? estimatedShipping} total={currentQuote?.total_amount ?? grandTotal} />
+              {!currentQuote && <p className="text-[11px] text-forest-600">Tổng tiền trên chỉ là dự kiến; chờ xác nhận từ hệ thống quản lý trước khi đặt hàng.</p>}
+              <button type="submit" disabled={submitting || quoteLoading || !currentQuote || enabledMethods.length === 0} className="w-full bg-forest-800 py-3.5 text-xs font-semibold uppercase tracking-[0.2em] text-white disabled:cursor-not-allowed disabled:opacity-50">
                 {submitting ? "Đang tạo đơn..." : "Xác nhận đặt hàng"}
               </button>
             </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useEffect, useMemo } from "react";
+import { useRef, useState, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -16,65 +16,19 @@ import {
 } from "lucide-react";
 import { useCart } from "@/lib/CartContext";
 import type { Product } from "@/lib/data";
+import { categoryAndDescendantSlugs } from "@/lib/categoryFilters";
 
-interface VideoStory {
-  id: string;
-  tabId: string;
-  tabLabel: string;
-  eyebrow: string;
-  title: string;
-  subtitle: string;
-  videoSrc: string;
-  link: string;
-  ctaText: string;
-  filterCategory: string;
-}
-
-const VIDEO_STORIES: VideoStory[] = [
-  {
-    id: "hoa-co",
-    tabId: "floral",
-    tabLabel: "Hoa cỏ",
-    eyebrow: "Nốt hương & Câu chuyện",
-    title: "Câu chuyện về hoa cỏ tự nhiên",
-    subtitle:
-      "Mỗi loại hoa, cỏ lại có một mùi hương riêng. Chúng mình để tự nhiên xoa dịu tâm hồn bạn bằng chính những làn hương mộc mạc nhất.",
-    videoSrc: "/videos/hoa-co.mp4",
-    link: "/san-pham?category=calm",
-    ctaText: "Khám phá câu chuyện",
-    filterCategory: "calm",
-  },
-  {
-    id: "huong-mau",
-    tabId: "warmth",
-    tabLabel: "Hương màu",
-    eyebrow: "Nghi thức sắc màu & ánh lửa",
-    title: "Vũ điệu sắc màu và ánh sáng",
-    subtitle:
-      "Ánh nến lung linh cùng sáp tự nhiên tạo nên không gian ấm cúng, dẫn lối tâm trí trở về với sự an yên, dịu êm sau ngày dài.",
-    videoSrc: "/videos/huong-mau.mp4",
-    link: "/san-pham?category=warmth",
-    ctaText: "Khám phá nến thơm",
-    filterCategory: "warmth",
-  },
-  {
-    id: "thuong-ngay",
-    tabId: "purify",
-    tabLabel: "Thường ngày",
-    eyebrow: "Khoảng lặng thường nhật",
-    title: "Khoảnh khắc bình dị thường ngày",
-    subtitle:
-      "Khói thơm tự nhiên từ Palo Santo và nhang mộc thanh lọc không gian, thiết lập lại nhịp thở và tái tạo nguồn năng lượng tích cực.",
-    videoSrc: "/videos/thuong-ngay.mp4",
-    link: "/san-pham?category=purify",
-    ctaText: "Khám phá nghi thức",
-    filterCategory: "purify",
-  },
-];
+const PALO_SANTO_STORY = {
+  eyebrow: "Khoảng lặng thường nhật",
+  title: "Câu chuyện về gỗ thiêng",
+  subtitle:
+    "Gỗ Palo santo - hay còn được gọi là: gỗ thánh. Được khai thác trong những cánh rừng già ở Peru. Palo Santo ủ một lớp tinh dầu thơm trong từng thớ gỗ. Chờ toả hương",
+  videoSrc: "/videos/palo-santo-video.mp4",
+  ctaText: "Khám phá gỗ Palo Santo",
+};
 
 export default function FeaturedStoryVideo() {
-  const { products, addToCart, openProductModal } = useCart();
-  const [activeVideoIndex, setActiveVideoIndex] = useState(0);
+  const { products, categories, addToCart, openProductModal, setCartOpen } = useCart();
   const [activeTab, setActiveTab] = useState<string>("all");
   const [isPlaying, setIsPlaying] = useState(true);
   const [isMuted, setIsMuted] = useState(true);
@@ -83,19 +37,16 @@ export default function FeaturedStoryVideo() {
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const productScrollRef = useRef<HTMLDivElement>(null);
+  const storyProductCategory = products.find((product) => /palo\s*santo/i.test(product.name))?.category;
+  const storyCategory = categories.find((category) => category.slug === storyProductCategory);
+  const storyHref = storyCategory
+    ? `/san-pham?category=${encodeURIComponent(storyCategory.slug)}`
+    : "/san-pham";
 
-  const currentVideo = VIDEO_STORIES[activeVideoIndex];
-
-  // Reload and play video when activeVideoIndex changes
-  useEffect(() => {
-    if (videoRef.current) {
-      videoRef.current.load();
-      videoRef.current.play().catch(() => {
-        // Autoplay may need user gesture or muted
-      });
-      setIsPlaying(true);
-    }
-  }, [activeVideoIndex]);
+  const handleBuyNow = (product: Product) => {
+    addToCart(product.id);
+    setCartOpen(true);
+  };
 
   const togglePlay = () => {
     if (!videoRef.current) return;
@@ -119,29 +70,20 @@ export default function FeaturedStoryVideo() {
     setActiveTab(tabId);
   };
 
-  // Dynamically derive category tabs from products
+  // Category tabs follow the same category list as the rest of the shop.
   const categoryTabs = useMemo(() => {
-    const dynamicCategories = Array.from(
-      new Map(products.map((p) => [p.category, p.categoryName || p.category])).entries()
-    ).map(([id, label]) => ({ id, label }));
-
-    if (dynamicCategories.length > 0) {
-      return [{ id: "all", label: "Tất cả" }, ...dynamicCategories];
-    }
-
     return [
       { id: "all", label: "Tất cả" },
-      { id: "calm", label: "Hoa cỏ" },
-      { id: "warmth", label: "Hương màu" },
-      { id: "purify", label: "Thường ngày" },
+      ...categories.map((category) => ({ id: category.slug, label: category.name })),
     ];
-  }, [products]);
+  }, [categories]);
 
   // Products filtered according to tab
   const filteredProducts = useMemo(() => {
     if (activeTab === "all") return products;
-    return products.filter((p) => p.category === activeTab);
-  }, [products, activeTab]);
+    const slugs = categoryAndDescendantSlugs(categories, activeTab);
+    return products.filter((product) => slugs.has(product.category));
+  }, [products, categories, activeTab]);
 
   const handleAddToCart = (product: Product) => {
     addToCart(product.id);
@@ -180,34 +122,28 @@ export default function FeaturedStoryVideo() {
         {/* LEFT COLUMN: Ambient Cinematic Video with Editorial Overlay  */}
         {/* ============================================================ */}
         <div className="relative min-h-[520px] sm:min-h-[580px] lg:min-h-full bg-[#181715] flex flex-col justify-between p-6 sm:p-10 lg:p-12 overflow-hidden group/video">
-          {/* Background Video (supports both landscape & portrait) */}
+          {/* Background Video */}
           <video
             ref={videoRef}
             autoPlay
+            loop
             muted={isMuted}
             playsInline
-            onEnded={() => {
-              setActiveVideoIndex((prev) => (prev + 1) % VIDEO_STORIES.length);
-            }}
-            key={currentVideo.videoSrc}
+            key={PALO_SANTO_STORY.videoSrc}
             className="absolute inset-0 h-full w-full object-cover object-center transition-opacity duration-700"
           >
-            <source src={currentVideo.videoSrc} type="video/mp4" />
+            <source src={PALO_SANTO_STORY.videoSrc} type="video/mp4" />
           </video>
 
           {/* Deep Dark Gradient Overlay for Supreme Text Readability */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-black/20 pointer-events-none" />
 
-          {/* Top Video Indicator - 3 subtle progress dashes for the 3 loop videos */}
-          <div className="relative z-10 flex items-center justify-center sm:justify-start gap-2">
-            {VIDEO_STORIES.map((_, idx) => (
-              <div
-                key={idx}
-                className={`h-0.5 rounded-full transition-all duration-500 ${
-                  activeVideoIndex === idx ? "w-8 bg-white" : "w-2.5 bg-white/30"
-                }`}
-              />
-            ))}
+          {/* Top Live Pill */}
+          <div className="relative z-10 flex items-center justify-center sm:justify-start">
+            <div className="flex items-center gap-2 rounded-full bg-white/15 backdrop-blur-md px-4 py-1.5 border border-white/20 text-white text-xs tracking-wider uppercase">
+              <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+              <span>Gỗ thánh Palo Santo tự nhiên</span>
+            </div>
           </div>
 
           {/* Bottom Overlay: Title, Subtitle, CTA & Play/Mute Controls */}
@@ -216,30 +152,30 @@ export default function FeaturedStoryVideo() {
               style={{ color: "#e5caa1" }}
               className="text-xs sm:text-sm font-semibold uppercase tracking-[0.2em] !text-[#e5caa1] drop-shadow-sm mx-auto sm:mx-0"
             >
-              {currentVideo.eyebrow}
+              {PALO_SANTO_STORY.eyebrow}
             </p>
 
             <h2
               style={{ color: "#ffffff" }}
               className="mt-3 text-2xl sm:text-3xl lg:text-[2.25rem] font-normal leading-[1.15] tracking-[-0.03em] !text-white drop-shadow-[0_4px_24px_rgba(0,0,0,0.85)] mx-auto sm:mx-0"
             >
-              {currentVideo.title}
+              {PALO_SANTO_STORY.title}
             </h2>
 
             <p
               style={{ color: "#ffffff" }}
               className="mt-4 max-w-xl text-base sm:text-lg leading-relaxed !text-white/95 font-light drop-shadow-[0_2px_12px_rgba(0,0,0,0.85)] mx-auto sm:mx-0"
             >
-              {currentVideo.subtitle}
+              {PALO_SANTO_STORY.subtitle}
             </p>
 
             {/* Explore Button and Video Controls Bar */}
             <div className="mt-8 flex flex-wrap items-center justify-center sm:justify-between gap-4 w-full">
               <Link
-                href={currentVideo.link}
+                href={storyHref}
                 className="inline-flex items-center gap-2 border border-white/80 px-6 py-3.5 text-xs sm:text-sm font-semibold uppercase tracking-[0.16em] text-white backdrop-blur-sm transition-all duration-300 hover:bg-white hover:text-black hover:border-white shadow-sm"
               >
-                <span>{currentVideo.ctaText}</span>
+                <span>{PALO_SANTO_STORY.ctaText}</span>
                 <span>→</span>
               </Link>
 
@@ -336,6 +272,9 @@ export default function FeaturedStoryVideo() {
               ref={productScrollRef}
               className="no-scrollbar flex gap-5 sm:gap-6 overflow-x-auto scroll-smooth snap-x snap-mandatory py-2 -mx-2 px-2"
             >
+              {filteredProducts.length === 0 && (
+                <p className="py-16 text-sm text-[#625f57]">Danh mục này hiện chưa có sản phẩm.</p>
+              )}
               {filteredProducts.map((product) => {
                 const isSaved = savedIds.has(product.id);
                 return (
@@ -369,6 +308,7 @@ export default function FeaturedStoryVideo() {
                     >
                       <Image
                         src={product.image}
+                        unoptimized
                         alt={product.name}
                         fill
                         sizes="(min-width: 1024px) 280px, 240px"
@@ -392,28 +332,38 @@ export default function FeaturedStoryVideo() {
                       </div>
 
                       {/* Price & Action Button */}
-                      <div className="mt-4 flex items-center justify-between border-t border-[#282723]/10 pt-3">
+                      <div className="mt-4 flex flex-wrap items-center justify-between gap-1.5 border-t border-[#282723]/10 pt-3">
                         <span className="text-base sm:text-lg font-bold text-[#282724] tracking-tight">
                           {product.price.toLocaleString("vi-VN")} đ
                         </span>
 
-                        <button
-                          type="button"
-                          onClick={() => handleAddToCart(product)}
-                          className="inline-flex items-center gap-1.5 rounded-full border border-[#282723]/25 bg-white px-3.5 py-1.5 text-xs font-semibold uppercase tracking-[0.14em] text-[#282724] transition-all hover:bg-[#282724] hover:text-white active:scale-95 cursor-pointer"
-                        >
-                          {addedId === product.id ? (
-                            <>
-                              <Check className="h-3.5 w-3.5 text-emerald-600" />
-                              <span className="text-emerald-700">Đã thêm</span>
-                            </>
-                          ) : (
-                            <>
-                              <ShoppingBag className="h-3.5 w-3.5" strokeWidth={1.25} />
-                              <span>Thêm</span>
-                            </>
-                          )}
-                        </button>
+                        <div className="flex items-center gap-1.5">
+                          <button
+                            type="button"
+                            onClick={() => handleAddToCart(product)}
+                            className="inline-flex items-center gap-1 rounded-full border border-[#282723]/25 bg-white px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.12em] text-[#282724] transition-all hover:bg-[#282724] hover:text-white active:scale-95 cursor-pointer"
+                          >
+                            {addedId === product.id ? (
+                              <>
+                                <Check className="h-3.5 w-3.5 text-emerald-600" />
+                                <span className="text-emerald-700">Đã thêm</span>
+                              </>
+                            ) : (
+                              <>
+                                <ShoppingBag className="h-3.5 w-3.5" strokeWidth={1.25} />
+                                <span>Thêm</span>
+                              </>
+                            )}
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() => handleBuyNow(product)}
+                            className="inline-flex items-center gap-1 rounded-full bg-[#282724] px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.12em] text-white transition-all hover:bg-[#9d753d] active:scale-95 cursor-pointer shadow-xs"
+                          >
+                            <span>Mua ngay</span>
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>

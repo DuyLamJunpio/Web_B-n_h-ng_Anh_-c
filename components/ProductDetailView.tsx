@@ -38,11 +38,18 @@ export default function ProductDetailView({ product, relatedProducts }: { produc
     const added = addToCart(product.id, selectedVariant?.id, quantity);
     if (!added) return;
     setIsAdded(true);
-    setCartOpen(true);
     window.setTimeout(() => setIsAdded(false), 1800);
   };
 
+  const handleBuyNow = () => {
+    const added = addToCart(product.id, selectedVariant?.id, quantity);
+    if (!added) return;
+    setCartOpen(true);
+  };
+
   const images = product.gallery && product.gallery.length > 0 ? product.gallery : [product.image];
+  const media = [...images, ...(product.videos ?? [])];
+  const activeIsVideo = product.videos?.includes(activeImage) ?? false;
 
   return (
     <main className="min-h-screen bg-[#f3f0e8] text-[#24231f]">
@@ -67,12 +74,16 @@ export default function ProductDetailView({ product, relatedProducts }: { produc
           <div className="space-y-6 lg:col-span-7">
             {/* Main Stage Image */}
             <div className="relative aspect-[1/1.05] w-full overflow-hidden border border-[#282723]/15 bg-[#faf8f5]">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={activeImage}
-                alt={product.name}
-                className="h-full w-full object-cover object-center transition-all duration-500"
-              />
+              {activeIsVideo ? (
+                <video key={activeImage} src={activeImage} controls playsInline className="h-full w-full object-contain" />
+              ) : (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={activeImage}
+                  alt={product.name}
+                  className="h-full w-full object-cover object-center transition-all duration-500"
+                />
+              )}
 
               {product.badge && (
                 <span className="absolute left-6 top-6 border border-[#282723]/20 bg-[#faf8f5]/95 px-3 py-1.5 text-xs uppercase tracking-[0.18em] text-[#24231f]">
@@ -82,9 +93,9 @@ export default function ProductDetailView({ product, relatedProducts }: { produc
             </div>
 
             {/* Thumbnail Strip */}
-            {images.length > 1 && (
+            {media.length > 1 && (
               <div className="flex gap-4 overflow-x-auto justify-center sm:justify-start pb-2">
-                {images.map((img, idx) => (
+                {media.map((img, idx) => (
                   <button
                     key={idx}
                     type="button"
@@ -95,8 +106,12 @@ export default function ProductDetailView({ product, relatedProducts }: { produc
                         : "border-[#282723]/20 opacity-70 hover:opacity-100"
                     }`}
                   >
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={img} alt={`Góc nhìn ${idx + 1}`} className="h-full w-full object-cover" />
+                    {product.videos?.includes(img) ? (
+                      <span className="flex h-full w-full items-center justify-center bg-[#282723] text-xs text-white">Video</span>
+                    ) : (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={img} alt={`Góc nhìn ${idx + 1}`} className="h-full w-full object-cover" />
+                    )}
                   </button>
                 ))}
               </div>
@@ -108,13 +123,17 @@ export default function ProductDetailView({ product, relatedProducts }: { produc
             {/* Category & Origin */}
             <div className="flex flex-col sm:flex-row items-center justify-center sm:justify-between gap-1 text-xs w-full">
               <span className="uppercase tracking-[0.2em] text-[#9d753d] font-semibold">
-                {product.categoryName} • {product.origin}
+                {product.categoryName}{product.origin ? ` • ${product.origin}` : ""}
               </span>
-              <div className="flex items-center gap-1.5 text-xs text-[#24231f]">
-                <Star className="h-3.5 w-3.5 fill-[#9d753d] text-[#9d753d]" />
-                <span className="font-medium">{product.rating}</span>
-                <span className="text-[#77736b]">({product.reviewsCount} đánh giá)</span>
-              </div>
+              {product.rating > 0 ? (
+                <div className="flex items-center gap-1.5 text-xs text-[#24231f]">
+                  <Star className="h-3.5 w-3.5 fill-[#9d753d] text-[#9d753d]" />
+                  <span className="font-medium">{product.rating}</span>
+                  <span className="text-[#77736b]">({product.reviewsCount} đánh giá)</span>
+                </div>
+              ) : (product.soldCount ?? 0) > 0 ? (
+                <span className="text-[#77736b]">Đã bán {product.soldCount}</span>
+              ) : null}
             </div>
 
             {/* Product Title */}
@@ -132,7 +151,7 @@ export default function ProductDetailView({ product, relatedProducts }: { produc
               <span className="text-3xl font-light tracking-tight text-[#24231f]">
                 {(currentPrice * quantity).toLocaleString("vi-VN")}đ
               </span>
-              {product.originalPrice && (
+              {product.originalPrice && currentPrice === product.price && (
                 <span className="text-sm text-[#77736b] line-through">
                   {(product.originalPrice * quantity).toLocaleString("vi-VN")}đ
                 </span>
@@ -188,16 +207,17 @@ export default function ProductDetailView({ product, relatedProducts }: { produc
               </div>
             )}
 
-            {availableVariants.length > 0 && (
+            {(product.variants?.length ?? 0) > 0 && (
               <div className="mt-6 space-y-2 w-full text-center sm:text-left">
                 <span className="block text-xs font-semibold uppercase tracking-[0.16em] text-[#24231f]">
                   Chọn quy cách / mùi hương
                 </span>
                 <div className="flex flex-wrap justify-center sm:justify-start gap-2">
-                  {availableVariants.map((variant) => (
+                  {product.variants?.map((variant) => (
                     <button
                       key={variant.id}
                       type="button"
+                      disabled={!variant.available}
                       onClick={() => {
                         setSelectedVariantId(variant.id);
                         setQuantity(1);
@@ -205,10 +225,10 @@ export default function ProductDetailView({ product, relatedProducts }: { produc
                       className={`border px-3 py-2 text-xs transition-colors ${
                         selectedVariantId === variant.id
                           ? "border-[#282723] bg-[#282723] text-white"
-                          : "border-[#282723]/25 bg-white text-[#24231f] hover:border-[#282723]"
+                          : "border-[#282723]/25 bg-white text-[#24231f] hover:border-[#282723] disabled:cursor-not-allowed disabled:opacity-50"
                       }`}
                     >
-                      {variant.label} · còn {variant.stock}
+                      {variant.label}{product.manageStock ? variant.available ? ` · còn ${variant.stock}` : " · hết hàng" : ""}
                     </button>
                   ))}
                 </div>
@@ -246,19 +266,29 @@ export default function ProductDetailView({ product, relatedProducts }: { produc
                   type="button"
                   onClick={handleAddToCart}
                   disabled={!canBuy}
-                  className="flex-1 border border-[#282723] bg-[#282723] py-3.5 px-6 text-xs font-semibold uppercase tracking-[0.18em] text-white transition-all hover:bg-black disabled:cursor-not-allowed disabled:opacity-50 flex items-center justify-center gap-2 shadow-sm"
+                  className="flex-1 border border-[#282723]/30 bg-transparent py-3.5 px-6 text-xs font-semibold uppercase tracking-[0.16em] text-[#24231f] transition-all hover:bg-[#282723]/5 disabled:cursor-not-allowed disabled:opacity-50 flex items-center justify-center gap-2 shadow-xs cursor-pointer"
                 >
                   {isAdded ? (
                     <>
-                      <Check className="h-4 w-4 text-[#d5b27d]" />
-                      <span>Đã thêm vào giỏ hàng!</span>
+                      <Check className="h-4 w-4 text-emerald-600" />
+                      <span>Đã thêm vào giỏ!</span>
                     </>
                   ) : (
                     <>
                       <ShoppingBag className="h-4 w-4" strokeWidth={1.5} />
-                      <span>{canBuy ? "Thêm vào giỏ hàng" : "Tạm hết hàng"}</span>
+                      <span>{canBuy ? "Thêm vào giỏ" : "Tạm hết hàng"}</span>
                     </>
                   )}
+                </button>
+
+                {/* Buy Now Button */}
+                <button
+                  type="button"
+                  onClick={handleBuyNow}
+                  disabled={!canBuy}
+                  className="flex-1 border border-[#282723] bg-[#282723] py-3.5 px-6 text-xs font-semibold uppercase tracking-[0.16em] text-white transition-all hover:bg-[#9d753d] disabled:cursor-not-allowed disabled:opacity-50 flex items-center justify-center gap-2 shadow-sm cursor-pointer"
+                >
+                  <span>Mua ngay</span>
                 </button>
               </div>
 

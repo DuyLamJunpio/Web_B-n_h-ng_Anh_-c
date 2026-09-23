@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import type { Product } from "@/lib/data";
 import { useCart } from "@/lib/CartContext";
+import { categoryAndDescendantSlugs, countProductsInCategory } from "@/lib/categoryFilters";
 
 const SCENT_OPTIONS = [
   { id: "go", label: "Gỗ mộc & Trầm", keyword: "gỗ" },
@@ -48,7 +49,7 @@ const SORT_OPTIONS = [
 
 export default function ShopAllPLP() {
   const searchParams = useSearchParams();
-  const { products, addToCart, openProductModal, selectedCategory, setSelectedCategory } = useCart();
+  const { products, categories, addToCart, openProductModal, selectedCategory, setSelectedCategory, setCartOpen } = useCart();
 
   // State filters
   const [selectedScents, setSelectedScents] = useState<string[]>([]);
@@ -61,6 +62,10 @@ export default function ShopAllPLP() {
   const [gridCols, setGridCols] = useState<2 | 3 | 4>(3);
   const [addedId, setAddedId] = useState<string | null>(null);
 
+  const handleBuyNow = (product: Product) => {
+    if (addToCart(product.id)) setCartOpen(true);
+  };
+
   // insertMode param (defaults to true matching Aesop's layout)
   const [insertMode, setInsertMode] = useState<boolean>(true);
 
@@ -71,7 +76,10 @@ export default function ShopAllPLP() {
         setInsertMode(paramInsert === "true");
       }
       const cat = searchParams.get("category");
-      setSelectedCategory(cat || "all");
+      const matchedCategory = categories.find((category) =>
+        category.slug === cat || category.name.toLocaleLowerCase("vi") === cat?.toLocaleLowerCase("vi")
+      );
+      setSelectedCategory(matchedCategory?.slug || cat || "all");
 
       const collection = searchParams.get("collection");
       setSelectedBadge(collection || "all");
@@ -86,21 +94,24 @@ export default function ShopAllPLP() {
     }, 0);
 
     return () => window.clearTimeout(timer);
-  }, [searchParams, setSelectedCategory]);
+  }, [searchParams, setSelectedCategory, categories]);
 
   // Categories list
   const categoryFilters = useMemo(() => {
-    const map = new Map<string, { id: string; label: string; count: number }>();
-    map.set("all", { id: "all", label: "Tất cả công thức", count: products.length });
-    products.forEach((p) => {
-      if (!map.has(p.category)) {
-        map.set(p.category, { id: p.category, label: p.categoryName || p.category, count: 1 });
-      } else {
-        map.get(p.category)!.count += 1;
-      }
-    });
-    return Array.from(map.values());
-  }, [products]);
+    return [
+      { id: "all", label: "Tất cả công thức", count: products.length },
+      ...categories.map((category) => ({
+        id: category.slug,
+        label: category.name,
+        count: countProductsInCategory(products, categories, category.slug),
+      })),
+    ];
+  }, [products, categories]);
+
+  const selectedCategorySlugs = useMemo(
+    () => categoryAndDescendantSlugs(categories, selectedCategory),
+    [categories, selectedCategory]
+  );
 
   // Handle scent filter toggle
   const toggleScent = (id: string) => {
@@ -135,22 +146,14 @@ export default function ShopAllPLP() {
         if (selectedCategory !== "all") {
           if (selectedCategory === "new") {
             const isNew = Boolean(
-              product.badge?.includes("Mới") ||
-              product.badge?.includes("Bán chạy") ||
-              product.badge?.includes("Được yêu thích") ||
-              product.rating >= 4.9
+              product.isNew || product.isFeatured ||
+              product.badge?.includes("Mới") || product.badge?.includes("Được yêu thích")
             );
             if (!isNew) return false;
           } else if (selectedCategory === "sale") {
             const isSale = Boolean(product.originalPrice && product.originalPrice > product.price);
             if (!isSale) return false;
-          } else if (selectedCategory === "purify") {
-            if (product.category !== "purify" && product.category !== "go-hoa-co" && product.category !== "huong-thom") return false;
-          } else if (selectedCategory === "warmth") {
-            if (product.category !== "warmth" && product.category !== "dat-va-da" && product.category !== "huong-thom") return false;
-          } else if (selectedCategory === "energy") {
-            if (product.category !== "energy" && product.category !== "phu-kien" && product.category !== "sang-tao") return false;
-          } else if (product.category !== selectedCategory) {
+          } else if (!selectedCategorySlugs.has(product.category)) {
             return false;
           }
         }
@@ -161,8 +164,8 @@ export default function ShopAllPLP() {
         if (selectedPriceRange === "over400" && product.price <= 400000) return false;
 
         // Badge / collection filter
-        if (selectedBadge === "new" && !product.badge?.includes("Mới") && product.rating < 4.9) return false;
-        if (selectedBadge === "bestseller" && !product.badge?.includes("Bán chạy") && !product.badge?.includes("Được yêu thích")) return false;
+        if (selectedBadge === "new" && !product.isNew && !product.badge?.includes("Mới")) return false;
+        if (selectedBadge === "bestseller" && (product.soldCount ?? 0) <= 0 && !product.badge?.includes("Bán chạy")) return false;
         if (selectedBadge === "sale" && (!product.originalPrice || product.originalPrice <= product.price)) return false;
 
         // Scent profile filter
@@ -193,12 +196,13 @@ export default function ShopAllPLP() {
         if (sortBy === "price-asc") return a.price - b.price;
         if (sortBy === "price-desc") return b.price - a.price;
         if (sortBy === "name-asc") return a.name.localeCompare(b.name, "vi");
+        if (selectedBadge === "bestseller") return (b.soldCount ?? 0) - (a.soldCount ?? 0);
         return 0;
       });
-  }, [products, selectedCategory, selectedPriceRange, selectedBadge, selectedScents, sortBy, searchQuery]);
+  }, [products, selectedCategory, selectedCategorySlugs, selectedPriceRange, selectedBadge, selectedScents, sortBy, searchQuery]);
 
   const handleAddToCart = (product: Product) => {
-    addToCart(product.id);
+    if (!addToCart(product.id)) return;
     setAddedId(product.id);
     window.setTimeout(() => setAddedId(null), 1600);
   };
@@ -516,23 +520,33 @@ export default function ShopAllPLP() {
                             )}
                           </div>
 
-                          <button
-                            type="button"
-                            onClick={() => handleAddToCart(product)}
-                            className="inline-flex items-center justify-center gap-1.5 text-xs sm:text-sm font-semibold uppercase tracking-[0.12em] text-[#24231f] transition-colors hover:text-[#9d753d] cursor-pointer w-full sm:w-auto py-2 sm:py-0 border border-[#282723]/20 sm:border-0"
-                          >
-                            {addedId === product.id ? (
-                              <>
-                                <Check className="h-4 w-4 text-[#66705a]" />
-                                <span className="text-[#66705a]">Đã thêm</span>
-                              </>
-                            ) : (
-                              <>
-                                <ShoppingBag className="h-4 w-4" strokeWidth={1.25} />
-                                <span>Thêm vào giỏ</span>
-                              </>
-                            )}
-                          </button>
+                          <div className="flex items-center gap-2 w-full sm:w-auto">
+                            <button
+                              type="button"
+                              onClick={() => handleAddToCart(product)}
+                              className="inline-flex items-center justify-center gap-1 text-xs font-semibold uppercase tracking-[0.12em] text-[#24231f] transition-colors hover:text-[#9d753d] cursor-pointer flex-1 sm:flex-none py-1.5 px-3 border border-[#282723]/25 rounded-full"
+                            >
+                              {addedId === product.id ? (
+                                <>
+                                  <Check className="h-3.5 w-3.5 text-[#66705a]" />
+                                  <span className="text-[#66705a]">Đã thêm</span>
+                                </>
+                              ) : (
+                                <>
+                                  <ShoppingBag className="h-3.5 w-3.5" strokeWidth={1.25} />
+                                  <span>Thêm</span>
+                                </>
+                              )}
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={() => handleBuyNow(product)}
+                              className="inline-flex items-center justify-center gap-1 text-xs font-semibold uppercase tracking-[0.12em] text-white bg-[#24231f] hover:bg-[#9d753d] transition-colors cursor-pointer flex-1 sm:flex-none py-1.5 px-3.5 rounded-full shadow-2xs"
+                            >
+                              <span>Mua ngay</span>
+                            </button>
+                          </div>
                         </div>
                       </div>
                     </div>

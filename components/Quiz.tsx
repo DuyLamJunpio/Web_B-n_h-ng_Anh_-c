@@ -9,7 +9,7 @@ import { Sparkles, RotateCcw, Check, ShoppingBag, Eye } from "lucide-react";
 export default function Quiz() {
   const [recommendedProduct, setRecommendedProduct] = useState<Product | null>(null);
   const [isAdded, setIsAdded] = useState(false);
-  const { addToCart, openProductModal } = useCart();
+  const { addToCart, openProductModal, setCartOpen } = useCart();
 
   const handleSelectMood = (mood: string) => {
     let selected = PRODUCTS[0];
@@ -24,6 +24,11 @@ export default function Quiz() {
     addToCart(product.id);
     setIsAdded(true);
     setTimeout(() => setIsAdded(false), 2000);
+  };
+
+  const handleBuyNow = (product: Product) => {
+    addToCart(product.id);
+    setCartOpen(true);
   };
 
   const moodOptions = [
@@ -187,7 +192,7 @@ export default function Quiz() {
 
                   {/* Scent notes breakdown */}
                   <div className="p-4 bg-forest-50/80 rounded-xl border border-forest-800/10 space-y-1.5 text-xs text-forest-800 w-full text-left">
-                    <div><strong className="text-forest-950">Tầng hương:</strong> {recommendedProduct.scentPyramid.top}</div>
+                    <div><strong className="text-forest-950">Tầng hương:</strong> {recommendedProduct.scentPyramid?.top || recommendedProduct.notes}</div>
                     <div><strong className="text-forest-950">Công dụng:</strong> {recommendedProduct.benefits[0]}</div>
                   </div>
 
@@ -199,29 +204,35 @@ export default function Quiz() {
                       </span>
                     </div>
 
-                    <div className="flex gap-3 w-full sm:w-auto justify-center">
+                    <div className="flex flex-wrap gap-2 w-full sm:w-auto justify-center">
                       <button
                         onClick={() => openProductModal(recommendedProduct.id)}
-                        className="px-4 py-2.5 border border-forest-800/20 hover:border-forest-700 text-forest-800 hover:text-forest-950 text-xs tracking-wider uppercase flex items-center justify-center gap-1.5 transition-colors cursor-pointer bg-[#f6f4ee] flex-1 sm:flex-none"
+                        className="px-3.5 py-2 border border-forest-800/20 hover:border-forest-700 text-forest-800 hover:text-forest-950 text-xs tracking-wider uppercase flex items-center justify-center gap-1.5 transition-colors cursor-pointer bg-[#f6f4ee]"
                       >
                         <Eye className="w-3.5 h-3.5 text-forest-600" />
                         <span>Chi Tiết</span>
                       </button>
                       <button
                         onClick={() => handleAddToCart(recommendedProduct)}
-                        className="px-6 py-2.5 bg-forest-800 hover:bg-forest-700 text-white text-xs uppercase tracking-widest font-semibold transition-all flex items-center justify-center gap-2 cursor-pointer flex-1 sm:flex-none"
+                        className="px-4 py-2 border border-forest-800/25 bg-white text-forest-900 hover:bg-forest-50 text-xs uppercase tracking-wider font-semibold transition-all flex items-center justify-center gap-1.5 cursor-pointer"
                       >
                         {isAdded ? (
                           <>
-                            <Check className="w-4 h-4 text-sky-200" />
+                            <Check className="w-3.5 h-3.5 text-emerald-600" />
                             <span>Đã Thêm!</span>
                           </>
                         ) : (
                           <>
-                            <ShoppingBag className="w-4 h-4 text-white" />
+                            <ShoppingBag className="w-3.5 h-3.5 text-forest-700" />
                             <span>Thêm Vào Giỏ</span>
                           </>
                         )}
+                      </button>
+                      <button
+                        onClick={() => handleBuyNow(recommendedProduct)}
+                        className="px-5 py-2 bg-forest-800 hover:bg-[#9d753d] text-white text-xs uppercase tracking-wider font-semibold transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
+                      >
+                        <span>Mua Ngay</span>
                       </button>
                     </div>
                   </div>

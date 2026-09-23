@@ -4,10 +4,12 @@ import { useEffect, useState, useMemo } from "react";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowRight, ChevronDown, X } from "lucide-react";
-import { useCart } from "@/lib/CartContext";
+import { PRIMARY_CATEGORY_SLUGS, useCart } from "@/lib/CartContext";
+import { countProductsInCategory } from "@/lib/categoryFilters";
+import type { StorefrontCategory } from "@/lib/catalog";
 
 export default function NavigationModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
-  const { products, setSelectedCategory } = useCart();
+  const { products, categories, setSelectedCategory } = useCart();
   const [isProductsExpanded, setIsProductsExpanded] = useState(true);
 
   useEffect(() => {
@@ -15,18 +17,21 @@ export default function NavigationModal({ isOpen, onClose }: { isOpen: boolean; 
     return () => { document.body.style.overflow = "unset"; };
   }, [isOpen]);
 
-  const categories = useMemo(() => {
-    const map = new Map<string, { id: string; label: string; count: number }>();
-    map.set("all", { id: "all", label: "Tất cả sản phẩm", count: products.length });
-    products.forEach((p) => {
-      if (!map.has(p.category)) {
-        map.set(p.category, { id: p.category, label: p.categoryName || p.category, count: 1 });
-      } else {
-        map.get(p.category)!.count += 1;
-      }
-    });
-    return Array.from(map.values());
-  }, [products]);
+  const menuCategories = useMemo(() => [
+    { id: "all", label: "Tất cả sản phẩm", count: products.length, isChild: false },
+    ...categories.map((category) => ({
+      id: category.slug,
+      label: category.name,
+      count: countProductsInCategory(products, categories, category.slug),
+      isChild: category.parent_id !== null,
+    })),
+  ], [products, categories]);
+
+  const primaryCategories = useMemo(() =>
+    PRIMARY_CATEGORY_SLUGS
+      .map((slug) => categories.find((category) => category.slug === slug))
+      .filter((category): category is StorefrontCategory => Boolean(category)),
+  [categories]);
 
   return (
     <AnimatePresence>
@@ -69,7 +74,7 @@ export default function NavigationModal({ isOpen, onClose }: { isOpen: boolean; 
                     className="overflow-hidden"
                   >
                     <div className="mt-3 grid grid-cols-1 gap-2 border-t border-[#282723]/10 pt-3 sm:grid-cols-2">
-                      {categories.map((cat) => (
+                      {menuCategories.map((cat) => (
                         <Link
                           key={cat.id}
                           href={cat.id === "all" ? "/san-pham" : `/san-pham?category=${cat.id}`}
@@ -77,7 +82,7 @@ export default function NavigationModal({ isOpen, onClose }: { isOpen: boolean; 
                             setSelectedCategory(cat.id);
                             onClose();
                           }}
-                          className="group flex items-center justify-between rounded-lg bg-[#ece7dd]/60 px-3.5 py-2.5 text-left transition-colors hover:bg-[#ece7dd]"
+                          className={`group flex items-center justify-between rounded-lg bg-[#ece7dd]/60 py-2.5 pr-3.5 text-left transition-colors hover:bg-[#ece7dd] ${cat.isChild ? "pl-6" : "pl-3.5"}`}
                         >
                           <div>
                             <span className="text-sm sm:text-base font-semibold tracking-tight text-[#282723] group-hover:text-[#9d753d]">{cat.label}</span>
@@ -92,84 +97,25 @@ export default function NavigationModal({ isOpen, onClose }: { isOpen: boolean; 
               </AnimatePresence>
             </div>
 
-            {/* 2. Sáng tạo */}
-            <Link
-              href="/san-pham?category=sang-tao"
-              onClick={onClose}
-              className="group flex w-full items-center justify-between border-b border-[#282723]/15 py-3.5 sm:py-5 text-left transition-colors hover:border-[#282723]/45"
-            >
-              <div>
-                <span className="block text-xl font-normal tracking-[-0.03em] sm:text-3xl">Sáng tạo</span>
-                <span className="mt-0.5 block text-xs sm:text-sm text-[#77736b]">Tác phẩm nghệ nhân và sáng tạo độc bản</span>
-              </div>
-              <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5 text-[#77736b] transition-transform duration-300 group-hover:translate-x-1 group-hover:text-[#9d753d]" strokeWidth={1.25} />
-            </Link>
-
-            {/* 3. Hương thơm */}
-            <Link
-              href="/san-pham?category=huong-thom"
-              onClick={onClose}
-              className="group flex w-full items-center justify-between border-b border-[#282723]/15 py-3.5 sm:py-5 text-left transition-colors hover:border-[#282723]/45"
-            >
-              <div>
-                <span className="block text-xl font-normal tracking-[-0.03em] sm:text-3xl">Hương thơm</span>
-                <span className="mt-0.5 block text-xs sm:text-sm text-[#77736b]">Nến thơm tự nhiên và xô thơm thảo mộc</span>
-              </div>
-              <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5 text-[#77736b] transition-transform duration-300 group-hover:translate-x-1 group-hover:text-[#9d753d]" strokeWidth={1.25} />
-            </Link>
-
-            {/* 4. Gỗ hoa cỏ */}
-            <Link
-              href="/san-pham?category=go-hoa-co"
-              onClick={onClose}
-              className="group flex w-full items-center justify-between border-b border-[#282723]/15 py-3.5 sm:py-5 text-left transition-colors hover:border-[#282723]/45"
-            >
-              <div>
-                <span className="block text-xl font-normal tracking-[-0.03em] sm:text-3xl">Gỗ hoa cỏ</span>
-                <span className="mt-0.5 block text-xs sm:text-sm text-[#77736b]">Gỗ thánh Palo Santo và trầm nén tự nhiên</span>
-              </div>
-              <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5 text-[#77736b] transition-transform duration-300 group-hover:translate-x-1 group-hover:text-[#9d753d]" strokeWidth={1.25} />
-            </Link>
-
-            {/* 5. Đất và Đá */}
-            <Link
-              href="/san-pham?category=dat-va-da"
-              onClick={onClose}
-              className="group flex w-full items-center justify-between border-b border-[#282723]/15 py-3.5 sm:py-5 text-left transition-colors hover:border-[#282723]/45"
-            >
-              <div>
-                <span className="block text-xl font-normal tracking-[-0.03em] sm:text-3xl">Đất và Đá</span>
-                <span className="mt-0.5 block text-xs sm:text-sm text-[#77736b]">Khay gốm thủ công men tro nung củi nhiệt cao</span>
-              </div>
-              <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5 text-[#77736b] transition-transform duration-300 group-hover:translate-x-1 group-hover:text-[#9d753d]" strokeWidth={1.25} />
-            </Link>
-
-            {/* 6. Phụ kiện */}
-            <Link
-              href="/san-pham?category=phu-kien"
-              onClick={onClose}
-              className="group flex w-full items-center justify-between border-b border-[#282723]/15 py-3.5 sm:py-5 text-left transition-colors hover:border-[#282723]/45"
-            >
-              <div>
-                <span className="block text-xl font-normal tracking-[-0.03em] sm:text-3xl">Phụ kiện</span>
-                <span className="mt-0.5 block text-xs sm:text-sm text-[#77736b]">Vòng tay bách xanh và dụng cụ nghi thức mộc</span>
-              </div>
-              <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5 text-[#77736b] transition-transform duration-300 group-hover:translate-x-1 group-hover:text-[#9d753d]" strokeWidth={1.25} />
-            </Link>
-
-            {/* 7. Quà tặng */}
-            <Link
-              href="/san-pham?category=qua-tang"
-              onClick={onClose}
-              className="group flex w-full items-center justify-between border-b border-[#282723]/15 py-3.5 sm:py-5 text-left transition-colors hover:border-[#282723]/45"
-            >
-              <div>
-                <span className="block text-xl font-normal tracking-[-0.03em] sm:text-3xl">Quà tặng</span>
-                <span className="mt-0.5 block text-xs sm:text-sm text-[#77736b]">Những hộp quà trang nhã gói ghém sự an yên</span>
-              </div>
-              <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5 text-[#77736b] transition-transform duration-300 group-hover:translate-x-1 group-hover:text-[#9d753d]" strokeWidth={1.25} />
-            </Link>
-
+            {primaryCategories.map((category) => (
+              <Link
+                key={category.slug}
+                href={`/san-pham?category=${encodeURIComponent(category.slug)}`}
+                onClick={() => {
+                  setSelectedCategory(category.slug);
+                  onClose();
+                }}
+                className="group flex w-full items-center justify-between border-b border-[#282723]/15 py-3.5 sm:py-5 text-left transition-colors hover:border-[#282723]/45"
+              >
+                <div>
+                  <span className="block text-xl font-normal tracking-[-0.03em] sm:text-3xl">{category.name}</span>
+                  {category.description && (
+                    <span className="mt-0.5 block text-xs sm:text-sm text-[#77736b]">{category.description}</span>
+                  )}
+                </div>
+                <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5 text-[#77736b] transition-transform duration-300 group-hover:translate-x-1 group-hover:text-[#9d753d]" strokeWidth={1.25} />
+              </Link>
+            ))}
             {/* 8. Thư viện */}
             <Link
               href="/#stories"

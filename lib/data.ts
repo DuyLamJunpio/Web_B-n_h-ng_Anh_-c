@@ -12,6 +12,10 @@ export interface ProductVariant {
 export interface Product {
   id: string;
   slug?: string;
+  isNew?: boolean;
+  isFeatured?: boolean;
+  soldCount?: number;
+  createdAt?: string;
   name: string;
   category: string;
   categoryName: string;
@@ -21,7 +25,7 @@ export interface Product {
   reviewsCount: number;
   badge?: string;
   notes: string;
-  scentPyramid: {
+  scentPyramid?: {
     top: string;
     middle: string;
     base: string;
@@ -29,6 +33,7 @@ export interface Product {
   origin: string;
   image: string;
   gallery: string[];
+  videos?: string[];
   desc: string;
   detail: string;
   benefits: string[];

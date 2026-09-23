@@ -6,7 +6,7 @@ import { useCart } from "@/lib/CartContext";
 import { Star, Check, ShoppingBag, X, Shield, Sparkles, Truck, ArrowRight } from "lucide-react";
 
 export default function ProductModal() {
-  const { selectedProduct, closeProductModal, addToCart } = useCart();
+  const { selectedProduct, closeProductModal, addToCart, setCartOpen } = useCart();
   const [activeImage, setActiveImage] = useState<string>("");
   const [quantity, setQuantity] = useState<number>(1);
   const [isAdded, setIsAdded] = useState(false);
@@ -30,6 +30,8 @@ export default function ProductModal() {
   const currentPrice = selectedVariant?.price ?? selectedProduct.price;
   const canBuy = selectedProduct.inStock !== false
     && (availableVariants.length > 0 || !(selectedProduct.variants?.length));
+  const media = [...selectedProduct.gallery, ...(selectedProduct.videos ?? [])];
+  const activeIsVideo = selectedProduct.videos?.includes(activeImage) ?? false;
 
   const handleAdd = () => {
     const added = addToCart(selectedProduct.id, selectedVariant?.id, quantity);
@@ -39,6 +41,13 @@ export default function ProductModal() {
       setIsAdded(false);
       closeProductModal();
     }, 1200);
+  };
+
+  const handleBuyNow = () => {
+    const added = addToCart(selectedProduct.id, selectedVariant?.id, quantity);
+    if (!added) return;
+    closeProductModal();
+    setCartOpen(true);
   };
 
   return (
@@ -62,12 +71,16 @@ export default function ProductModal() {
         {/* Left: Image Gallery */}
         <div className="md:col-span-5 space-y-4">
           <div className="relative aspect-square rounded-xl overflow-hidden border border-forest-800/10 bg-forest-50/50">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={activeImage || selectedProduct.image}
-              alt={selectedProduct.name}
-              className="w-full h-full object-cover"
-            />
+            {activeIsVideo ? (
+              <video key={activeImage} src={activeImage} controls playsInline className="w-full h-full object-contain" />
+            ) : (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={activeImage || selectedProduct.image}
+                alt={selectedProduct.name}
+                className="w-full h-full object-cover"
+              />
+            )}
             {selectedProduct.badge && (
               <span className="absolute top-3 left-3 px-2.5 py-1 bg-forest-800 text-white text-[10px] font-semibold tracking-wider uppercase rounded-full shadow-sm">
                 {selectedProduct.badge}
@@ -76,9 +89,9 @@ export default function ProductModal() {
           </div>
 
           {/* Thumbnails */}
-          {selectedProduct.gallery && selectedProduct.gallery.length > 1 && (
+          {media.length > 1 && (
             <div className="flex gap-3 justify-center md:justify-start">
-              {selectedProduct.gallery.map((img, idx) => (
+              {media.map((img, idx) => (
                 <button
                   key={idx}
                   onClick={() => setActiveImage(img)}
@@ -86,8 +99,12 @@ export default function ProductModal() {
                     activeImage === img ? "border-forest-800 ring-2 ring-forest-800/40" : "border-forest-800/15 opacity-70 hover:opacity-100"
                   }`}
                 >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={img} alt="thumb" className="w-full h-full object-cover" />
+                  {selectedProduct.videos?.includes(img) ? (
+                    <span className="flex h-full w-full items-center justify-center bg-forest-900 text-xs text-white">Video</span>
+                  ) : (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={img} alt={`Góc nhìn ${idx + 1}`} className="w-full h-full object-cover" />
+                  )}
                 </button>
               ))}
             </div>
@@ -99,13 +116,17 @@ export default function ProductModal() {
           <div className="space-y-3">
             <div className="flex flex-col sm:flex-row items-center justify-center sm:justify-between gap-1 text-xs sm:text-sm text-center sm:text-left">
               <span className="text-forest-700 tracking-[0.2em] uppercase font-semibold">
-                {selectedProduct.categoryName} • {selectedProduct.origin}
+                {selectedProduct.categoryName}{selectedProduct.origin ? ` • ${selectedProduct.origin}` : ""}
               </span>
-              <div className="flex items-center gap-1 text-forest-800">
-                <Star className="w-4 h-4 fill-amber-500 text-amber-500" />
-                <span className="font-semibold text-sm">{selectedProduct.rating}</span>
-                <span className="text-forest-600 font-serif text-xs sm:text-sm">({selectedProduct.reviewsCount} lượt đã chọn)</span>
-              </div>
+              {selectedProduct.rating > 0 ? (
+                <div className="flex items-center gap-1 text-forest-800">
+                  <Star className="w-4 h-4 fill-amber-500 text-amber-500" />
+                  <span className="font-semibold text-sm">{selectedProduct.rating}</span>
+                  <span className="text-forest-600 font-serif text-xs sm:text-sm">({selectedProduct.reviewsCount} đánh giá)</span>
+                </div>
+              ) : (selectedProduct.soldCount ?? 0) > 0 ? (
+                <span className="text-forest-600 text-xs sm:text-sm">Đã bán {selectedProduct.soldCount}</span>
+              ) : null}
             </div>
 
             <h3 className="font-serif text-2xl sm:text-3xl text-forest-950 font-semibold tracking-[-0.02em] text-center sm:text-left">
@@ -149,16 +170,17 @@ export default function ProductModal() {
 
           {/* Price, Quantity & Add to Cart Action */}
           <div className="pt-4 border-t border-forest-800/10 space-y-4">
-            {availableVariants.length > 0 && (
+            {(selectedProduct.variants?.length ?? 0) > 0 && (
               <div className="space-y-2 text-center sm:text-left">
                 <span className="block text-xs font-semibold uppercase tracking-wider text-forest-900">
                   Chọn quy cách / mùi hương
                 </span>
                 <div className="flex flex-wrap justify-center sm:justify-start gap-2">
-                  {availableVariants.map((variant) => (
+                  {selectedProduct.variants?.map((variant) => (
                     <button
                       key={variant.id}
                       type="button"
+                      disabled={!variant.available}
                       onClick={() => {
                         setSelectedVariantId(variant.id);
                         setQuantity(1);
@@ -166,10 +188,10 @@ export default function ProductModal() {
                       className={`rounded-sm border px-3 py-2 text-xs font-medium transition-colors ${
                         selectedVariantId === variant.id
                           ? "border-forest-800 bg-forest-800 text-white"
-                          : "border-forest-800/20 bg-white text-forest-900 hover:border-forest-800"
+                          : "border-forest-800/20 bg-white text-forest-900 hover:border-forest-800 disabled:cursor-not-allowed disabled:opacity-50"
                       }`}
                     >
-                      {variant.label} · còn {variant.stock}
+                      {variant.label}{selectedProduct.manageStock ? variant.available ? ` · còn ${variant.stock}` : " · hết hàng" : ""}
                     </button>
                   ))}
                 </div>
@@ -180,7 +202,7 @@ export default function ProductModal() {
               <span className="font-serif text-3xl text-forest-800 font-bold">
                 {(currentPrice * quantity).toLocaleString("vi-VN")} đ
               </span>
-              {selectedProduct.originalPrice && (
+              {selectedProduct.originalPrice && currentPrice === selectedProduct.price && (
                 <span className="text-sm text-forest-400 line-through font-serif">
                   {(selectedProduct.originalPrice * quantity).toLocaleString("vi-VN")} đ
                 </span>
@@ -207,23 +229,33 @@ export default function ProductModal() {
                 </button>
               </div>
 
-              {/* Add to Cart Button */}
+              {/* Add to Cart & Buy Now Buttons */}
               <button
+                type="button"
                 onClick={handleAdd}
                 disabled={!canBuy}
-                className="flex-1 py-3.5 bg-forest-800 hover:bg-forest-700 disabled:cursor-not-allowed disabled:opacity-50 text-white text-xs sm:text-sm font-semibold uppercase tracking-[0.18em] rounded-lg transition-all flex items-center justify-center gap-2 shadow-lg shadow-forest-900/15 cursor-pointer"
+                className="flex-1 py-3.5 bg-transparent hover:bg-forest-900/5 border border-forest-800/30 disabled:cursor-not-allowed disabled:opacity-50 text-forest-900 text-xs sm:text-sm font-semibold uppercase tracking-[0.14em] rounded-lg transition-all flex items-center justify-center gap-2 cursor-pointer"
               >
                 {isAdded ? (
                   <>
-                    <Check className="w-4 h-4" />
-                    <span>Đã Thêm Vào Giỏ Hàng!</span>
+                    <Check className="w-4 h-4 text-emerald-600" />
+                    <span>Đã Thêm!</span>
                   </>
                 ) : (
                   <>
                     <ShoppingBag className="w-4 h-4" />
-                    <span>{canBuy ? "Thêm Vào Giỏ Hàng" : "Tạm Hết Hàng"}</span>
+                    <span>{canBuy ? "Thêm Vào Giỏ" : "Tạm Hết Hàng"}</span>
                   </>
                 )}
+              </button>
+
+              <button
+                type="button"
+                onClick={handleBuyNow}
+                disabled={!canBuy}
+                className="flex-1 py-3.5 bg-forest-800 hover:bg-[#9d753d] disabled:cursor-not-allowed disabled:opacity-50 text-white text-xs sm:text-sm font-semibold uppercase tracking-[0.14em] rounded-lg transition-all flex items-center justify-center gap-2 shadow-lg shadow-forest-900/15 cursor-pointer"
+              >
+                <span>Mua Ngay</span>
               </button>
             </div>
 
