@@ -175,7 +175,7 @@ export default function FeaturedStoryVideo() {
       aria-label="Không gian câu chuyện và sản phẩm"
       className="border-b border-[#282723]/15 bg-[#faf8f5] text-[#282724] overflow-hidden"
     >
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.15fr] xl:grid-cols-[45%_55%] min-h-[640px] lg:min-h-[720px]">
+      <div className="grid grid-cols-1 lg:grid-cols-2 min-h-[640px] lg:min-h-[740px]">
         {/* ============================================================ */}
         {/* LEFT COLUMN: Ambient Cinematic Video with Editorial Overlay  */}
         {/* ============================================================ */}
