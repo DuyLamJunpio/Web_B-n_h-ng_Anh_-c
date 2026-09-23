@@ -6,14 +6,16 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ChevronDown, ArrowRight, ArrowUpRight, Menu, Search, ShoppingBag, X } from "lucide-react";
-import { useCart } from "@/lib/CartContext";
+import { PRIMARY_CATEGORY_SLUGS, useCart } from "@/lib/CartContext";
+import { countProductsInCategory } from "@/lib/categoryFilters";
+import type { StorefrontCategory } from "@/lib/catalog";
 import NavigationModal from "./NavigationModal";
 import CartDrawer from "./CartDrawer";
 import ProductModal from "./ProductModal";
 
 export default function Header() {
   const router = useRouter();
-  const { cartCount, setCartOpen, products, setSelectedCategory, storefrontContent } = useCart();
+  const { cartCount, setCartOpen, products, categories, setSelectedCategory, storefrontContent } = useCart();
   const [isNavOpen, setNavOpen] = useState(false);
   const [isSearchOpen, setSearchOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
@@ -53,31 +55,22 @@ export default function Header() {
     ).slice(0, 5);
   }, [searchTerm, products]);
 
-  const categories = useMemo(() => {
-    const map = new Map<string, { id: string; label: string; count: number; sub: string }>();
-    map.set("all", {
-      id: "all",
-      label: "Tất cả sản phẩm",
-      count: products.length,
-      sub: "Trọn bộ vật phẩm mộc & hương thơm tự nhiên",
-    });
+  const dropdownCategories = useMemo(() => [
+    { id: "all", label: "Tất cả sản phẩm", count: products.length, sub: "Trọn bộ vật phẩm mộc & hương thơm tự nhiên", isChild: false },
+    ...categories.map((category) => ({
+      id: category.slug,
+      label: category.name,
+      count: countProductsInCategory(products, categories, category.slug),
+      sub: category.description || "",
+      isChild: category.parent_id !== null,
+    })),
+  ], [products, categories]);
 
-    products.forEach((p) => {
-      if (!map.has(p.category)) {
-        map.set(p.category, {
-          id: p.category,
-          label: p.categoryName || p.category,
-          count: 1,
-          sub: p.notes || p.desc || "",
-        });
-      } else {
-        const item = map.get(p.category)!;
-        item.count += 1;
-      }
-    });
-
-    return Array.from(map.values());
-  }, [products]);
+  const primaryCategories = useMemo(() =>
+    PRIMARY_CATEGORY_SLUGS
+      .map((slug) => categories.find((category) => category.slug === slug))
+      .filter((category): category is StorefrontCategory => Boolean(category)),
+  [categories]);
 
   const handleDropdownEnter = () => {
     if (dropdownCloseTimeoutRef.current) {
@@ -229,11 +222,11 @@ export default function Header() {
                         <div className="border border-[#282723]/15 bg-[#f7f5f0] p-3 text-[#24231f] shadow-[0_22px_45px_rgba(24,24,20,0.16)]">
                           <div className="mb-2 flex items-center justify-between border-b border-[#282723]/10 px-2 pb-2">
                             <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#77736b]">Danh mục sản phẩm</span>
-                            <span className="font-mono text-[10px] text-[#9d753d]">{categories.length - 1} danh mục</span>
+                            <span className="font-mono text-[10px] text-[#9d753d]">{categories.length} danh mục</span>
                           </div>
 
                           <div className="space-y-1">
-                            {categories.map((cat) => (
+                            {dropdownCategories.map((cat) => (
                               <Link
                                 key={cat.id}
                                 href={cat.id === "all" ? "/san-pham" : `/san-pham?category=${cat.id}`}
@@ -241,7 +234,7 @@ export default function Header() {
                                   setSelectedCategory(cat.id);
                                   setIsProductsHovered(false);
                                 }}
-                                className="group flex w-full items-center justify-between px-3 py-2.5 text-left transition-colors hover:bg-[#ede8dd]"
+                                className={`group flex w-full items-center justify-between py-2.5 pr-3 text-left transition-colors hover:bg-[#ede8dd] ${cat.isChild ? "pl-6" : "pl-3"}`}
                               >
                                 <div className="min-w-0 pr-3">
                                   <div className="flex items-center gap-2">
@@ -277,53 +270,16 @@ export default function Header() {
                   </AnimatePresence>
                 </div>
 
-                {/* 2. Sáng tạo */}
-                <Link
-                  href="/san-pham?category=sang-tao"
-                  className="header-nav-link flex h-full items-center whitespace-nowrap px-1.5 xl:px-2.5 py-5 font-medium leading-none"
-                >
-                  Sáng tạo
-                </Link>
-
-                {/* 3. Hương thơm */}
-                <Link
-                  href="/san-pham?category=huong-thom"
-                  className="header-nav-link flex h-full items-center whitespace-nowrap px-1.5 xl:px-2.5 py-5 font-medium leading-none"
-                >
-                  Hương thơm
-                </Link>
-
-                {/* 4. Gỗ hoa cỏ */}
-                <Link
-                  href="/san-pham?category=go-hoa-co"
-                  className="header-nav-link flex h-full items-center whitespace-nowrap px-1.5 xl:px-2.5 py-5 font-medium leading-none"
-                >
-                  Gỗ hoa cỏ
-                </Link>
-
-                {/* 5. Đất và Đá */}
-                <Link
-                  href="/san-pham?category=dat-va-da"
-                  className="header-nav-link flex h-full items-center whitespace-nowrap px-1.5 xl:px-2.5 py-5 font-medium leading-none"
-                >
-                  Đất và Đá
-                </Link>
-
-                {/* 6. Phụ kiện */}
-                <Link
-                  href="/san-pham?category=phu-kien"
-                  className="header-nav-link flex h-full items-center whitespace-nowrap px-1.5 xl:px-2.5 py-5 font-medium leading-none"
-                >
-                  Phụ kiện
-                </Link>
-
-                {/* 7. Quà tặng */}
-                <Link
-                  href="/san-pham?category=qua-tang"
-                  className="header-nav-link flex h-full items-center whitespace-nowrap px-1.5 xl:px-2.5 py-5 font-medium leading-none"
-                >
-                  Quà tặng
-                </Link>
+                {primaryCategories.map((category) => (
+                  <Link
+                    key={category.slug}
+                    href={`/san-pham?category=${encodeURIComponent(category.slug)}`}
+                    onClick={() => setSelectedCategory(category.slug)}
+                    className="header-nav-link flex h-full items-center whitespace-nowrap px-1.5 xl:px-2.5 py-5 font-medium leading-none"
+                  >
+                    {category.name}
+                  </Link>
+                ))}
 
                 {/* 8. Thư viện */}
                 <Link
@@ -462,7 +418,7 @@ export default function Header() {
                       Khám phá danh mục nổi bật
                     </p>
                     <div className="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-3">
-                      {categories
+                      {dropdownCategories
                         .filter((c) => c.id !== "all")
                         .slice(0, 4)
                         .map((cat) => (

@@ -6,11 +6,13 @@ import { AnimatePresence, motion } from "framer-motion";
 import { ArrowRight, ArrowUpRight, Check, Eye, ShoppingBag, Star } from "lucide-react";
 import type { Product } from "@/lib/data";
 import { useCart } from "@/lib/CartContext";
+import { categoryAndDescendantSlugs, countProductsInCategory } from "@/lib/categoryFilters";
 
 export default function Collections() {
   const [addedId, setAddedId] = useState<string | null>(null);
-  const { addToCart, openProductModal, products, selectedCategory, setSelectedCategory, storefrontContent } = useCart();
+  const { addToCart, openProductModal, products, categories, selectedCategory, setSelectedCategory, storefrontContent, setCartOpen } = useCart();
   const managedCollection = storefrontContent.collections[0];
+  const selectedCategorySlugs = categoryAndDescendantSlugs(categories, selectedCategory);
 
   const getFilterCount = (filterId: string) => {
     if (filterId === "all") return products.length;
@@ -22,15 +24,14 @@ export default function Collections() {
     if (filterId === "sale") {
       return products.filter((p) => Boolean(p.originalPrice && p.originalPrice > p.price)).length;
     }
-    return products.filter((p) => p.category === filterId).length;
+    return countProductsInCategory(products, categories, filterId);
   };
 
   const filters = [
     { id: "all", label: "Tất cả" },
     { id: "new", label: "Mới & Nổi bật" },
     { id: "sale", label: "Ưu đãi" },
-    ...Array.from(new Map(products.map((product) => [product.category, product.categoryName])).entries())
-      .map(([id, label]) => ({ id, label })),
+    ...categories.map((category) => ({ id: category.slug, label: category.name })),
   ];
 
   const visibleProducts = products.filter((product) => {
@@ -51,13 +52,18 @@ export default function Collections() {
     if (selectedCategory === "sale") {
       return Boolean(product.originalPrice && product.originalPrice > product.price);
     }
-    return product.category === selectedCategory;
+    return selectedCategorySlugs.has(product.category);
   });
 
   const addProduct = (product: Product) => {
     if (!addToCart(product.id)) return;
     setAddedId(product.id);
     window.setTimeout(() => setAddedId(null), 1600);
+  };
+
+  const buyNow = (product: Product) => {
+    if (!addToCart(product.id)) return;
+    setCartOpen(true);
   };
 
   return (
@@ -245,33 +251,47 @@ export default function Collections() {
                       <p className="text-xs text-[#8c887f] mt-0.5">Miễn phí vận chuyển</p>
                     </div>
 
-                    <button
-                      type="button"
-                      onClick={() => addProduct(product)}
-                      className={`inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium transition-all duration-300 cursor-pointer ${
-                        addedId === product.id
-                          ? "bg-emerald-700 text-white shadow-sm"
-                          : "bg-[#282723] text-white hover:bg-[#9d753d] shadow-sm"
-                      }`}
-                    >
-                      {addedId === product.id ? (
-                        <>
-                          <Check className="h-4 w-4" />
-                          <span>Đã thêm</span>
-                        </>
-                      ) : (
-                        <>
-                          <ShoppingBag className="h-4 w-4" />
-                          <span>Thêm vào giỏ</span>
-                        </>
-                      )}
-                    </button>
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => addProduct(product)}
+                        className={`inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-xs sm:text-sm font-medium transition-all duration-300 cursor-pointer ${
+                          addedId === product.id
+                            ? "bg-emerald-700 text-white shadow-sm"
+                            : "border border-[#282723]/25 bg-transparent text-[#282723] hover:border-[#282723] hover:bg-[#282723] hover:text-white"
+                        }`}
+                      >
+                        {addedId === product.id ? (
+                          <>
+                            <Check className="h-4 w-4" />
+                            <span>Đã thêm</span>
+                          </>
+                        ) : (
+                          <>
+                            <ShoppingBag className="h-4 w-4" />
+                            <span>Thêm</span>
+                          </>
+                        )}
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => buyNow(product)}
+                        className="inline-flex items-center gap-1.5 rounded-full bg-[#282723] px-4 py-2 text-xs sm:text-sm font-medium text-white transition-all duration-300 hover:bg-[#9d753d] shadow-sm cursor-pointer"
+                      >
+                        <span>Mua ngay</span>
+                      </button>
+                    </div>
                   </div>
                 </motion.article>
               );
             })}
           </AnimatePresence>
         </motion.div>
+
+        {visibleProducts.length === 0 && (
+          <p className="mt-10 text-sm text-[#625f57]">Danh mục này hiện chưa có sản phẩm. Hãy chọn danh mục khác hoặc xem tất cả vật phẩm.</p>
+        )}
 
         {/* Section Bottom Links */}
         <div className="mt-16 flex flex-wrap items-center justify-between gap-6 border-t border-[#282723]/15 pt-8">

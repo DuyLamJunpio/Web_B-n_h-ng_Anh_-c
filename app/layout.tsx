@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import { CartProvider } from "@/lib/CartContext";
-import { getCatalogProducts, getStorefrontContent } from "@/lib/catalog";
+import { getCatalogProducts, getStorefrontCategories, getStorefrontContent } from "@/lib/catalog";
 
 const cormorantGaramond = localFont({
   variable: "--font-cormorant",
@@ -23,8 +23,9 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const [products, storefrontContent] = await Promise.all([
+  const [products, categories, storefrontContent] = await Promise.all([
     getCatalogProducts(),
+    getStorefrontCategories(),
     getStorefrontContent(),
   ]);
 
@@ -33,7 +34,7 @@ export default async function RootLayout({
       <body
         className={`${cormorantGaramond.variable} bg-linen-base text-forest-900 font-sans antialiased selection:bg-forest-700 selection:text-white min-h-screen flex flex-col justify-between overflow-x-hidden`}
       >
-        <CartProvider products={products} storefrontContent={storefrontContent}>
+        <CartProvider products={products} categories={categories} storefrontContent={storefrontContent}>
           {children}
         </CartProvider>
       </body>

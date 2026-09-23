@@ -3,8 +3,10 @@
 import { useState } from "react";
 import Link from "next/link";
 import { ArrowUpRight, Check, Send } from "lucide-react";
+import { useCart } from "@/lib/CartContext";
 
 export default function Footer() {
+  const { categories } = useCart();
   const [email, setEmail] = useState("");
   const [subscribed, setSubscribed] = useState(false);
 
@@ -36,10 +38,15 @@ export default function Footer() {
           <div className="text-center sm:text-left">
             <h2 className="text-sm font-bold uppercase tracking-[0.18em] text-[#282723]">Vật phẩm</h2>
             <div className="mt-5 space-y-3.5 text-[#504c44]">
-              <Link href="/san-pham?category=go-hoa-co" className="footer-link block hover:text-[#282723]">Gỗ Palo Santo</Link>
-              <Link href="/san-pham?category=huong-thom" className="footer-link block hover:text-[#282723]">Nến thơm sáp tự nhiên</Link>
-              <Link href="/san-pham?category=go-hoa-co" className="footer-link block hover:text-[#282723]">Nhang trầm Quảng Nam</Link>
-              <Link href="/san-pham?category=dat-va-da" className="footer-link block hover:text-[#282723]">Khay gốm Bát Tràng</Link>
+              {categories.filter((category) => category.parent_id === null).map((category) => (
+                <Link
+                  key={category.id}
+                  href={`/san-pham?category=${encodeURIComponent(category.slug)}`}
+                  className="footer-link block hover:text-[#282723]"
+                >
+                  {category.name}
+                </Link>
+              ))}
             </div>
           </div>
 
