@@ -144,6 +144,12 @@ export default function ShopAllPLP() {
           } else if (selectedCategory === "sale") {
             const isSale = Boolean(product.originalPrice && product.originalPrice > product.price);
             if (!isSale) return false;
+          } else if (selectedCategory === "purify") {
+            if (product.category !== "purify" && product.category !== "go-hoa-co" && product.category !== "huong-thom") return false;
+          } else if (selectedCategory === "warmth") {
+            if (product.category !== "warmth" && product.category !== "dat-va-da" && product.category !== "huong-thom") return false;
+          } else if (selectedCategory === "energy") {
+            if (product.category !== "energy" && product.category !== "phu-kien" && product.category !== "sang-tao") return false;
           } else if (product.category !== selectedCategory) {
             return false;
           }

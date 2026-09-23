@@ -88,7 +88,7 @@ export default function About() {
               <span>Bản tin & Kết nối thành viên</span>
             </div>
 
-            <h2 className="text-4xl font-normal leading-[1.08] tracking-[-0.035em] sm:text-5xl lg:text-6xl xl:text-7xl text-[#282723]">
+            <h2 className="text-3xl font-normal leading-[1.12] tracking-[-0.035em] sm:text-4xl lg:text-5xl xl:text-[3.25rem] text-[#282723]">
               Nhận tin nhắn từ RUNGU
             </h2>
 
@@ -214,7 +214,7 @@ export default function About() {
 
           {/* Bottom Overlay: Quote Caption & Video Controls */}
           <div className="relative z-10 mt-auto pt-24 text-white">
-            <p className="max-w-lg text-lg sm:text-xl lg:text-2xl font-normal leading-relaxed text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.85)]">
+            <p className="max-w-lg text-base sm:text-lg lg:text-xl font-normal leading-relaxed text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.85)]">
               &ldquo;Mỗi nốt hương gửi đi là một lời chúc an yên dành riêng cho bạn.&rdquo;
             </p>
             <span className="mt-3 block text-xs sm:text-sm tracking-[0.18em] uppercase text-[#e5caa1] font-semibold drop-shadow-sm">

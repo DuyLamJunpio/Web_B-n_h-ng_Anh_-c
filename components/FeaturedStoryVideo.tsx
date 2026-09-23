@@ -221,7 +221,7 @@ export default function FeaturedStoryVideo() {
 
             <h2
               style={{ color: "#ffffff" }}
-              className="mt-3 text-3xl sm:text-4xl lg:text-5xl font-normal leading-[1.12] tracking-[-0.03em] !text-white drop-shadow-[0_4px_24px_rgba(0,0,0,0.85)]"
+              className="mt-3 text-2xl sm:text-3xl lg:text-[2.25rem] font-normal leading-[1.15] tracking-[-0.03em] !text-white drop-shadow-[0_4px_24px_rgba(0,0,0,0.85)]"
             >
               {currentVideo.title}
             </h2>
@@ -281,7 +281,7 @@ export default function FeaturedStoryVideo() {
               Vật phẩm mộc & Hương thơm
             </p>
 
-            <h2 className="mt-3 text-3xl sm:text-4xl lg:text-5xl font-normal leading-[1.12] tracking-[-0.03em] text-[#282724]">
+            <h2 className="mt-3 text-2xl sm:text-3xl lg:text-[2.25rem] font-normal leading-[1.15] tracking-[-0.03em] text-[#282724]">
               Hương thơm & câu chuyện cho tất cả
             </h2>
 

@@ -128,7 +128,7 @@ export default function CategoryBand() {
           <p className="mb-4 text-xs sm:text-sm font-semibold uppercase tracking-[0.2em] text-[#9d753d]">
             Thư viện hương thơm
           </p>
-          <h2 className="text-4xl font-medium tracking-[-0.03em] sm:text-5xl lg:text-6xl text-[#282724]">
+          <h2 className="text-3xl font-medium tracking-[-0.03em] sm:text-4xl lg:text-[2.75rem] leading-tight text-[#282724]">
             Từng lát cắt của mùi hương
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-base sm:text-lg leading-relaxed text-[#504c44]">
@@ -192,7 +192,7 @@ export default function CategoryBand() {
                     <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#9d753d]">
                       {story.product}
                     </p>
-                    <h3 className="mt-2 text-xl sm:text-2xl font-semibold leading-tight tracking-[-0.02em] text-[#282724] transition-colors group-hover:text-[#9d753d]">
+                    <h3 className="mt-2 text-lg sm:text-xl font-semibold leading-tight tracking-[-0.02em] text-[#282724] transition-colors group-hover:text-[#9d753d]">
                       {story.title}
                     </h3>
                     <p className="mt-2.5 text-sm sm:text-base leading-relaxed text-[#504c44] line-clamp-3">
