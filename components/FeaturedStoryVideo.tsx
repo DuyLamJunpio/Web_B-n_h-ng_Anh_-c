@@ -115,23 +115,27 @@ export default function FeaturedStoryVideo() {
     setIsMuted(nextMuted);
   };
 
-  const handleNextVideo = () => {
-    const nextIdx = (activeVideoIndex + 1) % VIDEO_STORIES.length;
-    setActiveVideoIndex(nextIdx);
-  };
-
-  const handlePrevVideo = () => {
-    const prevIdx = (activeVideoIndex - 1 + VIDEO_STORIES.length) % VIDEO_STORIES.length;
-    setActiveVideoIndex(prevIdx);
-  };
-
   const handleTabClick = (tabId: string) => {
     setActiveTab(tabId);
-    const matchedIdx = VIDEO_STORIES.findIndex((v) => v.tabId === tabId || v.filterCategory === tabId);
-    if (matchedIdx !== -1) {
-      setActiveVideoIndex(matchedIdx);
-    }
   };
+
+  // Dynamically derive category tabs from products
+  const categoryTabs = useMemo(() => {
+    const dynamicCategories = Array.from(
+      new Map(products.map((p) => [p.category, p.categoryName || p.category])).entries()
+    ).map(([id, label]) => ({ id, label }));
+
+    if (dynamicCategories.length > 0) {
+      return [{ id: "all", label: "Tất cả" }, ...dynamicCategories];
+    }
+
+    return [
+      { id: "all", label: "Tất cả" },
+      { id: "calm", label: "Hoa cỏ" },
+      { id: "warmth", label: "Hương màu" },
+      { id: "purify", label: "Thường ngày" },
+    ];
+  }, [products]);
 
   // Products filtered according to tab
   const filteredProducts = useMemo(() => {
@@ -180,9 +184,11 @@ export default function FeaturedStoryVideo() {
           <video
             ref={videoRef}
             autoPlay
-            loop
             muted={isMuted}
             playsInline
+            onEnded={() => {
+              setActiveVideoIndex((prev) => (prev + 1) % VIDEO_STORIES.length);
+            }}
             key={currentVideo.videoSrc}
             className="absolute inset-0 h-full w-full object-cover object-center transition-opacity duration-700"
           >
@@ -192,61 +198,38 @@ export default function FeaturedStoryVideo() {
           {/* Deep Dark Gradient Overlay for Supreme Text Readability */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-black/20 pointer-events-none" />
 
-          {/* Top Video Header & Switcher */}
-          <div className="relative z-10 flex flex-wrap items-center justify-between gap-3">
-            {/* Video Playlist Pills (Switch between the 3 videos) */}
-            <div className="flex items-center gap-1.5 rounded-full bg-black/40 backdrop-blur-md p-1 border border-white/20">
-              {VIDEO_STORIES.map((story, idx) => (
-                <button
-                  key={story.id}
-                  type="button"
-                  onClick={() => {
-                    setActiveVideoIndex(idx);
-                    setActiveTab(story.filterCategory);
-                  }}
-                  className={`rounded-full px-3 py-1 text-xs font-medium transition-all cursor-pointer ${
-                    activeVideoIndex === idx
-                      ? "bg-white text-black font-semibold shadow"
-                      : "text-white/80 hover:text-white hover:bg-white/10"
-                  }`}
-                >
-                  {story.tabLabel}
-                </button>
-              ))}
-            </div>
-
-            {/* Video Nav Arrows */}
-            <div className="flex items-center gap-1.5">
-              <button
-                type="button"
-                onClick={handlePrevVideo}
-                aria-label="Video trước"
-                className="flex h-8 w-8 items-center justify-center rounded-full bg-black/40 backdrop-blur-md text-white border border-white/20 transition-all hover:bg-white hover:text-black cursor-pointer"
-              >
-                <ChevronLeft className="h-4 w-4" />
-              </button>
-              <button
-                type="button"
-                onClick={handleNextVideo}
-                aria-label="Video tiếp theo"
-                className="flex h-8 w-8 items-center justify-center rounded-full bg-black/40 backdrop-blur-md text-white border border-white/20 transition-all hover:bg-white hover:text-black cursor-pointer"
-              >
-                <ChevronRight className="h-4 w-4" />
-              </button>
-            </div>
+          {/* Top Video Indicator - 3 subtle progress dashes for the 3 loop videos */}
+          <div className="relative z-10 flex items-center gap-2">
+            {VIDEO_STORIES.map((_, idx) => (
+              <div
+                key={idx}
+                className={`h-0.5 rounded-full transition-all duration-500 ${
+                  activeVideoIndex === idx ? "w-8 bg-white" : "w-2.5 bg-white/30"
+                }`}
+              />
+            ))}
           </div>
 
           {/* Bottom Overlay: Title, Subtitle, CTA & Play/Mute Controls */}
           <div className="relative z-10 mt-auto pt-24 text-white">
-            <p className="text-xs sm:text-sm font-semibold uppercase tracking-[0.2em] text-[#e5caa1] drop-shadow-sm">
+            <p
+              style={{ color: "#e5caa1" }}
+              className="text-xs sm:text-sm font-semibold uppercase tracking-[0.2em] !text-[#e5caa1] drop-shadow-sm"
+            >
               {currentVideo.eyebrow}
             </p>
 
-            <h2 className="mt-3 text-3xl sm:text-4xl lg:text-5xl font-normal leading-[1.12] tracking-[-0.03em] text-white drop-shadow-md">
+            <h2
+              style={{ color: "#ffffff" }}
+              className="mt-3 text-3xl sm:text-4xl lg:text-5xl font-normal leading-[1.12] tracking-[-0.03em] !text-white drop-shadow-[0_4px_24px_rgba(0,0,0,0.85)]"
+            >
               {currentVideo.title}
             </h2>
 
-            <p className="mt-4 max-w-xl text-base sm:text-lg leading-relaxed text-white/90 font-light drop-shadow">
+            <p
+              style={{ color: "#ffffff" }}
+              className="mt-4 max-w-xl text-base sm:text-lg leading-relaxed !text-white/95 font-light drop-shadow-[0_2px_12px_rgba(0,0,0,0.85)]"
+            >
               {currentVideo.subtitle}
             </p>
 
@@ -308,12 +291,7 @@ export default function FeaturedStoryVideo() {
 
             {/* Category Filter Tabs (Aesop tab style with underline) */}
             <div className="mt-8 flex items-center gap-6 sm:gap-8 border-b border-[#282723]/15 overflow-x-auto no-scrollbar">
-              {[
-                { id: "all", label: "Tất cả" },
-                { id: "calm", label: "Hoa cỏ" },
-                { id: "warmth", label: "Hương màu" },
-                { id: "purify", label: "Thường ngày" },
-              ].map((tab) => (
+              {categoryTabs.map((tab) => (
                 <button
                   key={tab.id}
                   type="button"
