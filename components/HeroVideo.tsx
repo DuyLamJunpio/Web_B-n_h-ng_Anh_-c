@@ -10,12 +10,12 @@ import { useCart } from "@/lib/CartContext";
 const fallbackStories = [
   {
     eyebrow: "",
-    title: "Câu chuyện về hoa cỏ",
-    description: "Mỗi loại hoa, cỏ lại có mỗi mùi hương riêng. Chúng mình để tự nhiên xoa dịu tâm hồn bạn bằng chính những mùi hương mộc mạc đó",
+    title: "Ngàn lẻ một câu chuyện về những nốt hương",
+    description: "Một cơn gió mát lành của sự sáng tạo mùi hương. Để đưa bạn vào một hành trình mới...",
     cta: "Khám phá ngay bộ sưu tập",
     image: "/videos/0918.mp4",
     poster: "/videos/palo-santo-poster.jpg",
-    alt: "Câu chuyện về hoa cỏ - RUNGU",
+    alt: "Ngàn lẻ một câu chuyện về những nốt hương - RUNGU",
     mediaType: "video" as const,
     ctaLink: "/san-pham",
   },
@@ -35,7 +35,7 @@ const fallbackStories = [
     title: "Câu chuyện về sự giao thoa giữa âm nhạc và nghệ thuật",
     description: "Âm nhạc là cơn gió mát xoa dịu tâm hồn bạn",
     cta: "Đọc câu chuyện văn hóa",
-    image: "/videos/smoke-1080p.webm",
+    image: "/videos/loa_4K_enhanced.mp4",
     poster: "/videos/palo-santo-poster.jpg",
     alt: "Câu chuyện về sự giao thoa giữa âm nhạc và nghệ thuật - RUNGU",
     mediaType: "video" as const,
@@ -57,7 +57,7 @@ export default function HeroVideo() {
     ? storefrontContent.banners.map((banner) => ({
         eyebrow: "",
         title: banner.heading || "Ngàn lẻ một câu chuyện về những nốt hương",
-        description: banner.subheading || "Một sự sáng tạo dựa trên những nguyên liệu tự nhiên để đánh thức giác quan. Và đưa bạn vào một hành trình mới....",
+        description: banner.subheading || "Một cơn gió mát lành của sự sáng tạo mùi hương. Để đưa bạn vào một hành trình mới...",
         cta: banner.cta_label || "Khám phá ngay bộ sưu tập",
         image: banner.media,
         alt: banner.alt || banner.heading || "Câu chuyện nổi bật của RUNGU",
@@ -277,12 +277,23 @@ export default function HeroVideo() {
           className="max-w-3xl"
         >
           {story.eyebrow ? (
-            <p className="mb-3.5 text-xs sm:text-sm font-semibold tracking-[0.2em] uppercase text-[#e5caa1] drop-shadow-sm">{story.eyebrow}</p>
+            <p
+              style={{ color: "#ffffff" }}
+              className="mb-3.5 text-xs sm:text-sm font-semibold tracking-[0.2em] uppercase !text-white drop-shadow-sm"
+            >
+              {story.eyebrow}
+            </p>
           ) : null}
-          <h1 className="text-balance text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-normal leading-[1.08] tracking-[-0.03em] text-white drop-shadow-md">
+          <h1
+            style={{ color: "#ffffff" }}
+            className="text-balance text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-normal leading-[1.08] tracking-[-0.03em] !text-white drop-shadow-[0_4px_24px_rgba(0,0,0,0.85)]"
+          >
             {story.title}
           </h1>
-          <p className="mx-auto mt-5 max-w-2xl text-base sm:text-lg lg:text-xl leading-relaxed text-white/95 font-light drop-shadow-sm">
+          <p
+            style={{ color: "#ffffff" }}
+            className="mx-auto mt-5 max-w-2xl text-base sm:text-lg lg:text-xl leading-relaxed !text-white font-light drop-shadow-[0_2px_12px_rgba(0,0,0,0.85)]"
+          >
             {story.description}
           </p>
           <Link
