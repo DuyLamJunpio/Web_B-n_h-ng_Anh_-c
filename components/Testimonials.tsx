@@ -18,7 +18,7 @@ export default function Testimonials() {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-60px" }}
         transition={{ duration: 0.8 }}
-        className="space-y-4 max-w-3xl mb-16 text-left"
+        className="space-y-4 max-w-3xl mb-16 text-center sm:text-left mx-auto sm:mx-0 flex flex-col items-center sm:items-start"
       >
         <div className="inline-flex items-center gap-2 text-forest-700 text-xs tracking-[0.3em] uppercase font-mono font-semibold">
           <Quote className="w-3.5 h-3.5" />
@@ -33,7 +33,7 @@ export default function Testimonials() {
       </motion.div>
 
       {/* Asymmetric Editorial Grid (7:5 Ratio replacing the 3 equal cards cliché) */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch text-left">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch text-center sm:text-left">
         {/* Major Featured Testimonial (7 Columns) */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -43,7 +43,7 @@ export default function Testimonials() {
           className="lg:col-span-7 p-8 sm:p-12 bg-white/75 border border-forest-800/15 hover:border-forest-800/30 transition-all duration-300 flex flex-col justify-between space-y-8 relative group"
         >
           <div className="space-y-6">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row items-center justify-center sm:justify-between gap-2">
               <div className="flex gap-1 text-amber-500">
                 {[...Array(5)].map((_, i) => (
                   <Star key={i} className="w-4 h-4 fill-amber-500 text-amber-500" />
@@ -59,8 +59,8 @@ export default function Testimonials() {
             </p>
           </div>
 
-          <div className="pt-6 border-t border-forest-800/10 flex items-center justify-between flex-wrap gap-4">
-            <div className="flex items-center gap-4">
+          <div className="pt-6 border-t border-forest-800/10 flex flex-col sm:flex-row items-center justify-center sm:justify-between gap-4 text-center sm:text-left">
+            <div className="flex flex-col sm:flex-row items-center gap-4">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={featured.avatar}
@@ -95,7 +95,7 @@ export default function Testimonials() {
               className="p-6 sm:p-7 bg-white/65 border border-forest-800/10 hover:border-forest-800/25 transition-all duration-300 flex flex-col justify-between space-y-4 group"
             >
               <div className="space-y-3">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col sm:flex-row items-center justify-center sm:justify-between gap-2">
                   <div className="flex gap-1 text-amber-500">
                     {[...Array(5)].map((_, i) => (
                       <Star key={i} className="w-3.5 h-3.5 fill-amber-500 text-amber-500" />
@@ -109,8 +109,8 @@ export default function Testimonials() {
                 </p>
               </div>
 
-              <div className="pt-4 border-t border-forest-800/10 flex items-center justify-between">
-                <div className="flex items-center gap-3">
+              <div className="pt-4 border-t border-forest-800/10 flex flex-col sm:flex-row items-center justify-center sm:justify-between gap-3 text-center sm:text-left">
+                <div className="flex flex-col sm:flex-row items-center gap-3">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={t.avatar}

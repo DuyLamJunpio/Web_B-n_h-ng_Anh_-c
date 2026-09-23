@@ -81,25 +81,25 @@ export default function About() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.2 }}
             transition={{ duration: 0.7, ease: "easeOut" }}
-            className="max-w-2xl w-full mx-auto lg:mx-0"
+            className="max-w-2xl w-full mx-auto lg:mx-0 text-center lg:text-left flex flex-col items-center lg:items-start"
           >
-            <div className="inline-flex items-center gap-2 rounded-full bg-[#282723]/5 px-4 py-2 text-xs sm:text-sm font-semibold uppercase tracking-[0.2em] text-[#9d753d] border border-[#282723]/10 mb-6">
+            <div className="inline-flex items-center gap-2 rounded-full bg-[#282723]/5 px-4 py-2 text-xs sm:text-sm font-semibold uppercase tracking-[0.2em] text-[#9d753d] border border-[#282723]/10 mb-6 mx-auto lg:mx-0">
               <Sparkles className="h-4 w-4" />
               <span>Bản tin & Kết nối thành viên</span>
             </div>
 
-            <h2 className="text-3xl font-normal leading-[1.12] tracking-[-0.035em] sm:text-4xl lg:text-5xl xl:text-[3.25rem] text-[#282723]">
+            <h2 className="text-2xl sm:text-4xl lg:text-5xl xl:text-[3.25rem] font-normal leading-[1.15] tracking-[-0.035em] text-[#282723] mx-auto lg:mx-0">
               Nhận tin nhắn từ RUNGU
             </h2>
 
-            <p className="mt-6 text-base sm:text-lg lg:text-xl leading-relaxed text-[#4e4a42]">
+            <p className="mt-5 text-base sm:text-lg lg:text-xl leading-relaxed text-[#4e4a42] mx-auto lg:mx-0">
               Để lại số điện thoại và email để là người đầu tiên lắng nghe những câu chuyện nốt hương mới, nhận ưu đãi riêng tư và lời mời tham gia các buổi trải nghiệm mùi hương thủ công.
             </p>
 
             {/* Form Section - Sized up to comfortably fill space */}
-            <div className="mt-8 sm:mt-10">
+            <div className="mt-8 sm:mt-10 w-full">
               {submitted ? (
-                <div className="rounded-2xl bg-emerald-900/10 border border-emerald-800/20 p-8 text-emerald-900 transition-all animate-fadeIn">
+                <div className="rounded-2xl bg-emerald-900/10 border border-emerald-800/20 p-8 text-emerald-900 transition-all animate-fadeIn text-left">
                   <div className="flex items-start gap-4">
                     <CheckCircle2 className="h-7 w-7 text-emerald-700 shrink-0 mt-0.5" />
                     <div>
@@ -120,7 +120,7 @@ export default function About() {
                   </div>
                 </div>
               ) : (
-                <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
+                <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5 text-left">
                   {/* Phone Input */}
                   <div className="relative">
                     <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-5 text-[#8c887f]">
@@ -171,11 +171,11 @@ export default function About() {
 
               {/* Exclusive Perks Bar */}
               <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4 border-t border-[#282723]/15 pt-6 text-xs sm:text-sm text-[#504c44]">
-                <div className="flex items-center gap-2.5">
+                <div className="flex items-center justify-center lg:justify-start gap-2.5">
                   <Gift className="h-4 w-4 text-[#9d753d] shrink-0" />
                   <span>Ưu đãi đặc quyền cho thành viên mới</span>
                 </div>
-                <div className="flex items-center gap-2.5">
+                <div className="flex items-center justify-center lg:justify-start gap-2.5">
                   <Lock className="h-4 w-4 text-[#9d753d] shrink-0" />
                   <span>Bảo mật tuyệt đối, không gửi thư rác</span>
                 </div>
@@ -205,7 +205,7 @@ export default function About() {
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-black/30 pointer-events-none" />
 
           {/* Top Live Status Pill */}
-          <div className="relative z-10 flex items-center justify-between">
+          <div className="relative z-10 flex items-center justify-center lg:justify-between">
             <div className="flex items-center gap-2 rounded-full bg-white/15 backdrop-blur-md px-4 py-2 border border-white/25 text-white text-xs sm:text-sm font-medium tracking-wider uppercase">
               <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
               <span>Nghi thức khói thơm tự nhiên</span>
@@ -213,16 +213,16 @@ export default function About() {
           </div>
 
           {/* Bottom Overlay: Quote Caption & Video Controls */}
-          <div className="relative z-10 mt-auto pt-24 text-white">
-            <p className="max-w-lg text-base sm:text-lg lg:text-xl font-normal leading-relaxed text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.85)]">
+          <div className="relative z-10 mt-auto pt-24 text-white text-center lg:text-left flex flex-col items-center lg:items-start">
+            <p className="max-w-lg text-base sm:text-lg lg:text-xl font-normal leading-relaxed text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.85)] mx-auto lg:mx-0">
               &ldquo;Mỗi nốt hương gửi đi là một lời chúc an yên dành riêng cho bạn.&rdquo;
             </p>
-            <span className="mt-3 block text-xs sm:text-sm tracking-[0.18em] uppercase text-[#e5caa1] font-semibold drop-shadow-sm">
+            <span className="mt-3 block text-xs sm:text-sm tracking-[0.18em] uppercase text-[#e5caa1] font-semibold drop-shadow-sm mx-auto lg:mx-0">
               — RUNGU Fragrance Rituals
             </span>
 
             {/* Video Controls (Tạm dừng & Âm thanh) */}
-            <div className="mt-8 flex items-center gap-3">
+            <div className="mt-8 flex items-center justify-center lg:justify-start gap-3">
               <button
                 type="button"
                 onClick={togglePlay}

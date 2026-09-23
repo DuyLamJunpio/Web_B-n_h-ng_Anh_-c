@@ -158,7 +158,7 @@ export default function CategoryBand() {
               <div
                 key={story.slug}
                 data-story-card
-                className="w-[72vw] sm:w-[300px] md:w-[330px] lg:w-[360px] xl:w-[380px] shrink-0 snap-start"
+                className="w-[82vw] sm:w-[300px] md:w-[330px] lg:w-[360px] xl:w-[380px] shrink-0 snap-center sm:snap-start"
               >
                 <Link
                   href={`/story/${story.slug}`}
@@ -178,7 +178,7 @@ export default function CategoryBand() {
                       alt={story.imageAlt}
                       fill
                       draggable={false}
-                      sizes="(min-width: 1280px) 380px, (min-width: 1024px) 360px, (min-width: 640px) 300px, 75vw"
+                      sizes="(min-width: 1280px) 380px, (min-width: 1024px) 360px, (min-width: 640px) 300px, 85vw"
                       className="object-cover object-center transition-transform duration-700 ease-out group-hover:scale-[1.05] pointer-events-none select-none"
                       priority={index < 2}
                     />
@@ -187,15 +187,15 @@ export default function CategoryBand() {
                     </span>
                   </div>
 
-                  {/* Story Content Below Image */}
-                  <div className="pt-5">
+                  {/* Story Content Below Image - Centered on Mobile */}
+                  <div className="pt-5 text-center sm:text-left flex flex-col items-center sm:items-start">
                     <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#9d753d]">
                       {story.product}
                     </p>
                     <h3 className="mt-2 text-lg sm:text-xl font-semibold leading-tight tracking-[-0.02em] text-[#282724] transition-colors group-hover:text-[#9d753d]">
                       {story.title}
                     </h3>
-                    <p className="mt-2.5 text-sm sm:text-base leading-relaxed text-[#504c44] line-clamp-3">
+                    <p className="mt-2.5 text-sm sm:text-base leading-relaxed text-[#504c44] line-clamp-3 max-w-sm">
                       {story.detail}
                     </p>
                     <div className="mt-4 inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.16em] text-[#9d753d] transition-transform duration-300 group-hover:translate-x-1">

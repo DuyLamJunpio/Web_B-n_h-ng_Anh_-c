@@ -31,11 +31,11 @@ export default function NavigationModal({ isOpen, onClose }: { isOpen: boolean; 
   return (
     <AnimatePresence>
       {isOpen && (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }} className="fixed inset-0 z-50 flex flex-col overflow-y-auto bg-[#f3f1eb] p-6 text-[#282723] sm:p-10 lg:p-14">
-          <div className="mx-auto flex w-full max-w-[1400px] items-center justify-between border-b border-[#282723]/15 pb-6">
-            <span className="text-xs font-semibold uppercase tracking-[0.18em] text-[#77736b]">Menu điều hướng</span>
-            <Link href="/" onClick={onClose} className="text-3xl font-normal tracking-[0.18em]">RUNGU</Link>
-            <button type="button" onClick={onClose} className="flex items-center gap-2 border border-[#282723]/25 px-4 py-2 text-sm font-medium transition-colors hover:border-[#282723] cursor-pointer" aria-label="Đóng menu"><X className="h-4 w-4" strokeWidth={1.25} />Đóng</button>
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }} className="fixed inset-0 z-50 flex flex-col overflow-y-auto bg-[#f3f1eb] p-5 sm:p-10 lg:p-14 text-[#282723]">
+          <div className="relative mx-auto flex w-full max-w-[1400px] items-center justify-between border-b border-[#282723]/15 pb-4 sm:pb-6">
+            <span className="hidden sm:inline text-xs font-semibold uppercase tracking-[0.18em] text-[#77736b]">Menu điều hướng</span>
+            <Link href="/" onClick={onClose} className="text-2xl sm:text-3xl font-normal tracking-[0.18em] absolute left-1/2 -translate-x-1/2">RUNGU</Link>
+            <button type="button" onClick={onClose} className="flex items-center gap-1.5 sm:gap-2 border border-[#282723]/25 px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-medium transition-colors hover:border-[#282723] cursor-pointer ml-auto" aria-label="Đóng menu"><X className="h-4 w-4" strokeWidth={1.25} />Đóng</button>
           </div>
 
           <nav aria-label="Menu mở rộng" className="mx-auto my-auto w-full max-w-3xl py-6 sm:py-10">
@@ -197,7 +197,7 @@ export default function NavigationModal({ isOpen, onClose }: { isOpen: boolean; 
             </Link>
           </nav>
 
-          <div className="mx-auto flex w-full max-w-[1400px] flex-col gap-2 border-t border-[#282723]/15 pt-5 text-sm text-[#77736b] sm:flex-row sm:items-center sm:justify-between">
+          <div className="mx-auto flex w-full max-w-[1400px] flex-col gap-2 border-t border-[#282723]/15 pt-5 text-xs sm:text-sm text-[#77736b] text-center sm:text-left sm:flex-row sm:items-center sm:justify-between">
             <span>Hương thơm tự nhiên cho những ngày bình thường.</span>
             <span>hello@rungu.vn • 0868 238 690</span>
           </div>

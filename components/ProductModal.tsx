@@ -77,7 +77,7 @@ export default function ProductModal() {
 
           {/* Thumbnails */}
           {selectedProduct.gallery && selectedProduct.gallery.length > 1 && (
-            <div className="flex gap-3">
+            <div className="flex gap-3 justify-center md:justify-start">
               {selectedProduct.gallery.map((img, idx) => (
                 <button
                   key={idx}
@@ -97,7 +97,7 @@ export default function ProductModal() {
         {/* Right: Product Details */}
         <div className="md:col-span-7 space-y-5 flex flex-col justify-between text-left">
           <div className="space-y-3">
-            <div className="flex items-center justify-between text-xs sm:text-sm">
+            <div className="flex flex-col sm:flex-row items-center justify-center sm:justify-between gap-1 text-xs sm:text-sm text-center sm:text-left">
               <span className="text-forest-700 tracking-[0.2em] uppercase font-semibold">
                 {selectedProduct.categoryName} • {selectedProduct.origin}
               </span>
@@ -108,15 +108,15 @@ export default function ProductModal() {
               </div>
             </div>
 
-            <h3 className="font-serif text-2xl sm:text-3xl text-forest-950 font-semibold tracking-[-0.02em]">
+            <h3 className="font-serif text-2xl sm:text-3xl text-forest-950 font-semibold tracking-[-0.02em] text-center sm:text-left">
               {selectedProduct.name}
             </h3>
 
-            <p className="text-sm text-forest-700 italic font-serif">
+            <p className="text-sm text-forest-700 italic font-serif text-center sm:text-left">
               ✦ {selectedProduct.notes}
             </p>
 
-            <p className="text-forest-800 text-sm sm:text-base leading-relaxed">
+            <p className="text-forest-800 text-sm sm:text-base leading-relaxed text-center sm:text-left">
               {selectedProduct.detail || selectedProduct.desc}
             </p>
 
@@ -136,7 +136,7 @@ export default function ProductModal() {
             {/* Benefits list */}
             {selectedProduct.benefits && (
               <div className="space-y-2 pt-1 text-sm text-forest-800">
-                <span className="text-forest-900 font-semibold block">Công dụng chính:</span>
+                <span className="text-forest-900 font-semibold block text-center sm:text-left">Công dụng chính:</span>
                 {selectedProduct.benefits.map((b, i) => (
                   <div key={i} className="flex items-center gap-2 text-forest-800">
                     <Check className="w-4 h-4 text-forest-700 flex-shrink-0" />
@@ -150,11 +150,11 @@ export default function ProductModal() {
           {/* Price, Quantity & Add to Cart Action */}
           <div className="pt-4 border-t border-forest-800/10 space-y-4">
             {availableVariants.length > 0 && (
-              <div className="space-y-2">
+              <div className="space-y-2 text-center sm:text-left">
                 <span className="block text-xs font-semibold uppercase tracking-wider text-forest-900">
                   Chọn quy cách / mùi hương
                 </span>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap justify-center sm:justify-start gap-2">
                   {availableVariants.map((variant) => (
                     <button
                       key={variant.id}
@@ -176,7 +176,7 @@ export default function ProductModal() {
               </div>
             )}
 
-            <div className="flex items-baseline justify-between">
+            <div className="flex items-baseline justify-center sm:justify-between gap-3">
               <span className="font-serif text-3xl text-forest-800 font-bold">
                 {(currentPrice * quantity).toLocaleString("vi-VN")} đ
               </span>
@@ -187,21 +187,21 @@ export default function ProductModal() {
               )}
             </div>
 
-            <div className="flex gap-4">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
               {/* Quantity selector */}
-              <div className="flex items-center border border-forest-800/20 rounded-lg bg-forest-50/60">
+              <div className="flex items-center justify-center border border-forest-800/20 rounded-lg bg-forest-50/60">
                 <button
                   onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                  className="px-3.5 py-2 text-forest-700 hover:text-forest-950 text-base transition-colors cursor-pointer"
+                  className="px-4 py-2.5 text-forest-700 hover:text-forest-950 text-base transition-colors cursor-pointer"
                 >
                   -
                 </button>
-                <span className="px-3 text-sm font-semibold text-forest-950">{quantity}</span>
+                <span className="px-4 text-sm font-semibold text-forest-950">{quantity}</span>
                 <button
                   onClick={() => setQuantity(selectedVariant && selectedProduct.manageStock
                     ? Math.min(selectedVariant.stock, quantity + 1)
                     : quantity + 1)}
-                  className="px-3.5 py-2 text-forest-700 hover:text-forest-950 text-base transition-colors cursor-pointer"
+                  className="px-4 py-2.5 text-forest-700 hover:text-forest-950 text-base transition-colors cursor-pointer"
                 >
                   +
                 </button>

@@ -199,7 +199,7 @@ export default function FeaturedStoryVideo() {
           <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-black/20 pointer-events-none" />
 
           {/* Top Video Indicator - 3 subtle progress dashes for the 3 loop videos */}
-          <div className="relative z-10 flex items-center gap-2">
+          <div className="relative z-10 flex items-center justify-center sm:justify-start gap-2">
             {VIDEO_STORIES.map((_, idx) => (
               <div
                 key={idx}
@@ -211,30 +211,30 @@ export default function FeaturedStoryVideo() {
           </div>
 
           {/* Bottom Overlay: Title, Subtitle, CTA & Play/Mute Controls */}
-          <div className="relative z-10 mt-auto pt-24 text-white">
+          <div className="relative z-10 mt-auto pt-24 text-white text-center sm:text-left flex flex-col items-center sm:items-start">
             <p
               style={{ color: "#e5caa1" }}
-              className="text-xs sm:text-sm font-semibold uppercase tracking-[0.2em] !text-[#e5caa1] drop-shadow-sm"
+              className="text-xs sm:text-sm font-semibold uppercase tracking-[0.2em] !text-[#e5caa1] drop-shadow-sm mx-auto sm:mx-0"
             >
               {currentVideo.eyebrow}
             </p>
 
             <h2
               style={{ color: "#ffffff" }}
-              className="mt-3 text-2xl sm:text-3xl lg:text-[2.25rem] font-normal leading-[1.15] tracking-[-0.03em] !text-white drop-shadow-[0_4px_24px_rgba(0,0,0,0.85)]"
+              className="mt-3 text-2xl sm:text-3xl lg:text-[2.25rem] font-normal leading-[1.15] tracking-[-0.03em] !text-white drop-shadow-[0_4px_24px_rgba(0,0,0,0.85)] mx-auto sm:mx-0"
             >
               {currentVideo.title}
             </h2>
 
             <p
               style={{ color: "#ffffff" }}
-              className="mt-4 max-w-xl text-base sm:text-lg leading-relaxed !text-white/95 font-light drop-shadow-[0_2px_12px_rgba(0,0,0,0.85)]"
+              className="mt-4 max-w-xl text-base sm:text-lg leading-relaxed !text-white/95 font-light drop-shadow-[0_2px_12px_rgba(0,0,0,0.85)] mx-auto sm:mx-0"
             >
               {currentVideo.subtitle}
             </p>
 
             {/* Explore Button and Video Controls Bar */}
-            <div className="mt-8 flex flex-wrap items-center justify-between gap-4">
+            <div className="mt-8 flex flex-wrap items-center justify-center sm:justify-between gap-4 w-full">
               <Link
                 href={currentVideo.link}
                 className="inline-flex items-center gap-2 border border-white/80 px-6 py-3.5 text-xs sm:text-sm font-semibold uppercase tracking-[0.16em] text-white backdrop-blur-sm transition-all duration-300 hover:bg-white hover:text-black hover:border-white shadow-sm"
@@ -275,22 +275,22 @@ export default function FeaturedStoryVideo() {
         {/* RIGHT COLUMN: Aesop-Style Product Showcase & Carousel        */}
         {/* ============================================================ */}
         <div className="flex flex-col justify-between p-6 sm:p-10 lg:p-14 xl:p-16">
-          <div>
+          <div className="text-center sm:text-left flex flex-col items-center sm:items-start">
             {/* Header Eyebrow & Title */}
-            <p className="text-xs sm:text-sm font-semibold uppercase tracking-[0.2em] text-[#9d753d]">
+            <p className="text-xs sm:text-sm font-semibold uppercase tracking-[0.2em] text-[#9d753d] mx-auto sm:mx-0">
               Vật phẩm mộc & Hương thơm
             </p>
 
-            <h2 className="mt-3 text-2xl sm:text-3xl lg:text-[2.25rem] font-normal leading-[1.15] tracking-[-0.03em] text-[#282724]">
+            <h2 className="mt-3 text-2xl sm:text-3xl lg:text-[2.25rem] font-normal leading-[1.15] tracking-[-0.03em] text-[#282724] mx-auto sm:mx-0">
               Hương thơm & câu chuyện cho tất cả
             </h2>
 
-            <p className="mt-4 max-w-xl text-base sm:text-lg leading-relaxed text-[#504c44]">
+            <p className="mt-4 max-w-xl text-base sm:text-lg leading-relaxed text-[#504c44] mx-auto sm:mx-0">
               Khám phá những công thức mộc mạc và hương thơm tự nhiên, nâng niu không gian sống và mở ra khoảng lặng an yên cho tâm trí.
             </p>
 
             {/* Category Filter Tabs (Aesop tab style with underline) */}
-            <div className="mt-8 flex items-center gap-6 sm:gap-8 border-b border-[#282723]/15 overflow-x-auto no-scrollbar">
+            <div className="mt-8 flex items-center justify-center sm:justify-start gap-6 sm:gap-8 border-b border-[#282723]/15 overflow-x-auto no-scrollbar w-full">
               {categoryTabs.map((tab) => (
                 <button
                   key={tab.id}
@@ -342,7 +342,7 @@ export default function FeaturedStoryVideo() {
                   <div
                     key={product.id}
                     data-product-card
-                    className="w-[240px] sm:w-[270px] lg:w-[280px] shrink-0 snap-start flex flex-col justify-between group/card"
+                    className="w-[76vw] sm:w-[270px] lg:w-[280px] shrink-0 snap-center sm:snap-start flex flex-col justify-between group/card"
                   >
                     {/* Top Header inside card: Badge & Bookmark */}
                     <div className="flex items-center justify-between pb-2">

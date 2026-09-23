@@ -10,13 +10,13 @@ export default function LoiNgo() {
         <div className="hidden md:block md:w-1/2"></div>
         
         {/* Right: Content */}
-        <div className="w-full md:w-1/2 flex items-center justify-start md:pl-12 lg:pl-24">
+        <div className="w-full md:w-1/2 flex items-center justify-center md:justify-start text-center md:text-left md:pl-12 lg:pl-24">
           <motion.div
             initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 1.5, ease: "easeOut" }}
-            className="max-w-md"
+            className="max-w-md mx-auto md:mx-0"
           >
             <h2 className="font-serif text-3xl md:text-4xl font-light mb-8 text-white/90">
               Triết lý của Khói & Đất
