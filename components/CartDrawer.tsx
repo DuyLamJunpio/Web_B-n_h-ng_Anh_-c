@@ -2,7 +2,7 @@
 
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { useCart } from "@/lib/CartContext";
-import { ArrowLeft, ArrowRight, Check, CheckCircle2, Copy, ShoppingBag, Trash2, Truck, X } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, CheckCircle2, Copy, ShoppingBag, Ticket, Trash2, Truck, X } from "lucide-react";
 
 type CheckoutForm = {
   customer_name: string;
@@ -26,6 +26,7 @@ type CheckoutResult = {
 type CheckoutQuote = {
   ok: true;
   subtotal: number;
+  discount: number;
   shipping_fee: number;
   total_amount: number;
 };
@@ -34,18 +35,23 @@ type QuoteSnapshot = { key: string; data: CheckoutQuote };
 type CheckoutAttempt = { fingerprint: string; ref: string };
 const CHECKOUT_ATTEMPT_KEY = "rungu-checkout-attempt";
 
-async function requestQuote(items: Array<{ variant_id: number; quantity: number }>, paymentMethod: string, signal?: AbortSignal): Promise<CheckoutQuote> {
+async function requestQuote(
+  items: Array<{ variant_id: number; quantity: number }>,
+  paymentMethod: string,
+  voucherCode = "",
+  signal?: AbortSignal,
+): Promise<CheckoutQuote> {
   const response = await fetch("/api/checkout/quote", {
     method: "POST",
     headers: { "Content-Type": "application/json", Accept: "application/json" },
-    body: JSON.stringify({ items, payment_method: paymentMethod }),
+    body: JSON.stringify({ items, payment_method: paymentMethod, voucher_code: voucherCode || null }),
     signal,
   });
   const payload = await response.json().catch(() => null);
   if (!response.ok || !payload?.ok) {
     throw new Error(payload?.error || "Không kiểm tra được giá và tồn kho. Vui lòng thử lại.");
   }
-  if (![payload.subtotal, payload.shipping_fee, payload.total_amount].every((value) => Number.isSafeInteger(value) && value >= 0)) {
+  if (![payload.subtotal, payload.discount, payload.shipping_fee, payload.total_amount].every((value) => Number.isSafeInteger(value) && value >= 0)) {
     throw new Error("Hệ thống đặt hàng trả về số tiền không hợp lệ.");
   }
   return payload as CheckoutQuote;
@@ -105,13 +111,16 @@ export default function CartDrawer() {
   const [quote, setQuote] = useState<QuoteSnapshot | null>(null);
   const [quoteLoading, setQuoteLoading] = useState(false);
   const [quoteError, setQuoteError] = useState("");
+  const [voucherCode, setVoucherCode] = useState("");
+  const [appliedVoucherCode, setAppliedVoucherCode] = useState("");
+  const [voucherRefresh, setVoucherRefresh] = useState(0);
   const checkoutAttempt = useRef<CheckoutAttempt | null>(null);
 
   const orderItems = useMemo(
     () => cart.map((item) => ({ variant_id: Number(item.variantId), quantity: item.qty })),
     [cart],
   );
-  const quoteKey = JSON.stringify([form.payment_method, orderItems]);
+  const quoteKey = JSON.stringify([form.payment_method, orderItems, appliedVoucherCode]);
   const validVariants = cart.length > 0 && orderItems.every((item) =>
     Number.isSafeInteger(item.variant_id) && item.variant_id > 0
       && Number.isInteger(item.quantity) && item.quantity > 0 && item.quantity <= 100,
@@ -154,7 +163,7 @@ export default function CartDrawer() {
     setQuote(null);
     setQuoteLoading(true);
     setQuoteError("");
-    requestQuote(orderItems, form.payment_method, controller.signal)
+    requestQuote(orderItems, form.payment_method, appliedVoucherCode, controller.signal)
       .then((data) => setQuote({ key: quoteKey, data }))
       .catch((quoteFailure) => {
         if (!controller.signal.aborted) {
@@ -165,7 +174,7 @@ export default function CartDrawer() {
         if (!controller.signal.aborted) setQuoteLoading(false);
       });
     return () => controller.abort();
-  }, [checkoutMode, result, validVariants, quoteKey, orderItems, form.payment_method]);
+  }, [checkoutMode, result, validVariants, quoteKey, orderItems, form.payment_method, appliedVoucherCode, voucherRefresh]);
 
   useEffect(() => {
     if (!result?.checkout_ref || form.payment_method !== "bank_transfer" || paymentConfirmed) return;
@@ -200,6 +209,8 @@ export default function CartDrawer() {
       setError("");
       setQuoteError("");
       setQuote(null);
+      setVoucherCode("");
+      setAppliedVoucherCode("");
       if (result) {
         setResult(null);
         setForm({ ...initialForm, payment_method: defaultPaymentMethod });
@@ -216,6 +227,18 @@ export default function CartDrawer() {
         setTimeout(() => setCopiedField(null), 2500);
       }).catch(() => {});
     }
+  };
+
+  const applyVoucher = () => {
+    const normalized = voucherCode.trim().toUpperCase();
+    if (normalized && !/^[A-Z0-9_-]{1,50}$/.test(normalized)) {
+      setQuoteError("Mã giảm giá chỉ gồm chữ cái, số, dấu gạch ngang hoặc gạch dưới.");
+      return;
+    }
+    setQuote(null);
+    setQuoteError("");
+    setAppliedVoucherCode(normalized);
+    setVoucherRefresh((current) => current + 1);
   };
 
   const submitOrder = async (event: FormEvent<HTMLFormElement>) => {
@@ -241,8 +264,9 @@ export default function CartDrawer() {
     try {
       // Recheck immediately before creating the order. If anything changed, ask
       // the customer to review the new amount rather than silently charging it.
-      const latestQuote = await requestQuote(orderItems, form.payment_method);
+      const latestQuote = await requestQuote(orderItems, form.payment_method, appliedVoucherCode);
       if (latestQuote.subtotal !== currentQuote.subtotal
+        || latestQuote.discount !== currentQuote.discount
         || latestQuote.shipping_fee !== currentQuote.shipping_fee
         || latestQuote.total_amount !== currentQuote.total_amount) {
         setQuote({ key: quoteKey, data: latestQuote });
@@ -260,6 +284,7 @@ export default function CartDrawer() {
         note: form.note.trim() || null,
         payment_method: form.payment_method,
         expected_total_amount: currentQuote.total_amount,
+        voucher_code: appliedVoucherCode || null,
         items: orderItems,
       };
       const checkoutRef = getCheckoutRef(JSON.stringify(checkoutDetails));
@@ -426,9 +451,41 @@ export default function CartDrawer() {
               <Field label="Số nhà, tên đường" required value={form.address} onChange={(value) => setForm({ ...form, address: value })} />
 
               <label className="block text-xs text-forest-800">
-                <span className="mb-1.5 block font-medium">Ghi chú</span>
-                <textarea value={form.note} onChange={(event) => setForm({ ...form, note: event.target.value })} rows={3} className="w-full border border-forest-800/20 bg-white px-3 py-2.5 outline-none focus:border-forest-800" />
+                <span className="mb-1.5 block font-[Arial,sans-serif] text-[13px] font-semibold text-forest-900">Ghi chú</span>
+                <textarea value={form.note} onChange={(event) => setForm({ ...form, note: event.target.value })} rows={3} className="w-full border border-forest-800/35 bg-white px-3 py-2.5 font-[Arial,sans-serif] text-[14px] font-medium text-forest-950 outline-none transition focus:border-forest-950 focus:ring-2 focus:ring-forest-800/15" />
               </label>
+
+              <section className="border border-forest-800/20 bg-forest-50/70 p-3.5" aria-labelledby="voucher-heading">
+                <div className="mb-2 flex items-center gap-2">
+                  <Ticket className="h-4 w-4 text-amberWood-dark" aria-hidden="true" />
+                  <h3 id="voucher-heading" className="font-[Arial,sans-serif] text-[13px] font-semibold tracking-normal text-forest-950">Mã giảm giá</h3>
+                </div>
+                <div className="flex gap-2">
+                  <input
+                    value={voucherCode}
+                    onChange={(event) => setVoucherCode(event.target.value.toUpperCase())}
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter") {
+                        event.preventDefault();
+                        applyVoucher();
+                      }
+                    }}
+                    maxLength={50}
+                    placeholder="Nhập mã voucher"
+                    aria-label="Mã giảm giá"
+                    className="min-w-0 flex-1 border border-forest-800/35 bg-white px-3 py-2.5 font-[Arial,sans-serif] text-[14px] font-semibold uppercase tracking-wide text-forest-950 placeholder:normal-case placeholder:font-medium placeholder:tracking-normal placeholder:text-forest-600 outline-none transition focus:border-forest-950 focus:ring-2 focus:ring-forest-800/15"
+                  />
+                  <button type="button" onClick={applyVoucher} className="shrink-0 border border-forest-800 bg-forest-800 px-3.5 font-[Arial,sans-serif] text-[12px] font-semibold text-white transition-colors hover:bg-forest-950">
+                    Áp dụng
+                  </button>
+                </div>
+                {appliedVoucherCode && currentQuote && (
+                  <div className="mt-2 flex items-center justify-between gap-3 text-[12px] text-forest-800" role="status">
+                    <span>Đã áp dụng mã <strong className="font-[Arial,sans-serif] text-forest-950">{appliedVoucherCode}</strong>.</span>
+                    <button type="button" onClick={() => { setVoucherCode(""); setAppliedVoucherCode(""); setVoucherRefresh((current) => current + 1); }} className="font-[Arial,sans-serif] font-semibold text-amberWood-dark underline underline-offset-2">Bỏ mã</button>
+                  </div>
+                )}
+              </section>
 
               <fieldset className="space-y-2">
                 <legend className="mb-1.5 text-xs font-medium text-forest-800">Hình thức thanh toán</legend>
@@ -447,7 +504,7 @@ export default function CartDrawer() {
             </div>
 
             <div className="space-y-3 border-t border-forest-800/10 pt-4">
-              <Summary subtotal={currentQuote?.subtotal ?? cartTotal} shipping={currentQuote?.shipping_fee ?? estimatedShipping} total={currentQuote?.total_amount ?? grandTotal} />
+              <Summary subtotal={currentQuote?.subtotal ?? cartTotal} discount={currentQuote?.discount ?? 0} shipping={currentQuote?.shipping_fee ?? estimatedShipping} total={currentQuote?.total_amount ?? grandTotal} />
               {!currentQuote && <p className="text-[11px] text-forest-600">Tổng tiền trên chỉ là dự kiến; chờ xác nhận từ hệ thống quản lý trước khi đặt hàng.</p>}
               <button type="submit" disabled={submitting || quoteLoading || !currentQuote || enabledMethods.length === 0} className="w-full bg-forest-800 py-3.5 text-xs font-semibold uppercase tracking-[0.2em] text-white disabled:cursor-not-allowed disabled:opacity-50">
                 {submitting ? "Đang tạo đơn..." : "Xác nhận đặt hàng"}
@@ -493,7 +550,7 @@ export default function CartDrawer() {
                   <Truck className="h-4 w-4" />
                   {estimatedShipping === 0 ? "Đơn hàng được miễn phí vận chuyển" : `Phí vận chuyển dự kiến ${estimatedShipping.toLocaleString("vi-VN")} đ`}
                 </div>
-                <Summary subtotal={cartTotal} shipping={estimatedShipping} total={grandTotal} />
+                <Summary subtotal={cartTotal} discount={0} shipping={estimatedShipping} total={grandTotal} />
                 <button type="button" onClick={() => { setCheckoutMode(true); setError(""); }} className="flex w-full items-center justify-center gap-2 bg-forest-800 py-3.5 text-xs font-semibold uppercase tracking-[0.2em] text-white">
                   <span>Tiến hành đặt hàng</span><ArrowRight className="h-4 w-4" />
                 </button>
@@ -521,16 +578,17 @@ function Field({
 }) {
   return (
     <label className="block text-xs text-forest-800">
-      <span className="mb-1.5 block font-medium">{label}</span>
-      <input type={type} required={required} value={value} onChange={(event) => onChange(event.target.value)} className="w-full border border-forest-800/20 bg-white px-3 py-2.5 outline-none focus:border-forest-800" />
+      <span className="mb-1.5 block font-[Arial,sans-serif] text-[13px] font-semibold text-forest-900">{label}</span>
+      <input type={type} required={required} value={value} onChange={(event) => onChange(event.target.value)} className="h-11 w-full border border-forest-800/35 bg-white px-3 font-[Arial,sans-serif] text-[14px] font-semibold text-forest-950 outline-none transition placeholder:text-forest-600 focus:border-forest-950 focus:ring-2 focus:ring-forest-800/15" />
     </label>
   );
 }
 
-function Summary({ subtotal, shipping, total }: { subtotal: number; shipping: number; total: number }) {
+function Summary({ subtotal, discount, shipping, total }: { subtotal: number; discount: number; shipping: number; total: number }) {
   return (
     <div className="space-y-1.5 text-xs text-forest-700">
       <div className="flex justify-between"><span>Tạm tính</span><span>{subtotal.toLocaleString("vi-VN")} đ</span></div>
+      {discount > 0 && <div className="flex justify-between text-green-800"><span>Giảm giá</span><span>−{discount.toLocaleString("vi-VN")} đ</span></div>}
       <div className="flex justify-between"><span>Vận chuyển</span><span>{shipping === 0 ? "Miễn phí" : `${shipping.toLocaleString("vi-VN")} đ`}</span></div>
       <div className="flex justify-between border-t border-forest-800/10 pt-2 text-sm font-medium text-forest-950"><span>Tổng cộng</span><span className="font-serif text-xl">{total.toLocaleString("vi-VN")} đ</span></div>
     </div>

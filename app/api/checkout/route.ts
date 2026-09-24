@@ -19,10 +19,10 @@ function validItems(value: unknown): value is CheckoutItem[] {
 
 /** The browser never supplies prices or a payment confirmation. QLBH creates the order. */
 export async function POST(request: NextRequest) {
-  const apiUrl = process.env.QLBH_API_URL?.replace(/\/+$/, "");
+  const apiUrl = (process.env.QLBH_API_URL || "https://api.rungu.com.vn").trim().replace(/\/+$/, "");
   const secret = process.env.WAREHOUSE_WEBHOOK_SECRET;
 
-  if (!apiUrl || !secret) {
+  if (!secret) {
     return NextResponse.json(
       { success: false, error: "Hệ thống đặt hàng chưa được kết nối. Vui lòng liên hệ cửa hàng." },
       { status: 503 },
@@ -35,12 +35,14 @@ export async function POST(request: NextRequest) {
   }
 
   const body = input as Record<string, unknown>;
+  const voucherCode = typeof body.voucher_code === "string" ? body.voucher_code.trim().toUpperCase() : "";
   if (!validItems(body.items)
     || !["cod", "bank_transfer"].includes(String(body.payment_method))
     || typeof body.checkout_ref !== "string"
     || !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(body.checkout_ref)
     || !Number.isSafeInteger(body.expected_total_amount)
-    || Number(body.expected_total_amount) < 0) {
+    || Number(body.expected_total_amount) < 0
+    || (voucherCode !== "" && !/^[A-Z0-9_-]{1,50}$/.test(voucherCode))) {
     return NextResponse.json(
       { success: false, error: "Giỏ hàng hoặc hình thức thanh toán không hợp lệ. Vui lòng tải lại trang." },
       { status: 400 },
@@ -59,6 +61,7 @@ export async function POST(request: NextRequest) {
     payment_method: body.payment_method,
     checkout_ref: body.checkout_ref,
     expected_total_amount: body.expected_total_amount,
+    voucher_code: voucherCode || null,
     items: body.items,
   };
 
