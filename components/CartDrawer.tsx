@@ -129,6 +129,10 @@ export default function CartDrawer() {
       && Number.isInteger(item.quantity) && item.quantity > 0 && item.quantity <= 100,
   );
   const currentQuote = quote?.key === quoteKey ? quote.data : null;
+  // Keep showing the last quote while a payment-method change is being
+  // recalculated. The submit button remains disabled until the new quote
+  // arrives, but the applied voucher should not appear to disappear.
+  const displayedQuote = currentQuote ?? (appliedVoucherCode && quote ? quote.data : null);
 
   const getCheckoutRef = (fingerprint: string) => {
     let previous = checkoutAttempt.current;
@@ -238,6 +242,7 @@ export default function CartDrawer() {
       setQuoteError("Mã giảm giá chỉ gồm chữ cái, số, dấu gạch ngang hoặc gạch dưới.");
       return;
     }
+    setVoucherCode(normalized);
     setQuote(null);
     setQuoteError("");
     setAppliedVoucherCode(normalized);
@@ -334,7 +339,7 @@ export default function CartDrawer() {
         onClick={closeDrawer}
       />
 
-      <div className={`absolute top-0 right-0 bottom-0 w-full max-w-xl bg-white border-l border-forest-800/15 p-5 sm:p-6 flex flex-col transform transition-transform duration-300 ease-out pointer-events-auto shadow-2xl ${isCartOpen ? "translate-x-0" : "translate-x-full"}`}>
+      <div className={`absolute top-0 right-0 bottom-0 w-full max-w-2xl bg-white border-l border-forest-800/15 p-6 sm:p-8 flex flex-col transform transition-transform duration-300 ease-out pointer-events-auto shadow-2xl ${isCartOpen ? "translate-x-0" : "translate-x-full"}`}>
         <div className="flex items-center justify-between border-b border-forest-800/10 pb-4">
           <div className="flex items-center gap-2">
             {checkoutMode && !result ? (
@@ -344,7 +349,7 @@ export default function CartDrawer() {
             ) : (
               <ShoppingBag className="h-5 w-5 text-forest-700" />
             )}
-            <span className="font-serif text-xl text-forest-950 tracking-wider">
+            <span className="font-serif text-2xl sm:text-3xl text-forest-950 tracking-wider">
               {result ? "Đặt hàng thành công" : checkoutMode ? "Thông tin nhận hàng" : "Giỏ hàng"}
             </span>
             {!checkoutMode && !result && <span className="text-xs text-forest-700">({itemCount})</span>}
@@ -451,27 +456,27 @@ export default function CartDrawer() {
           </div>
         ) : checkoutMode ? (
           <form onSubmit={submitOrder} className="flex min-h-0 flex-1 flex-col">
-            <div className="flex-1 space-y-4 overflow-y-auto py-5 pr-1">
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <div className="flex-1 space-y-5 overflow-y-auto py-6 pr-1">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <Field label="Họ và tên" required value={form.customer_name} onChange={(value) => setForm({ ...form, customer_name: value })} />
                 <Field label="Số điện thoại" required type="tel" value={form.customer_phone} onChange={(value) => setForm({ ...form, customer_phone: value })} />
               </div>
               <Field label="Email (không bắt buộc)" type="email" value={form.customer_email} onChange={(value) => setForm({ ...form, customer_email: value })} />
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <Field label="Tỉnh / Thành phố" required value={form.province} onChange={(value) => setForm({ ...form, province: value })} />
                 <Field label="Phường / Xã" required value={form.ward} onChange={(value) => setForm({ ...form, ward: value })} />
               </div>
               <Field label="Số nhà, tên đường" required value={form.address} onChange={(value) => setForm({ ...form, address: value })} />
 
-              <label className="block text-xs text-forest-800">
-                <span className="mb-1.5 block font-[Arial,sans-serif] text-[13px] font-semibold text-forest-900">Ghi chú</span>
-                <textarea value={form.note} onChange={(event) => setForm({ ...form, note: event.target.value })} rows={3} className="w-full border border-forest-800/35 bg-white px-3 py-2.5 font-[Arial,sans-serif] text-[14px] font-medium text-forest-950 outline-none transition focus:border-forest-950 focus:ring-2 focus:ring-forest-800/15" />
+              <label className="block text-sm text-forest-800">
+                <span className="mb-1.5 block font-[Arial,sans-serif] text-[14px] font-semibold text-forest-900">Ghi chú</span>
+                <textarea value={form.note} onChange={(event) => setForm({ ...form, note: event.target.value })} rows={4} className="min-h-28 w-full border border-forest-800/35 bg-white px-3 py-3 font-[Arial,sans-serif] text-[15px] font-medium text-forest-950 outline-none transition focus:border-forest-950 focus:ring-2 focus:ring-forest-800/15" />
               </label>
 
-              <section className="border border-forest-800/20 bg-forest-50/70 p-3.5" aria-labelledby="voucher-heading">
+              <section className="border border-forest-800/20 bg-forest-50/70 p-4" aria-labelledby="voucher-heading">
                 <div className="mb-2 flex items-center gap-2">
                   <Ticket className="h-4 w-4 text-amberWood-dark" aria-hidden="true" />
-                  <h3 id="voucher-heading" className="font-[Arial,sans-serif] text-[13px] font-semibold tracking-normal text-forest-950">Mã giảm giá</h3>
+                  <h3 id="voucher-heading" className="font-[Arial,sans-serif] text-sm font-semibold tracking-normal text-forest-950">Mã giảm giá</h3>
                 </div>
                 <div className="flex gap-2">
                   <input
@@ -486,38 +491,41 @@ export default function CartDrawer() {
                     maxLength={50}
                     placeholder="Nhập mã voucher"
                     aria-label="Mã giảm giá"
-                    className="min-w-0 flex-1 border border-forest-800/35 bg-white px-3 py-2.5 font-[Arial,sans-serif] text-[14px] font-semibold uppercase tracking-wide text-forest-950 placeholder:normal-case placeholder:font-medium placeholder:tracking-normal placeholder:text-forest-600 outline-none transition focus:border-forest-950 focus:ring-2 focus:ring-forest-800/15"
+                    className="min-w-0 flex-1 border border-forest-800/35 bg-white px-3 py-3 font-[Arial,sans-serif] text-[15px] font-semibold uppercase tracking-wide text-forest-950 placeholder:normal-case placeholder:font-medium placeholder:tracking-normal placeholder:text-forest-600 outline-none transition focus:border-forest-950 focus:ring-2 focus:ring-forest-800/15"
                   />
-                  <button type="button" onClick={applyVoucher} className="shrink-0 border border-forest-800 bg-forest-800 px-3.5 font-[Arial,sans-serif] text-[12px] font-semibold text-white transition-colors hover:bg-forest-950">
+                  <button type="button" onClick={applyVoucher} className="shrink-0 border border-forest-800 bg-forest-800 px-4 font-[Arial,sans-serif] text-[13px] font-semibold text-white transition-colors hover:bg-forest-950">
                     Áp dụng
                   </button>
                 </div>
-                {appliedVoucherCode && currentQuote && (
-                  <div className="mt-2 flex items-center justify-between gap-3 text-[12px] text-forest-800" role="status">
-                    <span>Đã áp dụng mã <strong className="font-[Arial,sans-serif] text-forest-950">{appliedVoucherCode}</strong>.</span>
+                {appliedVoucherCode && (
+                  <div className="mt-2 flex items-center justify-between gap-3 text-[13px] text-forest-800" role="status">
+                    <span>
+                      Đã áp dụng mã <strong className="font-[Arial,sans-serif] text-forest-950">{appliedVoucherCode}</strong>
+                      {!currentQuote && " — đang cập nhật theo phương thức thanh toán mới..."}
+                    </span>
                     <button type="button" onClick={() => { setVoucherCode(""); setAppliedVoucherCode(""); setVoucherRefresh((current) => current + 1); }} className="font-[Arial,sans-serif] font-semibold text-amberWood-dark underline underline-offset-2">Bỏ mã</button>
                   </div>
                 )}
               </section>
 
               <fieldset className="space-y-2">
-                <legend className="mb-1.5 text-xs font-medium text-forest-800">Hình thức thanh toán</legend>
+                <legend className="mb-1.5 text-sm font-medium text-forest-800">Hình thức thanh toán</legend>
                 {enabledMethods.map(([key]) => (
-                  <label key={key} className={`flex cursor-pointer items-center gap-3 border p-3 text-xs ${form.payment_method === key ? "border-forest-800 bg-forest-50" : "border-forest-800/15"}`}>
-                    <input type="radio" name="payment_method" value={key} checked={form.payment_method === key} onChange={() => setForm({ ...form, payment_method: key })} />
+                  <label key={key} className={`flex cursor-pointer items-center gap-3 border p-3.5 text-sm ${form.payment_method === key ? "border-forest-800 bg-forest-50" : "border-forest-800/15"}`}>
+                    <input className="h-4 w-4" type="radio" name="payment_method" value={key} checked={form.payment_method === key} onChange={() => setForm((current) => ({ ...current, payment_method: key }))} />
                     <span>{paymentLabels[key] ?? key}</span>
                   </label>
                 ))}
               </fieldset>
 
-              {enabledMethods.length === 0 && <p role="alert" className="border border-red-200 bg-red-50 p-3 text-xs text-red-700">Chưa có hình thức thanh toán nào sẵn sàng. Vui lòng liên hệ cửa hàng.</p>}
-              {quoteLoading && <p className="text-xs text-forest-600">Đang kiểm tra giá và tồn kho mới nhất...</p>}
-              {quoteError && <p role="alert" className="border border-red-200 bg-red-50 p-3 text-xs leading-5 text-red-700">{quoteError}</p>}
-              {error && <p role="alert" className="border border-red-200 bg-red-50 p-3 text-xs leading-5 text-red-700">{error}</p>}
+              {enabledMethods.length === 0 && <p role="alert" className="border border-red-200 bg-red-50 p-3 text-sm leading-6 text-red-700">Chưa có hình thức thanh toán nào sẵn sàng. Vui lòng liên hệ cửa hàng.</p>}
+              {quoteLoading && <p className="text-sm text-forest-600">Đang kiểm tra giá và tồn kho mới nhất...</p>}
+              {quoteError && <p role="alert" className="border border-red-200 bg-red-50 p-3 text-sm leading-6 text-red-700">{quoteError}</p>}
+              {error && <p role="alert" className="border border-red-200 bg-red-50 p-3 text-sm leading-6 text-red-700">{error}</p>}
             </div>
 
             <div className="space-y-3 border-t border-forest-800/10 pt-4">
-              <Summary subtotal={currentQuote?.subtotal ?? cartTotal} discount={currentQuote?.discount ?? 0} shipping={currentQuote?.shipping_fee ?? estimatedShipping} total={currentQuote?.total_amount ?? grandTotal} />
+              <Summary subtotal={displayedQuote?.subtotal ?? cartTotal} discount={displayedQuote?.discount ?? 0} shipping={displayedQuote?.shipping_fee ?? estimatedShipping} total={displayedQuote?.total_amount ?? grandTotal} />
               {!currentQuote && <p className="text-[11px] text-forest-600">Tổng tiền trên chỉ là dự kiến; chờ xác nhận từ hệ thống quản lý trước khi đặt hàng.</p>}
               <button type="submit" disabled={submitting || quoteLoading || !currentQuote || enabledMethods.length === 0} className="w-full bg-forest-800 py-3.5 text-xs font-semibold uppercase tracking-[0.2em] text-white disabled:cursor-not-allowed disabled:opacity-50">
                 {submitting ? "Đang tạo đơn..." : "Xác nhận đặt hàng"}
@@ -590,9 +598,9 @@ function Field({
   type?: string;
 }) {
   return (
-    <label className="block text-xs text-forest-800">
-      <span className="mb-1.5 block font-[Arial,sans-serif] text-[13px] font-semibold text-forest-900">{label}</span>
-      <input type={type} required={required} value={value} onChange={(event) => onChange(event.target.value)} className="h-11 w-full border border-forest-800/35 bg-white px-3 font-[Arial,sans-serif] text-[14px] font-semibold text-forest-950 outline-none transition placeholder:text-forest-600 focus:border-forest-950 focus:ring-2 focus:ring-forest-800/15" />
+    <label className="block text-sm text-forest-800">
+      <span className="mb-1.5 block font-[Arial,sans-serif] text-[14px] font-semibold text-forest-900">{label}</span>
+      <input type={type} required={required} value={value} onChange={(event) => onChange(event.target.value)} className="h-12 w-full border border-forest-800/35 bg-white px-3 font-[Arial,sans-serif] text-[15px] font-semibold text-forest-950 outline-none transition placeholder:text-forest-600 focus:border-forest-950 focus:ring-2 focus:ring-forest-800/15" />
     </label>
   );
 }
