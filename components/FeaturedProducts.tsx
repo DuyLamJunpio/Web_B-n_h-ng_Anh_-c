@@ -80,7 +80,7 @@ export default function FeaturedProducts() {
 
           {/* Chữ nhỏ */}
           <p className="mt-4 sm:mt-5 text-base sm:text-lg leading-relaxed text-[#5a554c] max-w-2xl mx-auto">
-            Những sản phẩm sáng tạo, chất lượng từ thiên nhiên làm bạn say
+            Những sản phẩm sáng tạo, chất lượng từ thiên nhiên làm bạn say mê
           </p>
         </motion.div>
 
