@@ -11,6 +11,7 @@ import {
   CheckCircle2,
   ChevronDown,
   ChevronUp,
+  Clock3,
   Copy,
   CreditCard,
   MapPin,
@@ -387,7 +388,9 @@ export default function CartDrawer() {
               </div>
             )}
             <span className="font-serif text-2xl sm:text-3xl text-forest-950 font-medium tracking-wide">
-              {result ? "Đặt hàng thành công" : checkoutMode ? "Thông tin đặt hàng" : "Giỏ hàng"}
+              {result
+                ? (form.payment_method === "bank_transfer" && !paymentConfirmed ? "Chờ thanh toán" : "Đặt hàng thành công")
+                : checkoutMode ? "Thông tin đặt hàng" : "Giỏ hàng"}
             </span>
             {!checkoutMode && !result && (
               <span className="rounded-full bg-forest-100 px-2.5 py-0.5 text-xs font-bold text-forest-800">
@@ -409,14 +412,20 @@ export default function CartDrawer() {
         {result ? (
           <div className="flex flex-1 flex-col overflow-y-auto py-5 sm:py-6 px-1">
             <div className="text-center bg-forest-50/70 border border-forest-800/15 rounded-2xl p-5 sm:p-6 shadow-xs">
-              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-emerald-100 text-emerald-700">
-                <CheckCircle2 className="h-8 w-8" strokeWidth={2} />
+              <div className={`mx-auto flex h-14 w-14 items-center justify-center rounded-full ${form.payment_method === "bank_transfer" && !paymentConfirmed ? "bg-amber-100 text-amber-800" : "bg-emerald-100 text-emerald-700"}`}>
+                {form.payment_method === "bank_transfer" && !paymentConfirmed
+                  ? <Clock3 className="h-8 w-8" strokeWidth={2} />
+                  : <CheckCircle2 className="h-8 w-8" strokeWidth={2} />}
               </div>
               <h3 className="mt-3 font-serif text-2xl sm:text-3xl text-forest-950 font-medium">
-                RUNGU đã nhận đơn của bạn!
+                {form.payment_method === "bank_transfer" && !paymentConfirmed
+                  ? "Đơn hàng đang chờ thanh toán"
+                  : "RUNGU đã nhận đơn của bạn!"}
               </h3>
               <p className="mt-1 text-sm text-forest-700">
-                Cảm ơn bạn đã lựa chọn những nốt hương an lành từ thiên nhiên.
+                {form.payment_method === "bank_transfer" && !paymentConfirmed
+                  ? "Đơn đã được tạo và giữ hàng. Vui lòng quét mã QR hoặc chuyển khoản để hoàn tất."
+                  : "Cảm ơn bạn đã lựa chọn những nốt hương an lành từ thiên nhiên."}
               </p>
 
               <div className="mt-4 inline-flex flex-wrap items-center justify-center gap-2 sm:gap-4 rounded-xl bg-white border border-forest-800/15 px-4 py-2.5 shadow-xs">
