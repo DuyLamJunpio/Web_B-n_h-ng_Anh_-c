@@ -114,6 +114,9 @@ export default function CartDrawer() {
   const [voucherCode, setVoucherCode] = useState("");
   const [appliedVoucherCode, setAppliedVoucherCode] = useState("");
   const [voucherRefresh, setVoucherRefresh] = useState(0);
+  const bankQrUrl = result && form.payment_method === "bank_transfer"
+    ? `/api/checkout/qr/${encodeURIComponent(result.checkout_ref)}`
+    : null;
   const checkoutAttempt = useRef<CheckoutAttempt | null>(null);
 
   const orderItems = useMemo(
@@ -417,6 +420,16 @@ export default function CartDrawer() {
                     ? "SePay đã xác nhận chuyển khoản. Cửa hàng sẽ xử lý đơn hàng của bạn."
                     : "Đang chờ SePay xác nhận chuyển khoản. Vui lòng chuyển đúng số tiền và nội dung mã đơn; giữ lại biên lai để được hỗ trợ khi cần."}
                 </p>
+
+                {bankQrUrl && (
+                  <div className="mt-4 border-t border-forest-800/10 pt-4 text-center">
+                    <p className="font-[Arial,sans-serif] text-[12px] font-semibold text-forest-900">Quét mã QR để chuyển khoản đúng số tiền</p>
+                    {/* The protected route creates the VietQR image inside QLBH; payment data is never sent to a QR service. */}
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={bankQrUrl} alt={`Mã QR chuyển khoản cho đơn ${result.order_code}`} className="mx-auto mt-3 h-52 w-52 border border-forest-800/15 bg-white p-2" />
+                    <p className="mt-2 text-[11px] leading-relaxed text-forest-600">Nội dung chuyển khoản là mã đơn <strong className="font-mono text-forest-900">{result.order_code}</strong>.</p>
+                  </div>
+                )}
               </div>
             ) : (
               <div className="mt-6 border border-forest-800/15 bg-[#faf8f4] p-4 text-left text-xs space-y-2">
