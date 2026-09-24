@@ -16,6 +16,7 @@ type CheckoutForm = {
 };
 
 type CheckoutResult = {
+  checkout_ref: string;
   order_code: string;
   total_amount: number;
   shipping_fee: number;
@@ -100,6 +101,7 @@ export default function CartDrawer() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [result, setResult] = useState<CheckoutResult | null>(null);
+  const [paymentConfirmed, setPaymentConfirmed] = useState(false);
   const [quote, setQuote] = useState<QuoteSnapshot | null>(null);
   const [quoteLoading, setQuoteLoading] = useState(false);
   const [quoteError, setQuoteError] = useState("");
@@ -164,6 +166,23 @@ export default function CartDrawer() {
       });
     return () => controller.abort();
   }, [checkoutMode, result, validVariants, quoteKey, orderItems, form.payment_method]);
+
+  useEffect(() => {
+    if (!result?.checkout_ref || form.payment_method !== "bank_transfer" || paymentConfirmed) return;
+    let stopped = false;
+    const check = async () => {
+      try {
+        const response = await fetch(`/api/checkout/status/${result.checkout_ref}`, { cache: "no-store" });
+        const status = await response.json();
+        if (!stopped && response.ok && status.order_code === result.order_code && status.pay_status === 1) {
+          setPaymentConfirmed(true);
+        }
+      } catch { /* Keep the pending state until the next check. */ }
+    };
+    void check();
+    const timer = window.setInterval(check, 5000);
+    return () => { stopped = true; window.clearInterval(timer); };
+  }, [result, form.payment_method, paymentConfirmed]);
 
   const itemCount = cart.reduce((sum, item) => sum + item.qty, 0);
   const salesMethod = storefrontContent.sales[form.payment_method];
@@ -258,7 +277,9 @@ export default function CartDrawer() {
         throw new Error(validationMessage || payload.error || "Không thể tạo đơn hàng.");
       }
 
+      setPaymentConfirmed(Number(payload.pay_status) === 1);
       setResult({
+        checkout_ref: checkoutRef,
         order_code: payload.order_code,
         total_amount: Number(payload.total_amount),
         shipping_fee: Number(payload.shipping_fee),
@@ -367,7 +388,9 @@ export default function CartDrawer() {
                 </div>
 
                 <p className="mt-3 text-[11px] text-forest-600 border-t border-forest-800/10 pt-2.5">
-                  Sau khi chuyển khoản, cửa hàng sẽ đối soát giao dịch và xác nhận đơn. Vui lòng giữ lại biên lai để được hỗ trợ khi cần.
+                  {paymentConfirmed
+                    ? "SePay đã xác nhận chuyển khoản. Cửa hàng sẽ xử lý đơn hàng của bạn."
+                    : "Đang chờ SePay xác nhận chuyển khoản. Vui lòng chuyển đúng số tiền và nội dung mã đơn; giữ lại biên lai để được hỗ trợ khi cần."}
                 </p>
               </div>
             ) : (

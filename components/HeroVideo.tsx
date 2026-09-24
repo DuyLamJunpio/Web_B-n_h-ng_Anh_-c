@@ -146,12 +146,16 @@ export default function HeroVideo() {
     setActiveStory((current) => (current + direction + stories.length) % stories.length);
   };
 
-  // Sync video play state on story change
+  // Sync video play state on story change and ensure muted property is set for autoplay
   useEffect(() => {
-    if (videoRef.current && isPlaying) {
-      videoRef.current.play().catch(() => {});
+    const video = videoRef.current;
+    if (!video) return;
+    video.defaultMuted = true;
+    video.muted = !isSoundOn;
+    if (isPlaying) {
+      video.play().catch(() => {});
     }
-  }, [activeStory, isPlaying]);
+  }, [activeStory, isPlaying, isSoundOn]);
 
   useEffect(() => {
     return () => {
@@ -180,9 +184,10 @@ export default function HeroVideo() {
               src={story.image}
               poster={story.poster || undefined}
               autoPlay
-              muted={!isSoundOn}
+              muted
               loop
               playsInline
+              preload="auto"
               className="h-full w-full object-cover object-center"
             />
           ) : (
