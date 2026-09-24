@@ -129,6 +129,10 @@ export default function CartDrawer() {
       && Number.isInteger(item.quantity) && item.quantity > 0 && item.quantity <= 100,
   );
   const currentQuote = quote?.key === quoteKey ? quote.data : null;
+  // Keep showing the last quote while a payment-method change is being
+  // recalculated. The submit button remains disabled until the new quote
+  // arrives, but the applied voucher should not appear to disappear.
+  const displayedQuote = currentQuote ?? (appliedVoucherCode && quote ? quote.data : null);
 
   const getCheckoutRef = (fingerprint: string) => {
     let previous = checkoutAttempt.current;
@@ -238,6 +242,7 @@ export default function CartDrawer() {
       setQuoteError("Mã giảm giá chỉ gồm chữ cái, số, dấu gạch ngang hoặc gạch dưới.");
       return;
     }
+    setVoucherCode(normalized);
     setQuote(null);
     setQuoteError("");
     setAppliedVoucherCode(normalized);
@@ -492,9 +497,12 @@ export default function CartDrawer() {
                     Áp dụng
                   </button>
                 </div>
-                {appliedVoucherCode && currentQuote && (
+                {appliedVoucherCode && (
                   <div className="mt-2 flex items-center justify-between gap-3 text-[13px] text-forest-800" role="status">
-                    <span>Đã áp dụng mã <strong className="font-[Arial,sans-serif] text-forest-950">{appliedVoucherCode}</strong>.</span>
+                    <span>
+                      Đã áp dụng mã <strong className="font-[Arial,sans-serif] text-forest-950">{appliedVoucherCode}</strong>
+                      {!currentQuote && " — đang cập nhật theo phương thức thanh toán mới..."}
+                    </span>
                     <button type="button" onClick={() => { setVoucherCode(""); setAppliedVoucherCode(""); setVoucherRefresh((current) => current + 1); }} className="font-[Arial,sans-serif] font-semibold text-amberWood-dark underline underline-offset-2">Bỏ mã</button>
                   </div>
                 )}
@@ -504,7 +512,7 @@ export default function CartDrawer() {
                 <legend className="mb-1.5 text-sm font-medium text-forest-800">Hình thức thanh toán</legend>
                 {enabledMethods.map(([key]) => (
                   <label key={key} className={`flex cursor-pointer items-center gap-3 border p-3.5 text-sm ${form.payment_method === key ? "border-forest-800 bg-forest-50" : "border-forest-800/15"}`}>
-                    <input className="h-4 w-4" type="radio" name="payment_method" value={key} checked={form.payment_method === key} onChange={() => setForm({ ...form, payment_method: key })} />
+                    <input className="h-4 w-4" type="radio" name="payment_method" value={key} checked={form.payment_method === key} onChange={() => setForm((current) => ({ ...current, payment_method: key }))} />
                     <span>{paymentLabels[key] ?? key}</span>
                   </label>
                 ))}
@@ -517,7 +525,7 @@ export default function CartDrawer() {
             </div>
 
             <div className="space-y-3 border-t border-forest-800/10 pt-4">
-              <Summary subtotal={currentQuote?.subtotal ?? cartTotal} discount={currentQuote?.discount ?? 0} shipping={currentQuote?.shipping_fee ?? estimatedShipping} total={currentQuote?.total_amount ?? grandTotal} />
+              <Summary subtotal={displayedQuote?.subtotal ?? cartTotal} discount={displayedQuote?.discount ?? 0} shipping={displayedQuote?.shipping_fee ?? estimatedShipping} total={displayedQuote?.total_amount ?? grandTotal} />
               {!currentQuote && <p className="text-[11px] text-forest-600">Tổng tiền trên chỉ là dự kiến; chờ xác nhận từ hệ thống quản lý trước khi đặt hàng.</p>}
               <button type="submit" disabled={submitting || quoteLoading || !currentQuote || enabledMethods.length === 0} className="w-full bg-forest-800 py-3.5 text-xs font-semibold uppercase tracking-[0.2em] text-white disabled:cursor-not-allowed disabled:opacity-50">
                 {submitting ? "Đang tạo đơn..." : "Xác nhận đặt hàng"}
