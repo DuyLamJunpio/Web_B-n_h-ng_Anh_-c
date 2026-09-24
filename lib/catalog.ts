@@ -84,6 +84,11 @@ export type StorefrontContent = {
 };
 
 const CATALOG_TAG = "rungu-catalog";
+const DEFAULT_QLBH_API_URL = "https://api.rungu.com.vn";
+
+function getStorefrontApiUrl(): string {
+  return (process.env.QLBH_API_URL || DEFAULT_QLBH_API_URL).trim().replace(/\/+$/, "");
+}
 
 const FALLBACK_CATEGORIES: StorefrontCategory[] = [
   { id: -1, name: "Sáng tạo", slug: "sang-tao", parent_id: null, image: null, count: 0, description: "Tác phẩm nghệ nhân và sáng tạo độc bản" },
@@ -194,8 +199,7 @@ function toProduct(product: StorefrontProduct, apiUrl: string, categorySlugs: Ma
 
 /** Trang chi tiết đọc trực tiếp giá và tồn kho của một sản phẩm theo ID/slug. */
 export async function getCatalogProduct(idOrSlug: string): Promise<Product | null> {
-  const apiUrl = process.env.QLBH_API_URL?.replace(/\/+$/, "");
-  if (!apiUrl) return PRODUCTS.find((product) => product.id === idOrSlug || product.slug === idOrSlug) ?? null;
+  const apiUrl = getStorefrontApiUrl();
 
   try {
     const response = await fetch(`${apiUrl}/api/storefront/products/${encodeURIComponent(idOrSlug)}`, {
@@ -210,10 +214,9 @@ export async function getCatalogProduct(idOrSlug: string): Promise<Product | nul
   }
 }
 
-/** Lấy catalogue từ QLBH; dữ liệu mẫu chỉ dùng khi chưa cấu hình API. */
+/** Lấy catalogue đang được quản trị trong QLBH. */
 export async function getCatalogProducts(): Promise<Product[]> {
-  const apiUrl = process.env.QLBH_API_URL?.replace(/\/+$/, "");
-  if (!apiUrl) return PRODUCTS;
+  const apiUrl = getStorefrontApiUrl();
 
   try {
     const response = await fetch(`${apiUrl}/api/storefront/products`, {
@@ -242,8 +245,7 @@ export async function getStorefrontCategories(): Promise<StorefrontCategory[]> {
     ...category,
     count: PRODUCTS.filter((product) => product.category === category.slug).length,
   }));
-  const apiUrl = process.env.QLBH_API_URL?.replace(/\/+$/, "");
-  if (!apiUrl) return fallback;
+  const apiUrl = getStorefrontApiUrl();
 
   try {
     const response = await fetch(`${apiUrl}/api/storefront/categories`, {
@@ -273,7 +275,7 @@ export async function getStorefrontCategories(): Promise<StorefrontCategory[]> {
 
 /** Nội dung và chính sách bán hàng được quản trị từ QLBH. */
 export async function getStorefrontContent(): Promise<StorefrontContent> {
-  const apiUrl = process.env.QLBH_API_URL?.replace(/\/+$/, "");
+  const apiUrl = getStorefrontApiUrl();
   const fallback: StorefrontContent = {
     banners: [],
     collections: [],
@@ -284,8 +286,6 @@ export async function getStorefrontContent(): Promise<StorefrontContent> {
       bank_transfer: { enabled: true, free_shipping: true, shipping_fee: 0, free_shipping_min_items: null },
     },
   };
-
-  if (!apiUrl) return fallback;
 
   try {
     const response = await fetch(`${apiUrl}/api/storefront/content`, {
