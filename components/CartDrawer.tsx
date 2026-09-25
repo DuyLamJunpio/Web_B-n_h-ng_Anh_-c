@@ -497,7 +497,9 @@ export default function CartDrawer() {
 
               <div className="mt-4 inline-flex flex-wrap items-center justify-center gap-2 sm:gap-4 rounded-xl bg-white border border-forest-800/15 px-4 py-2.5 shadow-xs">
                 <div className="text-left">
-                  <span className="text-xs font-medium text-forest-600 block">Mã thanh toán</span>
+                  <span className="text-xs font-medium text-forest-600 block">
+                    {isBankPaymentPending ? "Mã thanh toán" : "Mã đơn hàng"}
+                  </span>
                   <strong className="font-mono text-base font-bold text-forest-950">{result.order_code}</strong>
                 </div>
                 <div className="h-8 w-px bg-forest-800/10 hidden sm:block" />
@@ -510,7 +512,7 @@ export default function CartDrawer() {
               </div>
             </div>
 
-            {form.payment_method === "bank_transfer" && bank ? (
+            {isBankPaymentPending && bank ? (
               <div className="mt-5 rounded-2xl border border-forest-800/20 bg-[#faf8f4] p-4 sm:p-6 text-left shadow-xs">
                 <div className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-forest-950 mb-3 border-b border-forest-800/10 pb-2.5">
                   <Building2 className="h-4 w-4 text-amberWood-dark" />
