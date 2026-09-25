@@ -454,7 +454,7 @@ function CheckoutContent() {
     <div className="min-h-screen bg-[#f7f5f0] text-forest-950 font-ui selection:bg-[#9d753d] selection:text-white pb-16 sm:pb-24 overflow-x-hidden">
       {/* Top Banner / Breadcrumb - Compact on mobile */}
       <div className="border-b border-forest-800/10 bg-white sticky top-0 z-30 shadow-2xs">
-        <div className="mx-auto max-w-7xl px-3.5 sm:px-6 lg:px-8 py-3 sm:py-4 flex items-center justify-between gap-2 sm:gap-4">
+        <div className="mx-auto max-w-[1600px] px-3.5 sm:px-6 lg:px-8 xl:px-12 py-3 sm:py-4 flex items-center justify-between gap-2 sm:gap-4">
           <div className="flex items-center gap-2 sm:gap-3 min-w-0">
             <Link
               href="/"
@@ -490,7 +490,7 @@ function CheckoutContent() {
       </div>
 
       {/* Stepper indicator - Fully responsive for all mobile widths */}
-      <div className="mx-auto max-w-7xl px-3.5 sm:px-6 lg:px-8 pt-4 sm:pt-6">
+      <div className="mx-auto max-w-[1600px] px-3.5 sm:px-6 lg:px-8 xl:px-12 pt-4 sm:pt-6">
         <div className="flex items-center justify-center gap-1.5 sm:gap-4 text-[11px] sm:text-sm font-semibold text-forest-600">
           <div className={`flex items-center gap-1 sm:gap-1.5 shrink-0 ${!result ? "text-amberWood-dark font-bold" : "text-emerald-700"}`}>
             <span className={`flex h-5 w-5 sm:h-6 sm:w-6 items-center justify-center rounded-full text-[10px] sm:text-xs text-white shrink-0 ${!result ? "bg-amberWood-dark" : "bg-emerald-600"}`}>
@@ -519,7 +519,7 @@ function CheckoutContent() {
       </div>
 
       {/* Main Container */}
-      <div className="mx-auto max-w-7xl px-3.5 sm:px-6 lg:px-8 pt-5 sm:pt-8">
+      <div className="mx-auto max-w-[1600px] px-3.5 sm:px-6 lg:px-8 xl:px-12 pt-5 sm:pt-8">
         {result ? (
           /* ==================== VIEW: PAYMENT / SUCCESS RESULT ==================== */
           <div className="mx-auto max-w-3xl">
@@ -818,22 +818,22 @@ function CheckoutContent() {
               )}
             </div>
 
-            <form onSubmit={submitOrder} className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-8 lg:gap-12 items-start">
-              {/* Left Column: Delivery Form, Voucher, Payment Method */}
-              <div className="lg:col-span-7 space-y-5 sm:space-y-7">
+            <form onSubmit={submitOrder} className="grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-5 xl:gap-7 items-start">
+              {/* Column 1: Customer & Delivery Details */}
+              <div className="lg:col-span-4 xl:col-span-5 space-y-4 sm:space-y-5">
                 {/* Step 1: Customer & Delivery Details */}
-                <div className="rounded-2xl sm:rounded-3xl border border-forest-800/15 bg-white p-4 sm:p-7 md:p-8 shadow-sm space-y-4 sm:space-y-5">
+                <div className="rounded-2xl sm:rounded-3xl border border-forest-800/15 bg-white p-4 sm:p-6 xl:p-7 shadow-sm space-y-4 sm:space-y-5">
                   <div className="flex items-center gap-2 pb-3.5 border-b border-forest-800/10">
                     <div className="flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-full bg-forest-50 text-amberWood-dark font-bold text-xs sm:text-sm border border-forest-800/15 shrink-0">
                       1
                     </div>
                     <MapPin className="h-4 w-4 sm:h-5 sm:w-5 text-amberWood-dark shrink-0" />
-                    <h2 className="text-sm sm:text-lg font-bold uppercase tracking-wider text-forest-950">
+                    <h2 className="text-sm sm:text-base xl:text-lg font-bold uppercase tracking-wider text-forest-950">
                       Thông tin giao hàng
                     </h2>
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 gap-3.5 sm:gap-4">
                     <InputField
                       id="customer_name"
                       name="name"
@@ -871,7 +871,7 @@ function CheckoutContent() {
                     onChange={(val) => setForm({ ...form, customer_email: val })}
                   />
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 gap-3.5 sm:gap-4">
                     <InputField
                       id="province"
                       name="province"
@@ -920,15 +920,83 @@ function CheckoutContent() {
                     />
                   </div>
                 </div>
+              </div>
 
-                {/* Step 2: Voucher Section */}
-                <div className="rounded-2xl sm:rounded-3xl border border-forest-800/15 bg-white p-3.5 sm:p-7 md:p-8 shadow-sm space-y-3.5 max-w-full overflow-hidden">
+              {/* Column 2: Payment Method & Voucher */}
+              <div className="lg:col-span-4 xl:col-span-3 space-y-4 sm:space-y-5">
+                {/* Step 2: Payment Method Selection */}
+                <div className="rounded-2xl sm:rounded-3xl border border-forest-800/15 bg-white p-4 sm:p-5 xl:p-6 shadow-sm space-y-3.5">
                   <div className="flex items-center gap-2 pb-3.5 border-b border-forest-800/10">
                     <div className="flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-full bg-forest-50 text-amberWood-dark font-bold text-xs sm:text-sm border border-forest-800/15 shrink-0">
                       2
                     </div>
+                    <CreditCard className="h-4 w-4 sm:h-5 sm:w-5 text-amberWood-dark shrink-0" />
+                    <h2 className="text-sm sm:text-base xl:text-lg font-bold uppercase tracking-wider text-forest-950">
+                      Hình thức thanh toán
+                    </h2>
+                  </div>
+
+                  <div className="space-y-2.5">
+                    {enabledMethods.map(([key]) => {
+                      const isSelected = form.payment_method === key;
+                      const isCOD = key === "cod";
+                      const isBank = key === "bank_transfer";
+
+                      return (
+                        <label
+                          key={key}
+                          className={`flex cursor-pointer items-start gap-3 rounded-xl sm:rounded-2xl border p-3 sm:p-3.5 transition-all ${
+                            isSelected
+                              ? "border-forest-900 bg-forest-50/90 ring-2 ring-forest-900/15 shadow-sm"
+                              : "border-forest-800/20 bg-white hover:border-forest-800/40 hover:bg-forest-50/30"
+                          }`}
+                        >
+                          <input
+                            type="radio"
+                            name="payment_method"
+                            value={key}
+                            checked={isSelected}
+                            onChange={() => setForm((c) => ({ ...c, payment_method: key }))}
+                            className="mt-0.5 h-4.5 w-4.5 text-forest-900 accent-forest-900 focus:ring-forest-800 shrink-0"
+                          />
+                          <div className="flex-1 min-w-0">
+                            <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+                              {isCOD ? (
+                                <Truck className="h-4 w-4 sm:h-4.5 sm:w-4.5 text-amberWood-dark shrink-0" />
+                              ) : isBank ? (
+                                <QrCode className="h-4 w-4 sm:h-4.5 sm:w-4.5 text-amberWood-dark shrink-0" />
+                              ) : null}
+                              <span className="text-xs sm:text-sm xl:text-base font-bold text-forest-950 leading-snug">
+                                {paymentLabels[key] ?? key}
+                              </span>
+                              {isBank && (
+                                <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] sm:text-xs font-bold text-emerald-800 shrink-0">
+                                  VietQR Tự động
+                                </span>
+                              )}
+                            </div>
+                            <p className="mt-1 text-[11px] sm:text-xs text-forest-700 leading-relaxed">
+                              {isCOD
+                                ? "Nhận hàng tận nơi, kiểm tra sản phẩm trước khi thanh toán tiền mặt cho nhân viên giao hàng."
+                                : isBank
+                                ? "Quét mã VietQR tiện lợi bằng ứng dụng mọi ngân hàng. Xác nhận thanh toán tự động tức thì."
+                                : "Thanh toán cho đơn hàng."}
+                            </p>
+                          </div>
+                        </label>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Step 3: Voucher Section */}
+                <div className="rounded-2xl sm:rounded-3xl border border-forest-800/15 bg-white p-4 sm:p-5 xl:p-6 shadow-sm space-y-3.5 max-w-full overflow-hidden">
+                  <div className="flex items-center gap-2 pb-3.5 border-b border-forest-800/10">
+                    <div className="flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-full bg-forest-50 text-amberWood-dark font-bold text-xs sm:text-sm border border-forest-800/15 shrink-0">
+                      3
+                    </div>
                     <Ticket className="h-4 w-4 sm:h-5 sm:w-5 text-amberWood-dark shrink-0" />
-                    <h2 className="text-sm sm:text-lg font-bold uppercase tracking-wider text-forest-950">
+                    <h2 className="text-sm sm:text-base xl:text-lg font-bold uppercase tracking-wider text-forest-950">
                       Mã ưu đãi (Voucher)
                     </h2>
                   </div>
@@ -947,12 +1015,12 @@ function CheckoutContent() {
                       maxLength={50}
                       placeholder="Nhập mã ưu đãi (nếu có)"
                       aria-label="Mã giảm giá"
-                      className="min-w-0 flex-1 w-full rounded-xl sm:rounded-2xl border border-forest-800/25 bg-white px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-base font-semibold uppercase tracking-wider text-forest-950 placeholder:normal-case placeholder:font-normal placeholder:tracking-normal placeholder:text-forest-400 placeholder:text-xs sm:placeholder:text-sm focus:border-forest-900 focus:ring-2 focus:ring-forest-800/20 focus:outline-none transition-all shadow-2xs"
+                      className="min-w-0 flex-1 w-full rounded-xl sm:rounded-2xl border border-forest-800/25 bg-white px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm font-semibold uppercase tracking-wider text-forest-950 placeholder:normal-case placeholder:font-normal placeholder:tracking-normal placeholder:text-forest-400 placeholder:text-xs sm:placeholder:text-sm focus:border-forest-900 focus:ring-2 focus:ring-forest-800/20 focus:outline-none transition-all shadow-2xs"
                     />
                     <button
                       type="button"
                       onClick={applyVoucher}
-                      className="rounded-xl sm:rounded-2xl bg-forest-900 px-3.5 sm:px-6 py-2 sm:py-3 text-xs sm:text-sm font-bold uppercase tracking-wider text-white hover:bg-forest-950 transition-all shadow-2xs shrink-0 cursor-pointer whitespace-nowrap active:scale-[0.98]"
+                      className="rounded-xl sm:rounded-2xl bg-forest-900 px-3.5 sm:px-5 py-2 sm:py-2.5 text-xs sm:text-sm font-bold uppercase tracking-wider text-white hover:bg-forest-950 transition-all shadow-2xs shrink-0 cursor-pointer whitespace-nowrap active:scale-[0.98]"
                     >
                       Áp dụng
                     </button>
@@ -967,7 +1035,7 @@ function CheckoutContent() {
                   )}
 
                   {appliedVoucherCode && (
-                    <div className="flex flex-wrap sm:flex-nowrap items-center justify-between gap-2 rounded-xl sm:rounded-2xl bg-emerald-50 border border-emerald-200 p-2.5 sm:px-4 sm:py-3 text-xs sm:text-sm text-emerald-900 max-w-full" role="status">
+                    <div className="flex flex-wrap sm:flex-nowrap items-center justify-between gap-2 rounded-xl sm:rounded-2xl bg-emerald-50 border border-emerald-200 p-2.5 sm:px-3 sm:py-2.5 text-xs sm:text-sm text-emerald-900 max-w-full" role="status">
                       <div className="flex items-center gap-1.5 min-w-0 flex-1">
                         <Tag className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-emerald-700 shrink-0" />
                         <div className="min-w-0 flex-1 truncate">
@@ -983,78 +1051,13 @@ function CheckoutContent() {
                           setAppliedVoucherCode("");
                           setVoucherRefresh((c) => c + 1);
                         }}
-                        className="inline-flex items-center gap-1 rounded-lg bg-white px-2.5 py-1 text-xs font-bold text-red-600 border border-red-200/80 hover:bg-red-50 hover:text-red-700 transition-colors cursor-pointer shrink-0 ml-auto"
+                        className="inline-flex items-center gap-1 rounded-lg bg-white px-2 py-1 text-xs font-bold text-red-600 border border-red-200/80 hover:bg-red-50 hover:text-red-700 transition-colors cursor-pointer shrink-0 ml-auto"
                       >
                         <X className="h-3.5 w-3.5" />
                         <span>Bỏ mã</span>
                       </button>
                     </div>
                   )}
-                </div>
-
-                {/* Step 3: Payment Method Selection */}
-                <div className="rounded-2xl sm:rounded-3xl border border-forest-800/15 bg-white p-4 sm:p-7 md:p-8 shadow-sm space-y-3.5">
-                  <div className="flex items-center gap-2 pb-3.5 border-b border-forest-800/10">
-                    <div className="flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-full bg-forest-50 text-amberWood-dark font-bold text-xs sm:text-sm border border-forest-800/15 shrink-0">
-                      3
-                    </div>
-                    <CreditCard className="h-4 w-4 sm:h-5 sm:w-5 text-amberWood-dark shrink-0" />
-                    <h2 className="text-sm sm:text-lg font-bold uppercase tracking-wider text-forest-950">
-                      Hình thức thanh toán
-                    </h2>
-                  </div>
-
-                  <div className="space-y-2.5 sm:space-y-3">
-                    {enabledMethods.map(([key]) => {
-                      const isSelected = form.payment_method === key;
-                      const isCOD = key === "cod";
-                      const isBank = key === "bank_transfer";
-
-                      return (
-                        <label
-                          key={key}
-                          className={`flex cursor-pointer items-start gap-3 sm:gap-4 rounded-xl sm:rounded-2xl border p-3.5 sm:p-4.5 transition-all ${
-                            isSelected
-                              ? "border-forest-900 bg-forest-50/90 ring-2 ring-forest-900/15 shadow-sm"
-                              : "border-forest-800/20 bg-white hover:border-forest-800/40 hover:bg-forest-50/30"
-                          }`}
-                        >
-                          <input
-                            type="radio"
-                            name="payment_method"
-                            value={key}
-                            checked={isSelected}
-                            onChange={() => setForm((c) => ({ ...c, payment_method: key }))}
-                            className="mt-0.5 h-4.5 w-4.5 text-forest-900 accent-forest-900 focus:ring-forest-800 shrink-0"
-                          />
-                          <div className="flex-1 min-w-0">
-                            <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
-                              {isCOD ? (
-                                <Truck className="h-4 w-4 sm:h-5 sm:w-5 text-amberWood-dark shrink-0" />
-                              ) : isBank ? (
-                                <QrCode className="h-4 w-4 sm:h-5 sm:w-5 text-amberWood-dark shrink-0" />
-                              ) : null}
-                              <span className="text-xs sm:text-base font-bold text-forest-950 leading-snug">
-                                {paymentLabels[key] ?? key}
-                              </span>
-                              {isBank && (
-                                <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] sm:text-xs font-bold text-emerald-800 shrink-0">
-                                  VietQR Tự động
-                                </span>
-                              )}
-                            </div>
-                            <p className="mt-1 text-[11px] sm:text-sm text-forest-700 leading-relaxed">
-                              {isCOD
-                                ? "Nhận hàng tận nơi, kiểm tra sản phẩm trước khi thanh toán tiền mặt cho nhân viên giao hàng."
-                                : isBank
-                                ? "Quét mã VietQR tiện lợi bằng ứng dụng mọi ngân hàng. Xác nhận thanh toán tự động tức thì."
-                                : "Thanh toán cho đơn hàng."}
-                            </p>
-                          </div>
-                        </label>
-                      );
-                    })}
-                  </div>
                 </div>
 
                 {/* Status and Error Alerts */}
@@ -1072,28 +1075,21 @@ function CheckoutContent() {
                   </div>
                 )}
 
-                {(cartValidationError || quoteError) && (
+                {cartValidationError && (
                   <div role="alert" className="flex items-start gap-2.5 rounded-xl border border-red-200 bg-red-50 p-3.5 text-xs sm:text-sm font-medium text-red-800">
                     <AlertCircle className="h-4 w-4 sm:h-5 sm:w-5 text-red-600 shrink-0 mt-0.5" />
-                    <p>{cartValidationError || quoteError}</p>
-                  </div>
-                )}
-
-                {error && (
-                  <div role="alert" className="flex items-start gap-2.5 rounded-xl border border-red-200 bg-red-50 p-3.5 text-xs sm:text-sm font-medium text-red-800">
-                    <AlertCircle className="h-4 w-4 sm:h-5 sm:w-5 text-red-600 shrink-0 mt-0.5" />
-                    <p>{error}</p>
+                    <p>{cartValidationError}</p>
                   </div>
                 )}
               </div>
 
-              {/* Right Column: Sticky Order Summary & Submit Button */}
-              <div className="lg:col-span-5 lg:sticky lg:top-20 space-y-5">
-                <div className="rounded-2xl sm:rounded-3xl border border-forest-800/15 bg-white p-4 sm:p-7 md:p-8 shadow-sm space-y-4 sm:space-y-6">
+              {/* Column 3: Sticky Order Summary & Submit Button */}
+              <div className="lg:col-span-4 xl:col-span-4 lg:sticky lg:top-20 space-y-4 sm:space-y-5">
+                <div className="rounded-2xl sm:rounded-3xl border border-forest-800/15 bg-white p-4 sm:p-6 md:p-7 shadow-sm space-y-4 sm:space-y-5">
                   <div className="flex items-center justify-between border-b border-forest-800/10 pb-3 sm:pb-4">
                     <div className="flex items-center gap-2">
                       <ShoppingBag className="h-4 w-4 sm:h-5 sm:w-5 text-forest-700 shrink-0" />
-                      <h2 className="text-sm sm:text-lg font-bold uppercase tracking-wider text-forest-950">
+                      <h2 className="text-sm sm:text-base xl:text-lg font-bold uppercase tracking-wider text-forest-950">
                         Đơn hàng của bạn ({itemCount})
                       </h2>
                     </div>
@@ -1106,7 +1102,7 @@ function CheckoutContent() {
                   </div>
 
                   {/* Items List */}
-                  <div className="space-y-3 max-h-60 sm:max-h-72 overflow-y-auto pr-1">
+                  <div className="space-y-3 max-h-56 sm:max-h-64 overflow-y-auto pr-1">
                     {cart.map((item) => (
                       <div key={item.cartKey} className="flex items-center gap-3 text-xs sm:text-sm">
                         <div className="h-14 w-14 sm:h-16 sm:w-16 flex-shrink-0 overflow-hidden rounded-xl bg-forest-50 border border-forest-800/10">
@@ -1158,7 +1154,7 @@ function CheckoutContent() {
                   </div>
 
                   {/* Free shipping banner */}
-                  <div className="flex items-center gap-2 rounded-xl bg-forest-50 border border-forest-800/10 p-2.5 sm:p-3 text-[11px] sm:text-xs font-medium text-forest-800">
+                  <div className="flex items-center gap-2 rounded-xl bg-forest-50 border border-forest-800/10 p-2.5 text-[11px] sm:text-xs font-medium text-forest-800">
                     <Truck className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-amberWood-dark shrink-0" />
                     <span>
                       {estimatedShipping === 0
@@ -1203,17 +1199,25 @@ function CheckoutContent() {
                         <span className="block text-sm sm:text-base font-bold text-forest-950">Tổng thanh toán</span>
                         <span className="text-[11px] text-forest-600 font-normal">Đã bao gồm VAT &amp; phí</span>
                       </div>
-                      <span className="font-serif text-2xl sm:text-3xl font-bold text-forest-950">
+                      <span className="font-serif text-xl sm:text-2xl xl:text-3xl font-bold text-forest-950">
                         {(displayedQuote?.total_amount ?? grandTotal).toLocaleString("vi-VN")} đ
                       </span>
                     </div>
                   </div>
 
+                  {/* Submission Error in Column 3 */}
+                  {error && (
+                    <div role="alert" className="flex items-start gap-2.5 rounded-xl border border-red-200 bg-red-50 p-3 text-xs sm:text-sm font-medium text-red-800">
+                      <AlertCircle className="h-4 w-4 sm:h-5 sm:w-5 text-red-600 shrink-0 mt-0.5" />
+                      <p>{error}</p>
+                    </div>
+                  )}
+
                   {/* Submit Order Button */}
                   <button
                     type="submit"
                     disabled={submitting || quoteLoading || !currentQuote || enabledMethods.length === 0}
-                    className="h-12 sm:h-14 w-full rounded-xl sm:rounded-2xl bg-forest-900 hover:bg-forest-950 active:scale-[0.99] text-white font-bold text-sm sm:text-lg tracking-wide shadow-md transition-all flex items-center justify-center gap-2 sm:gap-3 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+                    className="h-12 sm:h-14 w-full rounded-xl sm:rounded-2xl bg-forest-900 hover:bg-forest-950 active:scale-[0.99] text-white font-bold text-sm sm:text-base xl:text-lg tracking-wide shadow-md transition-all flex items-center justify-center gap-2 sm:gap-3 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     {submitting ? (
                       <>
