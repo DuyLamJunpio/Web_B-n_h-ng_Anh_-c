@@ -121,10 +121,14 @@ button, a { -webkit-tap-highlight-color: transparent; }
   transition: background-color 240ms ease, color 240ms ease, box-shadow 240ms ease;
 }
 
-.site-header-main:hover {
-  background: #f7f5f0;
+.site-header-main:hover,
+.site-header-main.is-scrolled {
+  background: rgba(247, 245, 240, 0.96);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   color: #24231f;
   box-shadow: 0 10px 30px rgb(36 35 31 / 0.08);
+  border-bottom: 1px solid rgba(40, 39, 35, 0.08);
 }
 
 .header-logo {
@@ -132,7 +136,8 @@ button, a { -webkit-tap-highlight-color: transparent; }
   transition: filter 240ms ease, opacity 220ms ease;
 }
 
-.site-header-main:hover .header-logo {
+.site-header-main:hover .header-logo,
+.site-header-main.is-scrolled .header-logo {
   filter: brightness(0);
 }
 
@@ -161,18 +166,27 @@ button, a { -webkit-tap-highlight-color: transparent; }
 }
 
 .site-header-main:hover .header-link,
-.site-header-main:hover .header-nav-link {
+.site-header-main:hover .header-nav-link,
+.site-header-main.is-scrolled .header-link,
+.site-header-main.is-scrolled .header-nav-link {
   color: #24231f;
   font-weight: 600;
 }
 
 .site-header-main:hover .header-link:hover,
-.site-header-main:hover .header-nav-link:hover {
-  color: #000;
+.site-header-main:hover .header-nav-link:hover,
+.site-header-main.is-scrolled .header-link:hover,
+.site-header-main.is-scrolled .header-nav-link:hover {
+  color: #9d753d;
 }
 
 .header-icon { transition: opacity 220ms ease; }
 .header-icon:hover { opacity: 0.72; }
+
+.site-header-main:hover .header-icon,
+.site-header-main.is-scrolled .header-icon {
+  color: #24231f;
+}
 
 .hero-arrow {
   position: absolute;

@@ -4,7 +4,7 @@ import { useState, useMemo, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { ChevronDown, ArrowRight, ArrowUpRight, Menu, Search, ShoppingBag, X } from "lucide-react";
 import { PRIMARY_CATEGORY_SLUGS, useCart } from "@/lib/CartContext";
 import { countProductsInCategory } from "@/lib/categoryFilters";
@@ -15,16 +15,76 @@ import ProductModal from "./ProductModal";
 
 export default function Header() {
   const router = useRouter();
-  const { cartCount, setCartOpen, products, categories, setSelectedCategory, storefrontContent } = useCart();
+  const pathname = usePathname();
+  const isLightPage = Boolean(pathname?.startsWith("/san-pham/"));
+
+  const { cartCount, isCartOpen, setCartOpen, products, categories, setSelectedCategory, storefrontContent } = useCart();
   const [isNavOpen, setNavOpen] = useState(false);
   const [isSearchOpen, setSearchOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [isProductsHovered, setIsProductsHovered] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const lastScrollY = useRef(0);
+
   const dropdownCloseTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const announcement = storefrontContent.announcement[0]
     || (Object.values(storefrontContent.sales).some((method) => method.enabled && method.free_shipping)
       ? "Miễn phí giao hàng cho đơn hàng RUNGU"
       : "Giao hàng toàn quốc");
+
+  // Smart sticky header: hide on scroll down, show on scroll up
+  useEffect(() => {
+    let rafId: number | null = null;
+    lastScrollY.current = Math.max(0, window.scrollY);
+
+    const handleScroll = () => {
+      if (rafId !== null) return;
+      rafId = window.requestAnimationFrame(() => {
+        rafId = null;
+
+        const currentScrollY = Math.max(0, window.scrollY);
+
+        // Keep header visible whenever an interactive overlay or modal is active
+        if (isNavOpen || isSearchOpen || isCartOpen || isProductsHovered) {
+          setIsVisible(true);
+          lastScrollY.current = currentScrollY;
+          return;
+        }
+
+        // At top of page: always visible, restore hero transparent state
+        if (currentScrollY <= 40) {
+          setIsVisible(true);
+          setIsScrolled(false);
+          lastScrollY.current = currentScrollY;
+          return;
+        }
+
+        setIsScrolled(true);
+
+        const diff = currentScrollY - lastScrollY.current;
+
+        // Ignore micro-scroll jitter (< 8px)
+        if (Math.abs(diff) < 8) return;
+
+        if (diff > 0 && currentScrollY > 80) {
+          // Scrolling DOWN -> hide navbar
+          setIsVisible(false);
+        } else if (diff < 0) {
+          // Scrolling UP -> reveal navbar
+          setIsVisible(true);
+        }
+
+        lastScrollY.current = currentScrollY;
+      });
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => {
+      if (rafId !== null) window.cancelAnimationFrame(rafId);
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, [isNavOpen, isSearchOpen, isCartOpen, isProductsHovered]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -86,19 +146,6 @@ export default function Header() {
     }, 180);
   };
 
-  const navigateTo = (targetId: string, category?: string) => {
-    if (category) {
-      setSelectedCategory(category);
-    }
-    setIsProductsHovered(false);
-    const el = document.getElementById(targetId);
-    if (el) {
-      el.scrollIntoView({ behavior: "smooth" });
-    } else {
-      window.location.href = `/#${targetId}`;
-    }
-  };
-
   const handleAnchorClick = (e: React.MouseEvent<HTMLAnchorElement>, targetId: string) => {
     setIsProductsHovered(false);
     const el = document.getElementById(targetId);
@@ -121,16 +168,16 @@ export default function Header() {
   return (
     <>
       <motion.header
-        initial={{ opacity: 0, y: -8 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, ease: "easeOut" }}
-        className="absolute inset-x-0 top-0 z-40 text-white"
+        initial={{ y: 0 }}
+        animate={{ y: isVisible ? 0 : "-100%" }}
+        transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
+        className="fixed inset-x-0 top-0 z-40 text-white will-change-transform"
       >
         <div className="flex min-h-9 items-center justify-center bg-[#2d2d2b] px-4 text-center text-xs tracking-[0.03em] font-medium">
           {announcement}
         </div>
 
-        <div className="site-header-main">
+        <div className={`site-header-main ${isScrolled || isLightPage ? "is-scrolled" : ""}`}>
           <div className="mx-auto max-w-[1540px] px-5 sm:px-8 lg:px-12">
             <div className="relative flex min-h-[64px] sm:min-h-[76px] items-center justify-center">
               {/* Mobile Left: Menu Toggle Button */}
