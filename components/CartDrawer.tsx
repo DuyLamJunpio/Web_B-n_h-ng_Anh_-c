@@ -39,6 +39,7 @@ type CheckoutForm = {
 type CheckoutResult = {
   checkout_ref: string;
   order_code: string;
+  payment_reference: string;
   total_amount: number;
   shipping_fee: number;
   message?: string;
@@ -337,6 +338,9 @@ export default function CartDrawer() {
       setResult({
         checkout_ref: checkoutRef,
         order_code: payload.order_code,
+        payment_reference: typeof payload.payment_reference === "string" && payload.payment_reference.trim()
+          ? payload.payment_reference
+          : `SEVQR ${payload.order_code}`,
         total_amount: Number(payload.total_amount),
         shipping_fee: Number(payload.shipping_fee),
         message: payload.message,
@@ -487,11 +491,11 @@ export default function CartDrawer() {
                     <span className="text-xs sm:text-sm font-medium text-forest-600">Nội dung chuyển khoản</span>
                     <div className="flex items-center gap-2">
                       <span className="font-mono text-base font-bold rounded-md bg-amber-100/80 border border-amber-300/80 px-2 py-0.5 text-amber-950">
-                        {result.order_code}
+                        {result.payment_reference}
                       </span>
                       <button
                         type="button"
-                        onClick={() => copyToClipboard(result.order_code, "code")}
+                        onClick={() => copyToClipboard(result.payment_reference, "code")}
                         className="inline-flex items-center gap-1 rounded-md bg-white px-2.5 py-1 text-xs font-bold border border-forest-800/20 text-forest-800 hover:bg-forest-100 hover:text-forest-950 transition-colors shadow-2xs cursor-pointer"
                       >
                         {copiedField === "code" ? <Check className="h-3.5 w-3.5 text-emerald-600" /> : <Copy className="h-3.5 w-3.5" />}
@@ -525,7 +529,7 @@ export default function CartDrawer() {
                       />
                     </div>
                     <p className="mt-3 text-xs text-forest-600">
-                      Mở app ngân hàng bất kỳ &gt; Quét QR &gt; Nội dung mã đơn: <strong className="font-mono text-forest-950">{result.order_code}</strong>
+                      Mở app ngân hàng bất kỳ &gt; Quét QR &gt; Nội dung chuyển khoản: <strong className="font-mono text-forest-950">{result.payment_reference}</strong>
                     </p>
                   </div>
                 )}
