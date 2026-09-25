@@ -43,6 +43,7 @@ type CheckoutResult = {
   payment_qr_data_uri?: string | null;
   total_amount: number;
   shipping_fee: number;
+  expires_at?: string | null;
   message?: string;
 };
 
@@ -132,6 +133,8 @@ export default function CartDrawer() {
   const [error, setError] = useState("");
   const [result, setResult] = useState<CheckoutResult | null>(null);
   const [paymentConfirmed, setPaymentConfirmed] = useState(false);
+  const [paymentExpired, setPaymentExpired] = useState(false);
+  const [secondsRemaining, setSecondsRemaining] = useState<number | null>(null);
   const [quote, setQuote] = useState<QuoteSnapshot | null>(null);
   const [quoteLoading, setQuoteLoading] = useState(false);
   const [quoteError, setQuoteError] = useState("");
@@ -143,6 +146,15 @@ export default function CartDrawer() {
     : null;
   const checkoutAttempt = useRef<CheckoutAttempt | null>(null);
 
+  const resetCheckoutAttempt = () => {
+    checkoutAttempt.current = null;
+    try {
+      window.sessionStorage.removeItem(CHECKOUT_ATTEMPT_KEY);
+    } catch {
+      // The cart remains usable if session storage is unavailable.
+    }
+  };
+
   const orderItems = useMemo(
     () => cart.map((item) => ({ variant_id: Number(item.variantId), quantity: item.qty })),
     [cart],
@@ -152,6 +164,9 @@ export default function CartDrawer() {
     Number.isSafeInteger(item.variant_id) && item.variant_id > 0
       && Number.isInteger(item.quantity) && item.quantity > 0 && item.quantity <= 100,
   );
+  const cartValidationError = checkoutMode && !result && !validVariants
+    ? "Giỏ hàng có sản phẩm không còn hợp lệ. Vui lòng xóa và thêm lại từ trang sản phẩm."
+    : "";
   const currentQuote = quote?.key === quoteKey ? quote.data : null;
   // Keep showing the last quote while a payment-method change is being
   // recalculated. The submit button remains disabled until the new quote
@@ -185,43 +200,71 @@ export default function CartDrawer() {
   useEffect(() => {
     if (!checkoutMode || result) return;
     if (!validVariants) {
-      setQuote(null);
-      setQuoteError("Giỏ hàng có sản phẩm không còn hợp lệ. Vui lòng xóa và thêm lại từ trang sản phẩm.");
       return;
     }
 
     const controller = new AbortController();
-    setQuote(null);
-    setQuoteLoading(true);
-    setQuoteError("");
-    requestQuote(orderItems, form.payment_method, appliedVoucherCode, controller.signal)
-      .then((data) => setQuote({ key: quoteKey, data }))
-      .catch((quoteFailure) => {
-        if (!controller.signal.aborted) {
-          setQuoteError(quoteFailure instanceof Error ? quoteFailure.message : "Không kiểm tra được đơn hàng.");
-        }
-      })
-      .finally(() => {
-        if (!controller.signal.aborted) setQuoteLoading(false);
-      });
+    // Bắt đầu ở microtask để effect chỉ đăng ký công việc bất đồng bộ. Khi
+    // khách đổi hình thức thanh toán liên tục, effect cũ có thể bị hủy trước
+    // khi nó kịp thay đổi giao diện.
+    void Promise.resolve().then(() => {
+      if (controller.signal.aborted) return;
+      setQuote(null);
+      setQuoteLoading(true);
+      setQuoteError("");
+      return requestQuote(orderItems, form.payment_method, appliedVoucherCode, controller.signal)
+        .then((data) => setQuote({ key: quoteKey, data }))
+        .catch((quoteFailure) => {
+          if (!controller.signal.aborted) {
+            setQuoteError(quoteFailure instanceof Error ? quoteFailure.message : "Không kiểm tra được đơn hàng.");
+          }
+        })
+        .finally(() => {
+          if (!controller.signal.aborted) setQuoteLoading(false);
+        });
+    });
     return () => controller.abort();
   }, [checkoutMode, result, validVariants, quoteKey, orderItems, form.payment_method, appliedVoucherCode, voucherRefresh]);
 
   useEffect(() => {
-    if (!result?.checkout_ref || form.payment_method !== "bank_transfer" || paymentConfirmed) return;
+    if (!result?.checkout_ref || form.payment_method !== "bank_transfer" || paymentConfirmed || paymentExpired) return;
     let stopped = false;
     const check = async () => {
       try {
         const response = await fetch(`/api/checkout/status/${result.checkout_ref}`, { cache: "no-store" });
         const status = await response.json();
-        if (!stopped && response.ok && status.order_code === result.order_code && status.pay_status === 1) {
-          setPaymentConfirmed(true);
+        if (!stopped && response.ok && status.order_code === result.order_code) {
+          if (status.pay_status === 1) {
+            setPaymentConfirmed(true);
+            setPaymentExpired(false);
+            clearCart();
+            resetCheckoutAttempt();
+          } else if (status.payment_state === "expired") {
+            setPaymentExpired(true);
+          }
         }
       } catch { /* Keep the pending state until the next check. */ }
     };
     void check();
     const timer = window.setInterval(check, 5000);
     return () => { stopped = true; window.clearInterval(timer); };
+  }, [result, form.payment_method, paymentConfirmed, paymentExpired, clearCart]);
+
+  useEffect(() => {
+    if (!result?.expires_at || form.payment_method !== "bank_transfer" || paymentConfirmed) {
+      return;
+    }
+
+    const expiresAt = new Date(result.expires_at).getTime();
+    if (!Number.isFinite(expiresAt)) return;
+    const updateCountdown = () => {
+      const remaining = Math.max(0, Math.ceil((expiresAt - Date.now()) / 1000));
+      setSecondsRemaining(remaining);
+      if (remaining === 0) setPaymentExpired(true);
+    };
+    updateCountdown();
+    const timer = window.setInterval(updateCountdown, 1000);
+    return () => window.clearInterval(timer);
   }, [result, form.payment_method, paymentConfirmed]);
 
   const itemCount = cart.reduce((sum, item) => sum + item.qty, 0);
@@ -232,6 +275,10 @@ export default function CartDrawer() {
   );
   const estimatedShipping = reachesFreeShipping ? 0 : Number(salesMethod?.shipping_fee ?? 0);
   const grandTotal = cartTotal + estimatedShipping;
+  const isBankPaymentPending = form.payment_method === "bank_transfer" && !paymentConfirmed;
+  const countdownLabel = secondsRemaining === null
+    ? "Đang kiểm tra hạn thanh toán…"
+    : `${String(Math.floor(secondsRemaining / 60)).padStart(2, "0")}:${String(secondsRemaining % 60).padStart(2, "0")}`;
 
   const closeDrawer = () => {
     setCartOpen(false);
@@ -245,6 +292,9 @@ export default function CartDrawer() {
       setAppliedVoucherCode("");
       if (result) {
         setResult(null);
+        setPaymentConfirmed(false);
+        setPaymentExpired(false);
+        setSecondsRemaining(null);
         setForm({ ...initialForm, payment_method: defaultPaymentMethod });
       }
     }, 250);
@@ -334,8 +384,9 @@ export default function CartDrawer() {
       }
 
       setPaymentConfirmed(Number(payload.pay_status) === 1);
+      setPaymentExpired(false);
       setResult({
-        checkout_ref: checkoutRef,
+        checkout_ref: typeof payload.checkout_ref === "string" ? payload.checkout_ref : checkoutRef,
         order_code: payload.order_code,
         payment_reference: typeof payload.payment_reference === "string" && payload.payment_reference.trim()
           ? payload.payment_reference
@@ -343,20 +394,30 @@ export default function CartDrawer() {
         payment_qr_data_uri: paymentQrDataUri,
         total_amount: Number(payload.total_amount),
         shipping_fee: Number(payload.shipping_fee),
+        expires_at: typeof payload.expires_at === "string" ? payload.expires_at : null,
         message: payload.message,
       });
-      checkoutAttempt.current = null;
-      try {
-        window.sessionStorage.removeItem(CHECKOUT_ATTEMPT_KEY);
-      } catch {
-        // Session storage may be unavailable in private browsing.
+      // Chuyển khoản mới chỉ có phiên QR, chưa phải đơn. Giữ giỏ hàng đến khi
+      // SePay xác nhận để khách có thể tạo lại mã sau khi hết 15 phút.
+      if (form.payment_method !== "bank_transfer" || Number(payload.pay_status) === 1) {
+        resetCheckoutAttempt();
+        clearCart();
       }
-      clearCart();
     } catch (checkoutError) {
       setError(checkoutError instanceof Error ? checkoutError.message : "Không thể tạo đơn hàng.");
     } finally {
       setSubmitting(false);
     }
+  };
+
+  const restartExpiredPayment = () => {
+    resetCheckoutAttempt();
+    setPaymentConfirmed(false);
+    setPaymentExpired(false);
+    setSecondsRemaining(null);
+    setResult(null);
+    setError("");
+    setCheckoutMode(true);
   };
 
   return (
@@ -393,7 +454,7 @@ export default function CartDrawer() {
             )}
             <span className="font-serif text-2xl sm:text-3xl text-forest-950 font-medium tracking-wide">
               {result
-                ? (form.payment_method === "bank_transfer" && !paymentConfirmed ? "Chờ thanh toán" : "Đặt hàng thành công")
+                ? (isBankPaymentPending ? "Thanh toán chuyển khoản" : "Đặt hàng thành công")
                 : checkoutMode ? "Thông tin đặt hàng" : "Giỏ hàng"}
             </span>
             {!checkoutMode && !result && (
@@ -416,25 +477,27 @@ export default function CartDrawer() {
         {result ? (
           <div className="flex flex-1 flex-col overflow-y-auto py-5 sm:py-6 px-1">
             <div className="text-center bg-forest-50/70 border border-forest-800/15 rounded-2xl p-5 sm:p-6 shadow-xs">
-              <div className={`mx-auto flex h-14 w-14 items-center justify-center rounded-full ${form.payment_method === "bank_transfer" && !paymentConfirmed ? "bg-amber-100 text-amber-800" : "bg-emerald-100 text-emerald-700"}`}>
-                {form.payment_method === "bank_transfer" && !paymentConfirmed
+              <div className={`mx-auto flex h-14 w-14 items-center justify-center rounded-full ${isBankPaymentPending ? "bg-amber-100 text-amber-800" : "bg-emerald-100 text-emerald-700"}`}>
+                {isBankPaymentPending
                   ? <Clock3 className="h-8 w-8" strokeWidth={2} />
                   : <CheckCircle2 className="h-8 w-8" strokeWidth={2} />}
               </div>
               <h3 className="mt-3 font-serif text-2xl sm:text-3xl text-forest-950 font-medium">
-                {form.payment_method === "bank_transfer" && !paymentConfirmed
-                  ? "Đơn hàng đang chờ thanh toán"
+                {isBankPaymentPending
+                  ? (paymentExpired ? "Mã thanh toán đã hết hạn" : "Chờ xác nhận chuyển khoản")
                   : "RUNGU đã nhận đơn của bạn!"}
               </h3>
               <p className="mt-1 text-sm text-forest-700">
-                {form.payment_method === "bank_transfer" && !paymentConfirmed
-                  ? "Đơn đã được tạo và giữ hàng. Vui lòng quét mã QR hoặc chuyển khoản để hoàn tất."
+                {isBankPaymentPending
+                  ? (paymentExpired
+                    ? "Phiên thanh toán đã hết 15 phút và chưa tạo đơn hàng. Hãy tạo mã VietQR mới để tiếp tục."
+                    : "Đây là phiên thanh toán của bạn. Đơn hàng chỉ được tạo sau khi SePay xác nhận tiền vào.")
                   : "Cảm ơn bạn đã lựa chọn những nốt hương an lành từ thiên nhiên."}
               </p>
 
               <div className="mt-4 inline-flex flex-wrap items-center justify-center gap-2 sm:gap-4 rounded-xl bg-white border border-forest-800/15 px-4 py-2.5 shadow-xs">
                 <div className="text-left">
-                  <span className="text-xs font-medium text-forest-600 block">Mã đơn hàng</span>
+                  <span className="text-xs font-medium text-forest-600 block">Mã thanh toán</span>
                   <strong className="font-mono text-base font-bold text-forest-950">{result.order_code}</strong>
                 </div>
                 <div className="h-8 w-px bg-forest-800/10 hidden sm:block" />
@@ -453,6 +516,13 @@ export default function CartDrawer() {
                   <Building2 className="h-4 w-4 text-amberWood-dark" />
                   <span>Thông tin chuyển khoản ngân hàng</span>
                 </div>
+
+                {isBankPaymentPending && (
+                  <div className={`mb-4 flex items-center justify-between rounded-xl border px-3.5 py-3 ${paymentExpired ? "border-red-200 bg-red-50 text-red-800" : "border-amber-200 bg-amber-50 text-amber-950"}`}>
+                    <span className="text-sm font-semibold">{paymentExpired ? "Mã VietQR đã hết hạn" : "Thời gian thanh toán còn lại"}</span>
+                    <strong className="font-mono text-xl tracking-wide">{paymentExpired ? "00:00" : countdownLabel}</strong>
+                  </div>
+                )}
 
                 <div className="space-y-3 text-sm text-forest-800">
                   <div className="flex justify-between items-center py-1 border-b border-forest-800/5">
@@ -510,11 +580,13 @@ export default function CartDrawer() {
                   <p>
                     {paymentConfirmed
                       ? "SePay đã tự động xác nhận chuyển khoản thành công. Cửa hàng đang chuẩn bị đơn hàng của bạn!"
-                      : "Hệ thống SePay tự động kiểm tra chuyển khoản. Vui lòng chuyển chính xác số tiền và nội dung mã đơn để đơn hàng được duyệt tự động ngay lập tức."}
+                      : paymentExpired
+                        ? "Phiên này đã kết thúc và không tạo đơn hàng trong quản trị. Vui lòng tạo mã mới trước khi chuyển khoản."
+                        : "Hệ thống SePay tự động kiểm tra chuyển khoản. Vui lòng chuyển chính xác số tiền và nội dung mã thanh toán để đơn hàng được tạo và duyệt tự động."}
                   </p>
                 </div>
 
-                {bankQrUrl && (
+                {!paymentExpired && bankQrUrl && (
                   <div className="mt-5 border-t border-forest-800/10 pt-4 text-center">
                     <div className="inline-flex items-center gap-1.5 text-sm font-bold text-forest-950 mb-2">
                       <QrCode className="h-4 w-4 text-amberWood-dark" />
@@ -532,6 +604,16 @@ export default function CartDrawer() {
                       Mở app ngân hàng bất kỳ &gt; Quét QR &gt; Nội dung chuyển khoản: <strong className="font-mono text-forest-950">{result.payment_reference}</strong>
                     </p>
                   </div>
+                )}
+
+                {paymentExpired && (
+                  <button
+                    type="button"
+                    onClick={restartExpiredPayment}
+                    className="mt-5 w-full rounded-xl bg-forest-900 py-3.5 text-sm font-bold uppercase tracking-wider text-white transition-colors hover:bg-forest-950"
+                  >
+                    Tạo mã VietQR mới
+                  </button>
                 )}
               </div>
             ) : (
@@ -823,10 +905,10 @@ export default function CartDrawer() {
                 </div>
               )}
 
-              {quoteError && (
+              {(cartValidationError || quoteError) && (
                 <div role="alert" className="flex items-start gap-2.5 rounded-xl border border-red-200 bg-red-50 p-3.5 text-sm font-medium text-red-800">
                   <AlertCircle className="h-5 w-5 text-red-600 shrink-0 mt-0.5" />
-                  <p>{quoteError}</p>
+                  <p>{cartValidationError || quoteError}</p>
                 </div>
               )}
 
