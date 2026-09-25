@@ -27,6 +27,7 @@ import {
   Ticket,
   Trash2,
   Truck,
+  X,
 } from "lucide-react";
 
 type CheckoutForm = {
@@ -799,9 +800,9 @@ function CheckoutContent() {
                       <span>{(displayedQuote?.subtotal ?? cartTotal).toLocaleString("vi-VN")} đ</span>
                     </div>
                     {(displayedQuote?.discount ?? 0) > 0 && (
-                      <div className="flex justify-between text-emerald-800 font-medium">
-                        <span>Giảm voucher</span>
-                        <span>−{displayedQuote?.discount.toLocaleString("vi-VN")} đ</span>
+                      <div className="flex items-center justify-between text-emerald-800 font-medium">
+                        <span className="truncate pr-2">Giảm voucher ({appliedVoucherCode})</span>
+                        <span className="shrink-0 font-bold">−{displayedQuote?.discount.toLocaleString("vi-VN")} đ</span>
                       </div>
                     )}
                     <div className="flex justify-between">
@@ -921,7 +922,7 @@ function CheckoutContent() {
                 </div>
 
                 {/* Step 2: Voucher Section */}
-                <div className="rounded-2xl sm:rounded-3xl border border-forest-800/15 bg-white p-4 sm:p-7 md:p-8 shadow-sm space-y-3.5">
+                <div className="rounded-2xl sm:rounded-3xl border border-forest-800/15 bg-white p-3.5 sm:p-7 md:p-8 shadow-sm space-y-3.5 max-w-full overflow-hidden">
                   <div className="flex items-center gap-2 pb-3.5 border-b border-forest-800/10">
                     <div className="flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-full bg-forest-50 text-amberWood-dark font-bold text-xs sm:text-sm border border-forest-800/15 shrink-0">
                       2
@@ -932,8 +933,9 @@ function CheckoutContent() {
                     </h2>
                   </div>
 
-                  <div className="flex gap-2">
+                  <div className="flex items-stretch gap-2 w-full max-w-full">
                     <input
+                      type="text"
                       value={voucherCode}
                       onChange={(e) => setVoucherCode(e.target.value.toUpperCase())}
                       onKeyDown={(e) => {
@@ -945,25 +947,34 @@ function CheckoutContent() {
                       maxLength={50}
                       placeholder="Nhập mã ưu đãi (nếu có)"
                       aria-label="Mã giảm giá"
-                      className="flex-1 rounded-xl sm:rounded-2xl border border-forest-800/25 bg-white px-3.5 py-2.5 sm:px-4 sm:py-3 text-sm sm:text-base font-semibold uppercase tracking-wider text-forest-950 placeholder:normal-case placeholder:font-normal placeholder:tracking-normal placeholder:text-forest-400 placeholder:text-xs sm:placeholder:text-sm focus:border-forest-900 focus:ring-2 focus:ring-forest-800/20 focus:outline-none transition-all"
+                      className="min-w-0 flex-1 w-full rounded-xl sm:rounded-2xl border border-forest-800/25 bg-white px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-base font-semibold uppercase tracking-wider text-forest-950 placeholder:normal-case placeholder:font-normal placeholder:tracking-normal placeholder:text-forest-400 placeholder:text-xs sm:placeholder:text-sm focus:border-forest-900 focus:ring-2 focus:ring-forest-800/20 focus:outline-none transition-all shadow-2xs"
                     />
                     <button
                       type="button"
                       onClick={applyVoucher}
-                      className="rounded-xl sm:rounded-2xl bg-forest-900 px-4 sm:px-6 py-2.5 sm:py-3 text-xs sm:text-sm font-bold uppercase tracking-wider text-white hover:bg-forest-950 transition-all shadow-2xs shrink-0 cursor-pointer"
+                      className="rounded-xl sm:rounded-2xl bg-forest-900 px-3.5 sm:px-6 py-2 sm:py-3 text-xs sm:text-sm font-bold uppercase tracking-wider text-white hover:bg-forest-950 transition-all shadow-2xs shrink-0 cursor-pointer whitespace-nowrap active:scale-[0.98]"
                     >
                       Áp dụng
                     </button>
                   </div>
 
+                  {/* Immediate feedback inside voucher card */}
+                  {quoteError && (
+                    <div role="alert" className="flex items-start gap-2 rounded-xl border border-red-200 bg-red-50 p-2.5 text-xs text-red-800 max-w-full">
+                      <AlertCircle className="h-4 w-4 text-red-600 shrink-0 mt-0.5" />
+                      <p className="flex-1 min-w-0 leading-relaxed">{quoteError}</p>
+                    </div>
+                  )}
+
                   {appliedVoucherCode && (
-                    <div className="flex items-center justify-between rounded-xl sm:rounded-2xl bg-emerald-50 border border-emerald-200 px-3.5 py-2.5 text-xs sm:text-sm text-emerald-900" role="status">
-                      <div className="flex items-center gap-1.5 min-w-0">
-                        <Tag className="h-3.5 w-3.5 text-emerald-700 shrink-0" />
-                        <span className="truncate">
-                          Mã: <strong className="font-bold text-emerald-950">{appliedVoucherCode}</strong>
-                          {!currentQuote && " (đang tính...)"}
-                        </span>
+                    <div className="flex flex-wrap sm:flex-nowrap items-center justify-between gap-2 rounded-xl sm:rounded-2xl bg-emerald-50 border border-emerald-200 p-2.5 sm:px-4 sm:py-3 text-xs sm:text-sm text-emerald-900 max-w-full" role="status">
+                      <div className="flex items-center gap-1.5 min-w-0 flex-1">
+                        <Tag className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-emerald-700 shrink-0" />
+                        <div className="min-w-0 flex-1 truncate">
+                          <span className="text-emerald-800">Đã áp dụng: </span>
+                          <strong className="font-bold text-emerald-950 font-mono tracking-wide">{appliedVoucherCode}</strong>
+                          {!currentQuote && <span className="text-[11px] text-emerald-700 ml-1">(đang tính...)</span>}
+                        </div>
                       </div>
                       <button
                         type="button"
@@ -972,9 +983,10 @@ function CheckoutContent() {
                           setAppliedVoucherCode("");
                           setVoucherRefresh((c) => c + 1);
                         }}
-                        className="text-xs font-bold text-red-600 hover:text-red-700 underline underline-offset-2 ml-2 cursor-pointer shrink-0"
+                        className="inline-flex items-center gap-1 rounded-lg bg-white px-2.5 py-1 text-xs font-bold text-red-600 border border-red-200/80 hover:bg-red-50 hover:text-red-700 transition-colors cursor-pointer shrink-0 ml-auto"
                       >
-                        Bỏ mã
+                        <X className="h-3.5 w-3.5" />
+                        <span>Bỏ mã</span>
                       </button>
                     </div>
                   )}
@@ -1166,8 +1178,8 @@ function CheckoutContent() {
 
                     {(displayedQuote?.discount ?? 0) > 0 && (
                       <div className="flex justify-between items-center text-emerald-800 font-medium">
-                        <span>Giảm giá voucher</span>
-                        <span className="font-bold">
+                        <span className="truncate pr-2">Giảm giá voucher ({appliedVoucherCode})</span>
+                        <span className="font-bold shrink-0">
                           −{displayedQuote?.discount.toLocaleString("vi-VN")} đ
                         </span>
                       </div>
