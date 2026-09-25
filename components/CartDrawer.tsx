@@ -40,6 +40,7 @@ type CheckoutResult = {
   checkout_ref: string;
   order_code: string;
   payment_reference: string;
+  payment_qr_data_uri?: string | null;
   total_amount: number;
   shipping_fee: number;
   message?: string;
@@ -138,7 +139,7 @@ export default function CartDrawer() {
   const [appliedVoucherCode, setAppliedVoucherCode] = useState("");
   const [voucherRefresh, setVoucherRefresh] = useState(0);
   const bankQrUrl = result && form.payment_method === "bank_transfer"
-    ? `/api/checkout/qr/${encodeURIComponent(result.checkout_ref)}`
+    ? result.payment_qr_data_uri || `/api/checkout/qr/${encodeURIComponent(result.checkout_ref)}`
     : null;
   const checkoutAttempt = useRef<CheckoutAttempt | null>(null);
 
@@ -294,18 +295,9 @@ export default function CartDrawer() {
 
     setSubmitting(true);
     try {
-      // Recheck immediately before creating the order. If anything changed, ask
-      // the customer to review the new amount rather than silently charging it.
-      const latestQuote = await requestQuote(orderItems, form.payment_method, appliedVoucherCode);
-      if (latestQuote.subtotal !== currentQuote.subtotal
-        || latestQuote.discount !== currentQuote.discount
-        || latestQuote.shipping_fee !== currentQuote.shipping_fee
-        || latestQuote.total_amount !== currentQuote.total_amount) {
-        setQuote({ key: quoteKey, data: latestQuote });
-        setError("Giá hoặc phí giao hàng vừa thay đổi. Vui lòng kiểm tra tổng tiền mới và xác nhận lại.");
-        return;
-      }
-
+      // QLBH tính lại toàn bộ giá, khuyến mãi và tồn kho trong transaction khi
+      // tạo đơn. Không gọi quote lần thứ hai ở đây: đó là một chặng mạng thừa
+      // khiến khách phải chờ thêm trước khi thấy VietQR.
       const checkoutDetails = {
         customer_name: form.customer_name.trim(),
         customer_phone: form.customer_phone.trim(),
@@ -341,6 +333,9 @@ export default function CartDrawer() {
         payment_reference: typeof payload.payment_reference === "string" && payload.payment_reference.trim()
           ? payload.payment_reference
           : `SEVQR ${payload.order_code}`,
+        payment_qr_data_uri: typeof payload.payment_qr_data_uri === "string" && payload.payment_qr_data_uri.startsWith("data:image/png;base64,")
+          ? payload.payment_qr_data_uri
+          : null,
         total_amount: Number(payload.total_amount),
         shipping_fee: Number(payload.shipping_fee),
         message: payload.message,
