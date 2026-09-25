@@ -142,8 +142,34 @@ export default function HeroVideo() {
     }
   };
 
+  const touchStartXRef = useRef<number | null>(null);
+  const touchStartYRef = useRef<number | null>(null);
+
   const moveStory = (direction: -1 | 1) => {
     setActiveStory((current) => (current + direction + stories.length) % stories.length);
+  };
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartXRef.current = e.touches[0].clientX;
+    touchStartYRef.current = e.touches[0].clientY;
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartXRef.current === null || touchStartYRef.current === null) return;
+    const diffX = e.changedTouches[0].clientX - touchStartXRef.current;
+    const diffY = e.changedTouches[0].clientY - touchStartYRef.current;
+
+    // Detect horizontal swipe while ignoring vertical page scrolling
+    if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 40) {
+      if (diffX > 0) {
+        moveStory(-1); // Swipe right -> Previous
+      } else {
+        moveStory(1); // Swipe left -> Next
+      }
+    }
+
+    touchStartXRef.current = null;
+    touchStartYRef.current = null;
   };
 
   // Sync video play state on story change and ensure muted property is set for autoplay
@@ -167,7 +193,12 @@ export default function HeroVideo() {
   }, []);
 
   return (
-    <section aria-label="Câu chuyện nổi bật của RUNGU" className="relative min-h-[100dvh] overflow-hidden bg-[#24221f] text-white">
+    <section
+      aria-label="Câu chuyện nổi bật của RUNGU"
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+      className="relative min-h-[100dvh] overflow-hidden bg-[#24221f] text-white"
+    >
       {/* Background Media (Video with Fallback Image) */}
       <AnimatePresence mode="wait">
         <motion.div
@@ -206,49 +237,43 @@ export default function HeroVideo() {
       </AnimatePresence>
 
       {/* Hero Video & Sound Controls (Play/Pause & Sound on/off) */}
-      <div className="absolute top-20 right-4 sm:top-auto sm:bottom-8 sm:left-8 lg:left-12 z-30 flex items-center gap-2">
+      <div className="absolute bottom-5 right-4 sm:bottom-8 sm:left-8 lg:left-12 sm:right-auto z-30 flex items-center rounded-full border border-white/20 bg-black/45 backdrop-blur-md shadow-lg p-1">
         {story.mediaType === "video" && (
           <button
             type="button"
             onClick={togglePlay}
             aria-label={isPlaying ? "Tạm dừng video" : "Phát video"}
             title={isPlaying ? "Tạm dừng video" : "Phát video"}
-            className="group flex items-center gap-2 rounded-full border border-white/30 bg-black/40 sm:bg-white/15 px-3 py-2 text-xs text-white backdrop-blur-md transition-all hover:border-white/60 hover:bg-white/30 cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white"
+            className="flex h-8 w-8 items-center justify-center rounded-full text-white/90 hover:bg-white/20 hover:text-white transition-all active:scale-95 cursor-pointer"
           >
             {isPlaying ? (
-              <>
-                <Pause className="h-3.5 w-3.5 text-white group-hover:text-white" />
-                <span className="hidden sm:inline font-light text-white">Tạm dừng</span>
-              </>
+              <Pause className="h-3.5 w-3.5" />
             ) : (
-              <>
-                <Play className="h-3.5 w-3.5 text-white fill-white" />
-                <span className="hidden sm:inline font-light text-white">Phát video</span>
-              </>
+              <Play className="h-3.5 w-3.5 fill-current ml-0.5" />
             )}
           </button>
         )}
+
+        {story.mediaType === "video" && <div className="h-3.5 w-px bg-white/20 my-auto mx-0.5" />}
 
         <button
           type="button"
           onClick={toggleSound}
           aria-label={isSoundOn ? "Tắt âm thanh" : "Bật âm thanh chuông thiền"}
           title={isSoundOn ? "Tắt âm thanh" : "Bật âm thanh chuông thiền 432Hz"}
-          className={`group flex items-center gap-2 rounded-full border px-3 py-2 text-xs backdrop-blur-md transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#d8b879] ${
-            isSoundOn
-              ? "border-[#d8b879] bg-[#d8b879]/30 text-[#f7e4c6]"
-              : "border-white/30 bg-black/40 sm:bg-white/15 text-white hover:border-white/60 hover:bg-white/30"
+          className={`flex h-8 items-center gap-1.5 rounded-full px-2.5 text-xs text-white/90 hover:bg-white/20 hover:text-white transition-all active:scale-95 cursor-pointer ${
+            isSoundOn ? "text-[#d8b879]" : ""
           }`}
         >
           {isSoundOn ? (
             <>
               <Volume2 className="h-3.5 w-3.5 text-[#e5caa1] animate-pulse" />
-              <span className="hidden sm:inline font-light text-[#f7e4c6]">Chuông thiền 432Hz</span>
+              <span className="hidden sm:inline font-light text-[#f7e4c6] pr-1">Chuông thiền 432Hz</span>
             </>
           ) : (
             <>
-              <VolumeX className="h-3.5 w-3.5 text-white/90 group-hover:text-white" />
-              <span className="hidden sm:inline font-light text-white">Bật âm thanh</span>
+              <VolumeX className="h-3.5 w-3.5 text-white/90" />
+              <span className="hidden sm:inline font-light text-white pr-1">Bật âm thanh</span>
             </>
           )}
         </button>

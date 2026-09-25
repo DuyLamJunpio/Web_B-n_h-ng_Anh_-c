@@ -94,7 +94,7 @@ export default function FeaturedProducts() {
               type="button"
               onClick={() => scroll("left")}
               aria-label="Xem sản phẩm trước"
-              className="absolute -left-2 sm:-left-4 lg:-left-6 top-[38%] -translate-y-1/2 z-20 flex h-11 w-11 sm:h-12 sm:w-12 items-center justify-center rounded-full bg-white/95 text-[#24231f] shadow-lg border border-[#282723]/10 backdrop-blur-md transition-all duration-300 hover:bg-[#24231f] hover:text-white hover:scale-105 active:scale-95 cursor-pointer"
+              className="absolute -left-2 sm:-left-4 lg:-left-6 top-[38%] -translate-y-1/2 z-20 hidden sm:flex h-11 w-11 sm:h-12 sm:w-12 items-center justify-center rounded-full bg-white/95 text-[#24231f] shadow-lg border border-[#282723]/10 backdrop-blur-md transition-all duration-300 hover:bg-[#24231f] hover:text-white hover:scale-105 active:scale-95 cursor-pointer"
             >
               <ChevronLeft className="h-5 w-5" strokeWidth={1.5} />
             </button>
@@ -106,7 +106,7 @@ export default function FeaturedProducts() {
               type="button"
               onClick={() => scroll("right")}
               aria-label="Xem sản phẩm tiếp theo"
-              className="absolute -right-2 sm:-right-4 lg:-right-6 top-[38%] -translate-y-1/2 z-20 flex h-11 w-11 sm:h-12 sm:w-12 items-center justify-center rounded-full bg-white/95 text-[#24231f] shadow-lg border border-[#282723]/10 backdrop-blur-md transition-all duration-300 hover:bg-[#24231f] hover:text-white hover:scale-105 active:scale-95 cursor-pointer"
+              className="absolute -right-2 sm:-right-4 lg:-right-6 top-[38%] -translate-y-1/2 z-20 hidden sm:flex h-11 w-11 sm:h-12 sm:w-12 items-center justify-center rounded-full bg-white/95 text-[#24231f] shadow-lg border border-[#282723]/10 backdrop-blur-md transition-all duration-300 hover:bg-[#24231f] hover:text-white hover:scale-105 active:scale-95 cursor-pointer"
             >
               <ChevronRight className="h-5 w-5" strokeWidth={1.5} />
             </button>

@@ -34,9 +34,19 @@ export default function FeaturedStoryVideo() {
   const [isMuted, setIsMuted] = useState(true);
   const [addedId, setAddedId] = useState<string | null>(null);
   const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
+  const [scrollProgress, setScrollProgress] = useState(0);
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const productScrollRef = useRef<HTMLDivElement>(null);
+
+  const handleProductScroll = () => {
+    if (!productScrollRef.current) return;
+    const { scrollLeft, scrollWidth, clientWidth } = productScrollRef.current;
+    const maxScroll = scrollWidth - clientWidth;
+    if (maxScroll > 0) {
+      setScrollProgress(scrollLeft / maxScroll);
+    }
+  };
   const storyProductCategory = products.find((product) => /palo\s*santo/i.test(product.name))?.category;
   const storyCategory = categories.find((category) => category.slug === storyProductCategory);
   const storyHref = storyCategory
@@ -252,7 +262,7 @@ export default function FeaturedStoryVideo() {
               type="button"
               onClick={() => scrollProducts("left")}
               aria-label="Cuộn sản phẩm sang trái"
-              className="absolute -left-3 sm:-left-4 top-[35%] -translate-y-1/2 z-20 flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-full bg-white/90 text-[#282724] shadow-md border border-[#282723]/15 backdrop-blur-sm transition-all hover:bg-white hover:scale-105 active:scale-95 cursor-pointer"
+              className="absolute -left-3 sm:-left-4 top-[35%] -translate-y-1/2 z-20 hidden sm:flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-full bg-white/90 text-[#282724] shadow-md border border-[#282723]/15 backdrop-blur-sm transition-all hover:bg-white hover:scale-105 active:scale-95 cursor-pointer"
             >
               <ChevronLeft className="h-5 w-5" />
             </button>
@@ -262,7 +272,7 @@ export default function FeaturedStoryVideo() {
               type="button"
               onClick={() => scrollProducts("right")}
               aria-label="Cuộn sản phẩm sang phải"
-              className="absolute -right-3 sm:-right-4 top-[35%] -translate-y-1/2 z-20 flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-full bg-white/90 text-[#282724] shadow-md border border-[#282723]/15 backdrop-blur-sm transition-all hover:bg-white hover:scale-105 active:scale-95 cursor-pointer"
+              className="absolute -right-3 sm:-right-4 top-[35%] -translate-y-1/2 z-20 hidden sm:flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-full bg-white/90 text-[#282724] shadow-md border border-[#282723]/15 backdrop-blur-sm transition-all hover:bg-white hover:scale-105 active:scale-95 cursor-pointer"
             >
               <ChevronRight className="h-5 w-5" />
             </button>
@@ -270,6 +280,7 @@ export default function FeaturedStoryVideo() {
             {/* Horizontal Product Cards Row */}
             <div
               ref={productScrollRef}
+              onScroll={handleProductScroll}
               className="no-scrollbar flex gap-5 sm:gap-6 overflow-x-auto scroll-smooth snap-x snap-mandatory py-2 -mx-2 px-2"
             >
               {filteredProducts.length === 0 && (
@@ -369,6 +380,19 @@ export default function FeaturedStoryVideo() {
                   </div>
                 );
               })}
+            </div>
+
+            {/* Minimalist Progress Track */}
+            <div className="mt-8 flex items-center justify-center">
+              <div className="h-[2px] w-40 sm:w-56 bg-[#24231f]/12 relative overflow-hidden rounded-full">
+                <div
+                  className="absolute top-0 bottom-0 bg-[#24231f] transition-all duration-300 rounded-full"
+                  style={{
+                    left: `${scrollProgress * 65}%`,
+                    width: "35%",
+                  }}
+                />
+              </div>
             </div>
           </div>
         </div>
