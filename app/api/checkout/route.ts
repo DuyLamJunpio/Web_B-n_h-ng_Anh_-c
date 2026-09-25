@@ -65,47 +65,72 @@ export async function POST(request: NextRequest) {
     items: body.items,
   };
 
-  try {
-    const response = await fetch(`${apiUrl}/api/checkout`, {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        "X-Storefront-Secret": secret,
-      },
-      body: JSON.stringify(payload),
-      cache: "no-store",
-      signal: AbortSignal.timeout(15000),
-    });
+  /*
+   * Render/reverse proxy có thể trả HTML hoặc body rỗng vài giây trong lúc
+   * khởi động lại. Cùng checkout_ref được gửi lại nên QLBH sẽ trả đúng đơn đã
+   * tạo, thay vì ghi thêm đơn hay tăng lượt dùng voucher.
+   *
+   * Có một ngân sách chung 15 giây, bằng giới hạn cũ. Vì vậy retry không làm
+   * khách chờ lâu hơn khi API thực sự không sẵn sàng.
+   */
+  const deadline = Date.now() + 15_000;
+  let lastFailure: Record<string, unknown> | null = null;
 
-    const contentType = response.headers.get("content-type") || "";
-    const rawResponse = await response.text();
-    let result: unknown = null;
+  for (const retryDelay of [0, 300, 900]) {
+    if (retryDelay > 0) {
+      await new Promise((resolve) => setTimeout(resolve, retryDelay));
+    }
+
+    const remainingMs = deadline - Date.now();
+    if (remainingMs < 1_000) break;
+
     try {
-      result = rawResponse ? JSON.parse(rawResponse) : null;
-    } catch {
-      // Render/proxy có thể trả một trang HTML khi API đang khởi động lại hoặc
-      // gặp lỗi 5xx. Không ghi body vì có thể chứa dữ liệu vận hành nhạy cảm.
-      console.error("QLBH checkout returned a non-JSON response", {
+      const response = await fetch(`${apiUrl}/api/checkout`, {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          "X-Storefront-Secret": secret,
+        },
+        body: JSON.stringify(payload),
+        cache: "no-store",
+        signal: AbortSignal.timeout(remainingMs),
+      });
+
+      const contentType = response.headers.get("content-type") || "";
+      const rawResponse = await response.text();
+      let result: unknown = null;
+      try {
+        result = rawResponse ? JSON.parse(rawResponse) : null;
+      } catch {
+        // Không ghi body vì trang lỗi từ proxy có thể chứa dữ liệu vận hành.
+      }
+
+      if (result && typeof result === "object") {
+        return NextResponse.json(result, { status: response.status });
+      }
+
+      lastFailure = {
+        kind: "non_json_response",
         status: response.status,
         contentType,
         bodyLength: rawResponse.length,
-      });
+      };
+    } catch (error) {
+      lastFailure = {
+        kind: "request_failed",
+        error: error instanceof Error ? error.name : "unknown_error",
+      };
     }
-    if (!result || typeof result !== "object") {
-      return NextResponse.json(
-        {
-          success: false,
-          error: "Chưa thể xác nhận trạng thái đơn hàng. Vui lòng thử lại sau ít phút; hệ thống sẽ không tạo trùng đơn.",
-        },
-        { status: 502 },
-      );
-    }
-    return NextResponse.json(result, { status: response.status });
-  } catch {
-    return NextResponse.json(
-      { success: false, error: "Không kết nối được hệ thống đặt hàng. Vui lòng thử lại sau ít phút." },
-      { status: 502 },
-    );
   }
+
+  console.error("QLBH checkout did not return JSON after safe retries", lastFailure);
+
+  return NextResponse.json(
+    {
+      success: false,
+      error: "Chưa thể xác nhận trạng thái đơn hàng. Vui lòng thử lại sau ít phút; hệ thống sẽ không tạo trùng đơn.",
+    },
+    { status: 502 },
+  );
 }
