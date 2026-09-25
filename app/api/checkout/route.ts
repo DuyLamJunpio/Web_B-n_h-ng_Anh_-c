@@ -1,5 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 
+// A checkout can legitimately take longer while Render is waking the QLBH
+// service.  Keep the serverless function alive long enough to complete the
+// safe retry sequence instead of returning an error after the first timeout.
+export const maxDuration = 30;
+
 type CheckoutItem = { variant_id: number; quantity: number };
 
 function validItems(value: unknown): value is CheckoutItem[] {
@@ -70,19 +75,27 @@ export async function POST(request: NextRequest) {
    * khởi động lại. Cùng checkout_ref được gửi lại nên QLBH sẽ trả đúng đơn đã
    * tạo, thay vì ghi thêm đơn hay tăng lượt dùng voucher.
    *
-   * Có một ngân sách chung 15 giây, bằng giới hạn cũ. Vì vậy retry không làm
-   * khách chờ lâu hơn khi API thực sự không sẵn sàng.
+   * Mỗi lần gọi có giới hạn riêng. Trước đây request đầu dùng hết ngân sách
+   * 15 giây, nên không còn thời gian thử lại: khách bấm lần hai thì API đã
+   * thức dậy và mới thành công. Các lần dưới đây dùng cùng checkout_ref để
+   * không tạo trùng đơn, đồng thời dành thời gian cho lần gọi tiếp theo.
    */
-  const deadline = Date.now() + 15_000;
+  const deadline = Date.now() + 27_000;
+  const attempts = [
+    { delayMs: 0, timeoutMs: 7_000 },
+    { delayMs: 500, timeoutMs: 11_000 },
+    { delayMs: 1_000, timeoutMs: 9_000 },
+  ];
   let lastFailure: Record<string, unknown> | null = null;
 
-  for (const retryDelay of [0, 300, 900]) {
-    if (retryDelay > 0) {
-      await new Promise((resolve) => setTimeout(resolve, retryDelay));
+  for (const [attemptIndex, attempt] of attempts.entries()) {
+    if (attempt.delayMs > 0) {
+      await new Promise((resolve) => setTimeout(resolve, attempt.delayMs));
     }
 
     const remainingMs = deadline - Date.now();
     if (remainingMs < 1_000) break;
+    const timeoutMs = Math.min(attempt.timeoutMs, remainingMs);
 
     try {
       const response = await fetch(`${apiUrl}/api/checkout`, {
@@ -94,7 +107,7 @@ export async function POST(request: NextRequest) {
         },
         body: JSON.stringify(payload),
         cache: "no-store",
-        signal: AbortSignal.timeout(remainingMs),
+        signal: AbortSignal.timeout(timeoutMs),
       });
 
       const contentType = response.headers.get("content-type") || "";
@@ -112,6 +125,7 @@ export async function POST(request: NextRequest) {
 
       lastFailure = {
         kind: "non_json_response",
+        attempt: attemptIndex + 1,
         status: response.status,
         contentType,
         bodyLength: rawResponse.length,
@@ -119,6 +133,7 @@ export async function POST(request: NextRequest) {
     } catch (error) {
       lastFailure = {
         kind: "request_failed",
+        attempt: attemptIndex + 1,
         error: error instanceof Error ? error.name : "unknown_error",
       };
     }
