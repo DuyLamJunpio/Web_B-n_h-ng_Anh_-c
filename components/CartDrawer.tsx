@@ -139,7 +139,7 @@ export default function CartDrawer() {
   const [appliedVoucherCode, setAppliedVoucherCode] = useState("");
   const [voucherRefresh, setVoucherRefresh] = useState(0);
   const bankQrUrl = result && form.payment_method === "bank_transfer"
-    ? result.payment_qr_data_uri || `/api/checkout/qr/${encodeURIComponent(result.checkout_ref)}`
+    ? result.payment_qr_data_uri || null
     : null;
   const checkoutAttempt = useRef<CheckoutAttempt | null>(null);
 
@@ -326,6 +326,13 @@ export default function CartDrawer() {
         throw new Error(validationMessage || payload.error || "Không thể tạo đơn hàng.");
       }
 
+      const paymentQrDataUri = typeof payload.payment_qr_data_uri === "string" && payload.payment_qr_data_uri.startsWith("data:image/png;base64,")
+        ? payload.payment_qr_data_uri
+        : null;
+      if (form.payment_method === "bank_transfer" && !paymentQrDataUri) {
+        throw new Error("Chưa thể xác nhận mã VietQR. Vui lòng thử lại; hệ thống sẽ không tạo trùng đơn.");
+      }
+
       setPaymentConfirmed(Number(payload.pay_status) === 1);
       setResult({
         checkout_ref: checkoutRef,
@@ -333,9 +340,7 @@ export default function CartDrawer() {
         payment_reference: typeof payload.payment_reference === "string" && payload.payment_reference.trim()
           ? payload.payment_reference
           : `SEVQR ${payload.order_code}`,
-        payment_qr_data_uri: typeof payload.payment_qr_data_uri === "string" && payload.payment_qr_data_uri.startsWith("data:image/png;base64,")
-          ? payload.payment_qr_data_uri
-          : null,
+        payment_qr_data_uri: paymentQrDataUri,
         total_amount: Number(payload.total_amount),
         shipping_fee: Number(payload.shipping_fee),
         message: payload.message,
