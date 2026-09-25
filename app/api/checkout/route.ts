@@ -78,10 +78,26 @@ export async function POST(request: NextRequest) {
       signal: AbortSignal.timeout(15000),
     });
 
-    const result = await response.json().catch(() => null);
+    const contentType = response.headers.get("content-type") || "";
+    const rawResponse = await response.text();
+    let result: unknown = null;
+    try {
+      result = rawResponse ? JSON.parse(rawResponse) : null;
+    } catch {
+      // Render/proxy có thể trả một trang HTML khi API đang khởi động lại hoặc
+      // gặp lỗi 5xx. Không ghi body vì có thể chứa dữ liệu vận hành nhạy cảm.
+      console.error("QLBH checkout returned a non-JSON response", {
+        status: response.status,
+        contentType,
+        bodyLength: rawResponse.length,
+      });
+    }
     if (!result || typeof result !== "object") {
       return NextResponse.json(
-        { success: false, error: "Hệ thống đặt hàng không trả về kết quả hợp lệ. Vui lòng liên hệ cửa hàng trước khi thử lại." },
+        {
+          success: false,
+          error: "Hệ thống đặt hàng tạm thời không phản hồi đúng. Đơn chưa được tạo; vui lòng thử lại sau ít phút.",
+        },
         { status: 502 },
       );
     }
