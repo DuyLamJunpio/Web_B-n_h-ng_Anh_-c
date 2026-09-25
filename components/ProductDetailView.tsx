@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   Star,
   Check,
@@ -20,6 +21,7 @@ import type { Product } from "@/lib/data";
 import { useCart } from "@/lib/CartContext";
 
 export default function ProductDetailView({ product, relatedProducts }: { product: Product; relatedProducts: Product[] }) {
+  const router = useRouter();
   const { addToCart, setCartOpen, storefrontContent } = useCart();
   const [activeImage, setActiveImage] = useState<string>(product.image);
   const [quantity, setQuantity] = useState<number>(1);
@@ -44,7 +46,8 @@ export default function ProductDetailView({ product, relatedProducts }: { produc
   const handleBuyNow = () => {
     const added = addToCart(product.id, selectedVariant?.id, quantity);
     if (!added) return;
-    setCartOpen(true);
+    setCartOpen(false);
+    router.push("/thanh-toan");
   };
 
   const images = product.gallery && product.gallery.length > 0 ? product.gallery : [product.image];

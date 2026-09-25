@@ -115,7 +115,10 @@ export function CartProvider({
 
   useEffect(() => {
     if (!cartHydrated) return;
-    setCart((current) => reconcileCart(current, products));
+    const timer = window.setTimeout(() => {
+      setCart((current) => reconcileCart(current, products));
+    }, 0);
+    return () => window.clearTimeout(timer);
   }, [products, cartHydrated]);
 
   useEffect(() => {
