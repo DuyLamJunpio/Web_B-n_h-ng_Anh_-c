@@ -97,7 +97,7 @@ export default function ProductDetailView({ product, relatedProducts }: { produc
 
             {/* Thumbnail Strip */}
             {media.length > 1 && (
-              <div className="flex gap-4 overflow-x-auto justify-center sm:justify-start pb-2">
+              <div className="flex gap-4 overflow-x-auto justify-start pb-2">
                 {media.map((img, idx) => (
                   <button
                     key={idx}

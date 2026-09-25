@@ -76,8 +76,9 @@ export default function FeaturedStoryVideo() {
     setIsMuted(nextMuted);
   };
 
-  const handleTabClick = (tabId: string) => {
+  const handleTabClick = (tabId: string, event?: React.MouseEvent<HTMLButtonElement>) => {
     setActiveTab(tabId);
+    event?.currentTarget.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
   };
 
   // Category tabs follow the same category list as the rest of the shop.
@@ -236,13 +237,13 @@ export default function FeaturedStoryVideo() {
             </p>
 
             {/* Category Filter Tabs (Aesop tab style with underline) */}
-            <div className="mt-8 flex items-center justify-center sm:justify-start gap-6 sm:gap-8 border-b border-[#282723]/15 overflow-x-auto no-scrollbar w-full">
+            <div className="mt-8 flex items-center justify-start gap-6 sm:gap-8 border-b border-[#282723]/15 overflow-x-auto no-scrollbar w-full -mx-6 px-6 sm:mx-0 sm:px-0 scroll-smooth">
               {categoryTabs.map((tab) => (
                 <button
                   key={tab.id}
                   type="button"
-                  onClick={() => handleTabClick(tab.id)}
-                  className={`relative pb-3 text-base font-medium transition-colors whitespace-nowrap cursor-pointer ${
+                  onClick={(e) => handleTabClick(tab.id, e)}
+                  className={`relative shrink-0 pb-3 text-base font-medium transition-colors whitespace-nowrap cursor-pointer ${
                     activeTab === tab.id ? "text-[#282724] font-semibold" : "text-[#77736b] hover:text-[#282724]"
                   }`}
                 >
