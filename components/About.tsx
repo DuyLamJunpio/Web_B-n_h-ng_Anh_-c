@@ -91,13 +91,6 @@ export default function About() {
           {/* Cinematic Gradient Overlay */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-black/30 pointer-events-none" />
 
-          {/* Top Live Status Pill */}
-          <div className="relative z-10 flex items-center justify-center lg:justify-start">
-            <div className="flex items-center gap-2 rounded-full bg-white/15 backdrop-blur-md px-4 py-2 border border-white/25 text-white text-xs sm:text-sm font-medium tracking-wider uppercase">
-              <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span>Khoảnh khắc thường ngày & hương thơm</span>
-            </div>
-          </div>
 
           {/* Bottom Overlay: Quote Caption & Video Controls */}
           <div className="relative z-10 mt-auto pt-24 text-white text-center lg:text-left flex flex-col items-center lg:items-start">
