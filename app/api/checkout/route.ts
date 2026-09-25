@@ -96,7 +96,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           success: false,
-          error: "Hệ thống đặt hàng tạm thời không phản hồi đúng. Đơn chưa được tạo; vui lòng thử lại sau ít phút.",
+          error: "Chưa thể xác nhận trạng thái đơn hàng. Vui lòng thử lại sau ít phút; hệ thống sẽ không tạo trùng đơn.",
         },
         { status: 502 },
       );
