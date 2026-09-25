@@ -2,10 +2,12 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useCart } from "@/lib/CartContext";
 import { Star, Check, ShoppingBag, X, Shield, Sparkles, Truck, ArrowRight } from "lucide-react";
 
 export default function ProductModal() {
+  const router = useRouter();
   const { selectedProduct, closeProductModal, addToCart, setCartOpen } = useCart();
   const [activeImage, setActiveImage] = useState<string>("");
   const [quantity, setQuantity] = useState<number>(1);
@@ -47,7 +49,8 @@ export default function ProductModal() {
     const added = addToCart(selectedProduct.id, selectedVariant?.id, quantity);
     if (!added) return;
     closeProductModal();
-    setCartOpen(true);
+    setCartOpen(false);
+    router.push("/thanh-toan");
   };
 
   return (
