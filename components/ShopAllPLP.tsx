@@ -215,38 +215,85 @@ export default function ShopAllPLP() {
     };
   }, [isFilterDrawerOpen]);
 
+  const currentCategory = useMemo(() => {
+    if (selectedCategory === "all") return null;
+    return categories.find((c) => c.slug === selectedCategory) || null;
+  }, [categories, selectedCategory]);
+
+  const heroTitle = useMemo(() => {
+    if (searchQuery.trim()) return `Kết quả: "${searchQuery.trim()}"`;
+    if (currentCategory) return currentCategory.name;
+    if (selectedCategory === "new") return "Sản phẩm mới";
+    if (selectedCategory === "sale") return "Ưu đãi đặc biệt";
+    return "Tất cả sản phẩm";
+  }, [searchQuery, currentCategory, selectedCategory]);
+
+  const heroDesc = useMemo(() => {
+    if (searchQuery.trim()) return `Danh sách sản phẩm và công thức tự nhiên phù hợp với từ khóa "${searchQuery.trim()}".`;
+    if (currentCategory?.description) return currentCategory.description;
+    return "Các công thức tự nhiên cho không gian, thân thể và tâm trí. Tuyển chọn từ gỗ Palo Santo Peru ngã đổ tự nhiên, xô thơm trắng California, nhang trầm xứ Quảng và sáp đậu nành thủ công.";
+  }, [searchQuery, currentCategory]);
+
   return (
     <main className="min-h-screen bg-[#f3f0e8] text-[#24231f]">
-      {/* 1. EDITORIAL HERO HEADER (Aesop Style) */}
-      <section className="relative flex min-h-[44vh] items-end overflow-hidden bg-[#24221f] text-white">
-        <Image
-          src="/videos/palo-santo-poster.jpg"
-          alt="Không gian tĩnh lặng của RUNGU"
-          fill
-          priority
-          sizes="100vw"
-          className="object-cover object-center opacity-40"
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#181715]/65 via-[#181715]/40 to-[#181715]/90" />
+      {/* 1. EDITORIAL HERO HEADER (Aesop / RUNGU Luxury Style) */}
+      <section className="relative flex min-h-[50vh] sm:min-h-[56vh] lg:min-h-[62vh] items-end overflow-hidden bg-[#161513] text-white">
+        <div className="absolute inset-0 select-none pointer-events-none">
+          <Image
+            src="/videos/palo-santo-poster.jpg"
+            alt="Không gian tĩnh lặng và hương mộc tự nhiên của RUNGU"
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover object-center opacity-30 sm:opacity-35 scale-105 transition-transform duration-1000 ease-out"
+          />
+          {/* Multi-stage dark gradient overlays for rich contrast and depth */}
+          <div className="absolute inset-0 bg-gradient-to-b from-[#0e0d0c]/90 via-[#141311]/70 to-[#161513]/95" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-[#9d753d]/15 via-transparent to-transparent" />
+        </div>
 
-        <div className="relative mx-auto w-full max-w-[1540px] px-5 pb-12 pt-36 sm:px-8 lg:px-12 sm:pb-16 text-center sm:text-left flex flex-col items-center sm:items-start">
-          <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 text-xs uppercase tracking-[0.2em] font-semibold text-[#d5b27d] mx-auto sm:mx-0">
-            <Link href="/" className="transition-opacity hover:opacity-75">Trang chủ</Link>
-            <span>/</span>
-            <span>Cửa hàng</span>
+        <div className="relative mx-auto w-full max-w-[1540px] px-5 pb-14 pt-40 sm:px-8 sm:pb-16 sm:pt-48 lg:px-12 lg:pb-20 lg:pt-56 flex flex-col items-start text-left">
+          {/* Breadcrumbs & Badge */}
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs uppercase tracking-[0.22em] font-medium text-[#dfbe8c]">
+            <Link href="/" className="transition-colors hover:text-white">
+              Trang chủ
+            </Link>
+            <span className="text-white/40">/</span>
+            <button
+              type="button"
+              onClick={() => setSelectedCategory("all")}
+              className={`transition-colors hover:text-white cursor-pointer ${selectedCategory === "all" && !searchQuery ? "!text-white" : ""}`}
+            >
+              Cửa hàng
+            </button>
+            {currentCategory && (
+              <>
+                <span className="text-white/40">/</span>
+                <span className="!text-white font-semibold">{currentCategory.name}</span>
+              </>
+            )}
+            <span className="hidden sm:inline-block text-white/30">•</span>
+            <span className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full border border-[#dfbe8c]/30 bg-[#dfbe8c]/10 text-[11px] font-normal tracking-[0.16em] text-[#e8cfab]">
+              Bộ sưu tập thuần mộc
+            </span>
           </div>
 
-          <h1 className="mt-4 text-3xl sm:text-5xl lg:text-6xl font-normal tracking-[-0.03em] text-white mx-auto sm:mx-0">
-            Tất cả sản phẩm
+          {/* Main Page Title */}
+          <h1 className="mt-5 sm:mt-7 text-4xl sm:text-6xl lg:text-7xl font-normal tracking-[-0.03em] !text-white drop-shadow-[0_2px_14px_rgba(0,0,0,0.6)] leading-[1.08]">
+            {heroTitle}
           </h1>
 
-          <div className="mt-4 flex flex-col justify-between gap-4 border-t border-white/20 pt-4 sm:flex-row sm:items-end w-full">
-            <p className="max-w-2xl text-sm sm:text-lg leading-relaxed text-white/90 mx-auto sm:mx-0">
-              Các công thức tự nhiên cho không gian, thân thể và tâm trí. Tuyển chọn từ gỗ Palo Santo Peru ngã đổ tự nhiên, xô thơm trắng California, nhang trầm xứ Quảng và sáp đậu nành thủ công.
+          {/* Bottom metadata & description with generous divider */}
+          <div className="mt-6 sm:mt-8 w-full border-t border-white/20 pt-6 sm:pt-8 flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
+            <p className="max-w-2xl text-sm sm:text-base lg:text-lg leading-relaxed !text-white/90 font-light drop-shadow-sm">
+              {heroDesc}
             </p>
-            <span className="font-mono text-xs sm:text-sm uppercase tracking-[0.16em] text-white/80 mx-auto sm:mx-0">
-              {filteredProducts.length} trên {products.length} công thức
-            </span>
+            <div className="shrink-0 flex items-center gap-3 sm:self-end">
+              <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-white/20 bg-white/10 font-mono text-xs sm:text-sm uppercase tracking-[0.18em] !text-white/90 backdrop-blur-md shadow-xs">
+                <span className="inline-block h-1.5 w-1.5 rounded-full bg-[#dfbe8c] animate-pulse" />
+                {filteredProducts.length} trên {products.length} công thức
+              </span>
+            </div>
           </div>
         </div>
       </section>
@@ -472,12 +519,19 @@ export default function ShopAllPLP() {
                         <Eye className="h-4 w-4" strokeWidth={1.25} />
                       </button>
 
-                      {/* Badge if available */}
-                      {product.badge && (
-                        <span className="absolute left-4 top-4 border border-[#282723]/15 bg-[#faf8f5]/90 px-2.5 py-1 text-[10px] uppercase tracking-[0.16em] text-[#625f57]">
-                          {product.badge}
-                        </span>
-                      )}
+                      {/* Top Badges */}
+                      <div className="absolute left-4 top-4 flex flex-col gap-1.5 items-start z-10 pointer-events-none">
+                        {product.badge && (
+                          <span className="border border-[#282723]/15 bg-[#faf8f5]/90 px-2.5 py-1 text-[10px] uppercase tracking-[0.16em] text-[#625f57]">
+                            {product.badge}
+                          </span>
+                        )}
+                        {product.originalPrice && product.originalPrice > product.price && (
+                          <span className="rounded-full bg-red-600 px-2 py-0.5 text-[10px] font-bold text-white shadow-sm">
+                            -{product.discountPercent ?? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}%
+                          </span>
+                        )}
+                      </div>
                     </div>
 
                     {/* Content Box */}
@@ -509,16 +563,27 @@ export default function ShopAllPLP() {
                       {/* Price & Add to Cart (Aesop Minimalist Bar) */}
                       <div className="mt-auto pt-6 w-full">
                         <div className="flex flex-col sm:flex-row items-center justify-between border-t border-[#282723]/15 pt-4 gap-3 sm:gap-0">
-                          <div className="flex items-baseline gap-2">
-                            <span className="text-base sm:text-lg font-bold text-[#24231f] tracking-tight">
-                              {product.price.toLocaleString("vi-VN")}đ
-                            </span>
-                            {product.originalPrice && product.originalPrice > product.price && (
-                              <span className="text-xs sm:text-sm text-[#77736b] line-through">
+                          {product.originalPrice && product.originalPrice > product.price ? (
+                            <div className="flex flex-col items-center sm:items-start">
+                              <span className="text-xs text-[#8c8273] line-through font-serif">
                                 {product.originalPrice.toLocaleString("vi-VN")}đ
                               </span>
-                            )}
-                          </div>
+                              <div className="flex items-center gap-1.5">
+                                <span className="text-base sm:text-lg font-bold text-red-600 tracking-tight">
+                                  {product.price.toLocaleString("vi-VN")}đ
+                                </span>
+                                <span className="text-[10px] font-semibold text-red-600 bg-red-50 border border-red-200/80 px-1.5 py-0.2 rounded">
+                                  Ưu đãi
+                                </span>
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="flex items-baseline gap-2">
+                              <span className="text-base sm:text-lg font-bold text-[#24231f] tracking-tight">
+                                {product.price.toLocaleString("vi-VN")}đ
+                              </span>
+                            </div>
+                          )}
 
                           <div className="flex items-center gap-2 w-full sm:w-auto">
                             <button

@@ -41,7 +41,18 @@ export default function ProductModal() {
     ["mặc định", "mặc định / mặc định", "default"].includes(
       (selectedProduct.variants[0].label || "").trim().toLowerCase()
     );
-  const hasVisibleVariants = (selectedProduct.variants?.length ?? 0) > 0 && !isDefaultVariantOnly;
+  const hasVisibleVariants = selectedProduct.hasVariants ?? (
+    (selectedProduct.variants?.length ?? 0) > 1 ||
+    ((selectedProduct.variants?.length ?? 0) === 1 && !isDefaultVariantOnly)
+  );
+  const hasDiscount = Boolean(selectedProduct.originalPrice && selectedProduct.originalPrice > currentPrice);
+  const discountPercent = selectedProduct.discountPercent ?? (
+    hasDiscount && selectedProduct.originalPrice
+      ? Math.round(((selectedProduct.originalPrice - currentPrice) / selectedProduct.originalPrice) * 100)
+      : 0
+  );
+  const totalPrice = currentPrice * quantity;
+  const totalOriginalPrice = (selectedProduct.originalPrice ?? 0) * quantity;
   const media = [...selectedProduct.gallery, ...(selectedProduct.videos ?? [])];
   const activeIsVideo = selectedProduct.videos?.includes(activeImage) ?? false;
 
@@ -213,16 +224,37 @@ export default function ProductModal() {
               </div>
             )}
 
-            <div className="flex items-baseline justify-center sm:justify-between gap-3">
-              <span className="font-serif text-3xl text-forest-800 font-bold">
-                {(currentPrice * quantity).toLocaleString("vi-VN")} đ
-              </span>
-              {selectedProduct.originalPrice && currentPrice === selectedProduct.price && (
-                <span className="text-sm text-forest-400 line-through font-serif">
-                  {(selectedProduct.originalPrice * quantity).toLocaleString("vi-VN")} đ
+            {/* Price Box with Discount */}
+            {hasDiscount ? (
+              <div className="space-y-1 text-center sm:text-left">
+                <div className="flex items-center justify-center sm:justify-start gap-2">
+                  <span className="text-xs text-forest-500 font-medium">Giá gốc:</span>
+                  <span className="text-sm sm:text-base text-forest-400 line-through font-serif">
+                    {totalOriginalPrice.toLocaleString("vi-VN")} đ
+                  </span>
+                  {discountPercent > 0 && (
+                    <span className="rounded-full bg-red-50 border border-red-200/80 px-2 py-0.5 text-[11px] font-bold text-red-600">
+                      -{discountPercent}%
+                    </span>
+                  )}
+                </div>
+
+                <div className="flex items-baseline justify-center sm:justify-start gap-2.5">
+                  <span className="font-serif text-3xl sm:text-4xl text-red-600 font-bold tracking-tight">
+                    {totalPrice.toLocaleString("vi-VN")} đ
+                  </span>
+                  <span className="text-[11px] font-semibold text-red-600 bg-red-50 border border-red-200/60 uppercase tracking-wider px-2 py-0.5 rounded">
+                    Giá ưu đãi
+                  </span>
+                </div>
+              </div>
+            ) : (
+              <div className="flex items-baseline justify-center sm:justify-start gap-3">
+                <span className="font-serif text-3xl sm:text-4xl text-forest-900 font-bold tracking-tight">
+                  {totalPrice.toLocaleString("vi-VN")} đ
                 </span>
-              )}
-            </div>
+              </div>
+            )}
 
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
               {/* Quantity selector */}

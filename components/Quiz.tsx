@@ -199,9 +199,25 @@ export default function Quiz() {
                   {/* Price & Add to cart */}
                   <div className="pt-4 border-t border-forest-800/15 flex flex-col sm:flex-row items-center justify-center sm:justify-between gap-4 w-full">
                     <div>
-                      <span className="font-serif text-2xl sm:text-3xl text-forest-900 font-bold">
-                        {recommendedProduct.price.toLocaleString("vi-VN")} đ
-                      </span>
+                      {recommendedProduct.originalPrice && recommendedProduct.originalPrice > recommendedProduct.price ? (
+                        <div className="flex flex-col items-center sm:items-start">
+                          <span className="text-xs text-forest-400 line-through font-serif">
+                            {recommendedProduct.originalPrice.toLocaleString("vi-VN")} đ
+                          </span>
+                          <div className="flex items-center gap-1.5">
+                            <span className="font-serif text-2xl sm:text-3xl text-red-600 font-bold">
+                              {recommendedProduct.price.toLocaleString("vi-VN")} đ
+                            </span>
+                            <span className="text-[10px] font-semibold text-red-600 bg-red-50 border border-red-200/80 px-1.5 py-0.2 rounded">
+                              Ưu đãi
+                            </span>
+                          </div>
+                        </div>
+                      ) : (
+                        <span className="font-serif text-2xl sm:text-3xl text-forest-900 font-bold">
+                          {recommendedProduct.price.toLocaleString("vi-VN")} đ
+                        </span>
+                      )}
                     </div>
 
                     <div className="flex flex-wrap gap-2 w-full sm:w-auto justify-center">

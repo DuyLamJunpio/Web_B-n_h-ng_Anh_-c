@@ -17,6 +17,9 @@ type StorefrontProduct = {
   created_at?: string | null;
   price?: number;
   compare_price?: number | null;
+  discount_percent?: number | null;
+  has_variants?: boolean;
+  variant_mode?: string;
   sold?: number;
   in_stock?: boolean;
   total_stock?: number;
@@ -155,7 +158,7 @@ function toProduct(product: StorefrontProduct, apiUrl: string, categorySlugs: Ma
       .map((item) => item?.trim())
       .filter((item): item is string => Boolean(item));
     const uniqueParts = Array.from(new Set(rawParts));
-    let label = uniqueParts.join(" / ") || variant.sku || "Mặc định";
+    let label = uniqueParts.join(" / ") || "Mặc định";
     if (label.toLowerCase() === "mặc định / mặc định") {
       label = "Mặc định";
     }
@@ -174,18 +177,38 @@ function toProduct(product: StorefrontProduct, apiUrl: string, categorySlugs: Ma
   const basePrice = Number(product.price) || 0;
   const displayPrice = variants.find((variant) => variant.available)?.price ?? basePrice;
 
+  const hasBackendVariantsFlag = typeof product.has_variants === "boolean"
+    ? product.has_variants
+    : product.variant_mode
+      ? product.variant_mode !== "simple"
+      : undefined;
+
+  const hasVariants = hasBackendVariantsFlag !== undefined
+    ? hasBackendVariantsFlag
+    : (variants.length > 1 || (variants.length === 1 && Boolean(variants[0].size || variants[0].color)));
+
+  const comparePrice = product.compare_price ? Number(product.compare_price) : undefined;
+  const originalPrice = comparePrice && comparePrice > displayPrice ? comparePrice : undefined;
+  const discountPercent = typeof product.discount_percent === "number" && product.discount_percent > 0
+    ? product.discount_percent
+    : originalPrice && originalPrice > displayPrice
+      ? Math.round(((originalPrice - displayPrice) / originalPrice) * 100)
+      : undefined;
+
   return {
     id: String(product.id),
     slug: product.slug,
     isNew: Boolean(product.is_new),
     isFeatured: Boolean(product.is_featured),
+    hasVariants,
     soldCount: Number(product.sold) || 0,
     createdAt: product.created_at || undefined,
     name: product.name?.trim() || "Sản phẩm RỪNG U",
     category: categorySlug,
     categoryName,
     price: displayPrice,
-    originalPrice: displayPrice === basePrice && product.compare_price ? Number(product.compare_price) : undefined,
+    originalPrice,
+    discountPercent,
     rating: 0,
     reviewsCount: 0,
     badge: product.is_new ? "Mới về" : product.is_featured ? "Được chọn" : undefined,

@@ -326,6 +326,13 @@ export default function FeaturedStoryVideo() {
                         sizes="(min-width: 1024px) 280px, 240px"
                         className="object-cover object-center transition-transform duration-700 ease-out group-hover/card:scale-[1.06]"
                       />
+                      {product.originalPrice && product.originalPrice > product.price && (
+                        <div className="absolute top-2 left-2 z-10 pointer-events-none">
+                          <span className="rounded-full bg-red-600 px-2 py-0.5 text-[10px] font-bold text-white shadow-sm">
+                            -{product.discountPercent ?? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}%
+                          </span>
+                        </div>
+                      )}
                     </div>
 
                     {/* Product Information */}
@@ -345,9 +352,25 @@ export default function FeaturedStoryVideo() {
 
                       {/* Price & Action Button */}
                       <div className="mt-4 flex flex-wrap items-center justify-between gap-1.5 border-t border-[#282723]/10 pt-3">
-                        <span className="text-base sm:text-lg font-bold text-[#282724] tracking-tight">
-                          {product.price.toLocaleString("vi-VN")} đ
-                        </span>
+                        {product.originalPrice && product.originalPrice > product.price ? (
+                          <div className="flex flex-col">
+                            <span className="text-xs text-[#8c8273] line-through font-serif">
+                              {product.originalPrice.toLocaleString("vi-VN")} đ
+                            </span>
+                            <div className="flex items-center gap-1.5">
+                              <span className="text-base sm:text-lg font-bold text-red-600 tracking-tight">
+                                {product.price.toLocaleString("vi-VN")} đ
+                              </span>
+                              <span className="text-[10px] font-semibold text-red-600 bg-red-50 border border-red-200/80 px-1.5 py-0.2 rounded">
+                                Ưu đãi
+                              </span>
+                            </div>
+                          </div>
+                        ) : (
+                          <span className="text-base sm:text-lg font-bold text-[#282724] tracking-tight">
+                            {product.price.toLocaleString("vi-VN")} đ
+                          </span>
+                        )}
 
                         <div className="flex items-center gap-1.5">
                           <button

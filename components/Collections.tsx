@@ -181,7 +181,7 @@ export default function Collections() {
                             </span>
                           )}
                           {discountPercent && (
-                            <span className="rounded-full bg-[#9d753d] px-2.5 py-1 text-[10px] font-bold text-white shadow-sm">
+                            <span className="rounded-full bg-red-600 px-2.5 py-1 text-[10px] font-bold text-white shadow-sm">
                               -{discountPercent}%
                             </span>
                           )}
@@ -238,16 +238,27 @@ export default function Collections() {
                   {/* Price & Add to Cart Footer */}
                   <div className="mt-6 flex items-center justify-between pt-4.5 border-t border-[#282723]/10">
                     <div>
-                      <div className="flex items-baseline gap-2">
-                        <span className="text-lg sm:text-xl font-bold text-[#24231f]">
-                          {product.price.toLocaleString("vi-VN")}đ
-                        </span>
-                        {product.originalPrice && product.originalPrice > product.price && (
-                          <span className="text-xs text-[#9c978f] line-through">
+                      {product.originalPrice && product.originalPrice > product.price ? (
+                        <div className="flex flex-col">
+                          <span className="text-xs text-[#8c8273] line-through font-serif">
                             {product.originalPrice.toLocaleString("vi-VN")}đ
                           </span>
-                        )}
-                      </div>
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-lg sm:text-xl font-bold text-red-600 tracking-tight">
+                              {product.price.toLocaleString("vi-VN")}đ
+                            </span>
+                            <span className="text-[10px] font-semibold text-red-600 bg-red-50 border border-red-200/80 px-1.5 py-0.2 rounded">
+                              Ưu đãi
+                            </span>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="flex items-baseline gap-2">
+                          <span className="text-lg sm:text-xl font-bold text-[#24231f]">
+                            {product.price.toLocaleString("vi-VN")}đ
+                          </span>
+                        </div>
+                      )}
                       <p className="text-xs text-[#8c887f] mt-0.5">Miễn phí vận chuyển</p>
                     </div>
 
