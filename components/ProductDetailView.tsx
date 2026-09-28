@@ -38,7 +38,18 @@ export default function ProductDetailView({ product, relatedProducts }: { produc
     ["mặc định", "mặc định / mặc định", "default"].includes(
       (product.variants[0].label || "").trim().toLowerCase()
     );
-  const hasVisibleVariants = (product.variants?.length ?? 0) > 0 && !isDefaultVariantOnly;
+  const hasVisibleVariants = product.hasVariants ?? (
+    (product.variants?.length ?? 0) > 1 ||
+    ((product.variants?.length ?? 0) === 1 && !isDefaultVariantOnly)
+  );
+  const hasDiscount = Boolean(product.originalPrice && product.originalPrice > currentPrice);
+  const discountPercent = product.discountPercent ?? (
+    hasDiscount && product.originalPrice
+      ? Math.round(((product.originalPrice - currentPrice) / product.originalPrice) * 100)
+      : 0
+  );
+  const totalPrice = currentPrice * quantity;
+  const totalOriginalPrice = (product.originalPrice ?? 0) * quantity;
 
   const shippingMessage = Object.values(storefrontContent.sales).some((method) => method.enabled && method.free_shipping)
     ? "Miễn phí giao hàng"
@@ -65,8 +76,7 @@ export default function ProductDetailView({ product, relatedProducts }: { produc
   return (
     <main className="min-h-screen bg-[#f3f0e8] text-[#24231f]">
       {/* 1. BREADCRUMBS */}
-      {/* 1. BREADCRUMBS */}
-      <div className="border-b border-[#282723]/10 bg-[#ebe7dd]/50 px-5 pt-28 pb-4 sm:px-8 lg:px-12 sm:pt-36">
+      <div className="border-b border-[#282723]/10 bg-[#ebe7dd]/50 px-5 pt-32 pb-4 sm:px-8 lg:px-12 sm:pt-40 lg:pt-48">
         <div className="mx-auto flex max-w-[1400px] flex-wrap items-center justify-center sm:justify-start gap-2 text-xs uppercase tracking-[0.16em] text-[#77736b]">
           <Link href="/" className="transition-colors hover:text-[#24231f]">Trang chủ</Link>
           <span>/</span>
@@ -153,19 +163,42 @@ export default function ProductDetailView({ product, relatedProducts }: { produc
             </h1>
 
             {/* Scent Summary Line */}
-            <p className="mt-2 text-sm italic text-[#77736b]">
-              ✦ {product.notes}
-            </p>
+            {product.notes && (
+              <p className="mt-2 text-sm italic text-[#77736b]">
+                ✦ {product.notes}
+              </p>
+            )}
 
-            {/* Price Box */}
-            <div className="mt-6 flex items-baseline justify-center sm:justify-start gap-3 border-y border-[#282723]/15 py-4 w-full">
-              <span className="text-3xl font-light tracking-tight text-[#24231f]">
-                {(currentPrice * quantity).toLocaleString("vi-VN")}đ
-              </span>
-              {product.originalPrice && currentPrice === product.price && (
-                <span className="text-sm text-[#77736b] line-through">
-                  {(product.originalPrice * quantity).toLocaleString("vi-VN")}đ
-                </span>
+            {/* Price Box with Discount */}
+            <div className="mt-6 border-y border-[#282723]/15 py-4 w-full text-center sm:text-left">
+              {hasDiscount ? (
+                <div className="space-y-1">
+                  <div className="flex items-center justify-center sm:justify-start gap-2">
+                    <span className="text-xs text-[#8c8273]">Giá gốc:</span>
+                    <span className="text-sm text-[#8c8273] line-through font-serif">
+                      {totalOriginalPrice.toLocaleString("vi-VN")} đ
+                    </span>
+                    {discountPercent > 0 && (
+                      <span className="rounded-full bg-red-50 border border-red-200/80 px-2 py-0.5 text-[11px] font-bold text-red-600">
+                        -{discountPercent}%
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex items-baseline justify-center sm:justify-start gap-2.5">
+                    <span className="text-3xl sm:text-4xl font-bold tracking-tight text-red-600 font-serif">
+                      {totalPrice.toLocaleString("vi-VN")} đ
+                    </span>
+                    <span className="text-[11px] font-semibold text-red-600 bg-red-50 border border-red-200/60 uppercase tracking-wider px-2 py-0.5 rounded">
+                      Giá ưu đãi
+                    </span>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex items-baseline justify-center sm:justify-start gap-3">
+                  <span className="text-3xl sm:text-4xl font-light tracking-tight text-[#24231f] font-serif">
+                    {totalPrice.toLocaleString("vi-VN")} đ
+                  </span>
+                </div>
               )}
             </div>
 
@@ -355,6 +388,11 @@ export default function ProductDetailView({ product, relatedProducts }: { produc
                       alt={item.name}
                       className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
                     />
+                    {item.originalPrice && item.originalPrice > item.price && (
+                      <span className="absolute top-2 left-2 rounded-full bg-red-600 px-2 py-0.5 text-[9px] font-bold text-white shadow-sm">
+                        -{item.discountPercent ?? Math.round(((item.originalPrice - item.price) / item.originalPrice) * 100)}%
+                      </span>
+                    )}
                   </Link>
 
                   <div className="mt-4 flex flex-1 flex-col text-center sm:text-left items-center sm:items-start">
@@ -369,7 +407,18 @@ export default function ProductDetailView({ product, relatedProducts }: { produc
                     <p className="mt-1 text-xs text-[#77736b] line-clamp-2">{item.notes}</p>
 
                     <div className="mt-auto flex items-center justify-between pt-4 border-t border-[#282723]/10 w-full">
-                      <span className="text-xs font-medium">{item.price.toLocaleString("vi-VN")}đ</span>
+                      {item.originalPrice && item.originalPrice > item.price ? (
+                        <div className="flex flex-col">
+                          <span className="text-[10px] text-[#8c8273] line-through font-serif">
+                            {item.originalPrice.toLocaleString("vi-VN")}đ
+                          </span>
+                          <span className="text-xs font-bold text-red-600">
+                            {item.price.toLocaleString("vi-VN")}đ
+                          </span>
+                        </div>
+                      ) : (
+                        <span className="text-xs font-medium">{item.price.toLocaleString("vi-VN")}đ</span>
+                      )}
                       <Link
                         href={`/san-pham/${item.id}`}
                         className="inline-flex items-center gap-1 text-[11px] font-medium uppercase tracking-[0.12em] text-[#24231f] hover:text-[#9d753d]"

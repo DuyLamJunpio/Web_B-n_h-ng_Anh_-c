@@ -139,6 +139,20 @@ export default function FeaturedProducts() {
                       className="object-cover object-center transition-transform duration-700 ease-out group-hover/card:scale-[1.04]"
                     />
 
+                    {/* Top Badges */}
+                    <div className="absolute top-3 left-3 flex flex-col gap-1.5 items-start z-10 pointer-events-none">
+                      {product.badge && (
+                        <span className="rounded-full bg-[#282723]/80 backdrop-blur-md px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-white border border-white/20">
+                          {product.badge}
+                        </span>
+                      )}
+                      {product.originalPrice && product.originalPrice > product.price && (
+                        <span className="rounded-full bg-red-600 px-2.5 py-0.5 text-[10px] font-bold text-white shadow-sm">
+                          -{product.discountPercent ?? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}%
+                        </span>
+                      )}
+                    </div>
+
                     {/* Subtle Overlay Badge on Hover */}
                     <div className="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black/50 via-black/15 to-transparent opacity-0 translate-y-2 group-hover/card:opacity-100 group-hover/card:translate-y-0 transition-all duration-300 flex items-center justify-between text-white">
                       <span className="text-xs uppercase tracking-widest font-medium">Khám phá chi tiết</span>
@@ -167,9 +181,25 @@ export default function FeaturedProducts() {
 
                     {/* Price & Action Row */}
                     <div className="mt-6 flex flex-wrap items-center justify-between gap-2 border-t border-[#24231f]/10 pt-4">
-                      <span className="text-base sm:text-lg font-medium text-[#24231f] tracking-tight">
-                        {product.price.toLocaleString("vi-VN")} đ
-                      </span>
+                      {product.originalPrice && product.originalPrice > product.price ? (
+                        <div className="flex flex-col">
+                          <span className="text-xs text-[#8c8273] line-through font-serif">
+                            {product.originalPrice.toLocaleString("vi-VN")} đ
+                          </span>
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-base sm:text-lg font-bold text-red-600 tracking-tight">
+                              {product.price.toLocaleString("vi-VN")} đ
+                            </span>
+                            <span className="text-[10px] font-semibold text-red-600 bg-red-50 border border-red-200/80 px-1.5 py-0.2 rounded">
+                              Ưu đãi
+                            </span>
+                          </div>
+                        </div>
+                      ) : (
+                        <span className="text-base sm:text-lg font-medium text-[#24231f] tracking-tight">
+                          {product.price.toLocaleString("vi-VN")} đ
+                        </span>
+                      )}
 
                       <div className="flex items-center gap-2">
                         <button

@@ -19,14 +19,45 @@ export default async function StoryPage({ params }: { params: Promise<{ slug: st
     <>
       <Header />
       <main className="bg-[#f3f0e8] text-[#282724]">
-        <section className="relative flex min-h-[78vh] items-end overflow-hidden bg-[#282724] text-white">
-          <Image src={story.image} alt={story.imageAlt} fill priority sizes="100vw" className="object-cover opacity-75" />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#171714]/80 via-[#171714]/10 to-transparent" />
-          <div className="relative mx-auto w-full max-w-[1600px] px-5 pb-16 pt-40 sm:px-8 lg:px-12 lg:pb-24 text-center sm:text-left flex flex-col items-center sm:items-start">
-            <Link href="/#stories" className="mb-12 inline-flex text-xs uppercase tracking-[0.18em] text-white/75 transition-colors hover:text-white">← Quay lại thư viện câu chuyện</Link>
-            <p className="mb-5 text-xs uppercase tracking-[0.2em] text-[#d5b27d]">{story.route}</p>
-            <h1 className="max-w-[900px] text-5xl font-medium leading-[0.94] tracking-[-0.05em] sm:text-7xl lg:text-[clamp(5rem,11vw,11rem)]">{story.title}</h1>
-            <p className="mt-5 max-w-[560px] text-xl leading-tight text-white/85 sm:text-2xl">{story.product}</p>
+        <section className="relative flex min-h-[75vh] sm:min-h-[82vh] items-end overflow-hidden bg-[#161513] text-white">
+          <Image
+            src={story.image}
+            alt={story.imageAlt}
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover opacity-55 sm:opacity-60 scale-105 transition-transform duration-1000 ease-out"
+          />
+          {/* Dual multi-stop gradients for flawless contrast */}
+          <div className="absolute inset-0 bg-gradient-to-b from-[#0e0d0c]/85 via-[#121110]/50 to-[#141311]/95" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-[#9d753d]/15 via-transparent to-transparent pointer-events-none" />
+
+          <div className="relative mx-auto w-full max-w-[1600px] px-5 pb-16 pt-40 sm:px-8 sm:pb-20 sm:pt-48 lg:px-12 lg:pb-24 lg:pt-56 text-left flex flex-col items-start">
+            <Link
+              href="/#stories"
+              className="mb-8 inline-flex items-center gap-2 text-xs uppercase tracking-[0.2em] font-medium !text-white/80 transition-colors hover:!text-white"
+            >
+              <span>←</span>
+              <span>Quay lại thư viện câu chuyện</span>
+            </Link>
+
+            <div className="mb-4 inline-flex items-center gap-2">
+              <span className="text-xs uppercase tracking-[0.22em] font-semibold text-[#dfbe8c]">
+                {story.route}
+              </span>
+              <span className="h-1 w-1 rounded-full bg-[#dfbe8c]" />
+              <span className="text-[11px] uppercase tracking-[0.16em] text-white/60">
+                Ghi chép hành trình
+              </span>
+            </div>
+
+            <h1 className="max-w-[1000px] text-5xl font-medium leading-[0.96] tracking-[-0.04em] sm:text-7xl lg:text-[clamp(4.5rem,10vw,9.5rem)] !text-white drop-shadow-[0_2px_16px_rgba(0,0,0,0.65)]">
+              {story.title}
+            </h1>
+
+            <p className="mt-6 max-w-[620px] text-lg sm:text-2xl leading-relaxed !text-white/90 font-light drop-shadow-sm">
+              {story.product}
+            </p>
           </div>
         </section>
 

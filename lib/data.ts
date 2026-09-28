@@ -14,6 +14,8 @@ export interface Product {
   slug?: string;
   isNew?: boolean;
   isFeatured?: boolean;
+  hasVariants?: boolean;
+  discountPercent?: number;
   soldCount?: number;
   createdAt?: string;
   name: string;

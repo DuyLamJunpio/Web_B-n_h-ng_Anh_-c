@@ -78,31 +78,32 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  font-family: var(--font-cormorant), Georgia, serif !important;
-  font-weight: 500;
-  letter-spacing: -0.02em;
-  color: var(--color-forest-950);
-}
+@layer base {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-cormorant), Georgia, serif !important;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+  }
 
-h1 {
-  font-weight: 500;
-  letter-spacing: -0.03em;
-}
+  h1 {
+    font-weight: 500;
+    letter-spacing: -0.03em;
+  }
 
-h2 {
-  font-weight: 500;
-  letter-spacing: -0.025em;
-}
+  h2 {
+    font-weight: 500;
+    letter-spacing: -0.025em;
+  }
 
-h3 {
-  font-weight: 600;
-  letter-spacing: -0.02em;
+  h3 {
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
 }
 
 nav,
