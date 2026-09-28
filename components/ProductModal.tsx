@@ -21,17 +21,27 @@ export default function ProductModal() {
       setActiveImage(selectedProduct.image);
       setQuantity(1);
       setIsAdded(false);
-      setSelectedVariantId(selectedProduct.variants?.find((variant) => variant.available)?.id ?? "");
+      setSelectedVariantId(
+        selectedProduct.variants?.find((variant) => variant.available)?.id
+        ?? selectedProduct.variants?.[0]?.id
+        ?? ""
+      );
     }
   }, [selectedProduct]);
 
   if (!selectedProduct) return null;
 
   const availableVariants = (selectedProduct.variants ?? []).filter((variant) => variant.available);
-  const selectedVariant = availableVariants.find((variant) => variant.id === selectedVariantId);
+  const selectedVariant = (selectedProduct.variants ?? []).find((variant) => variant.id === selectedVariantId) ?? availableVariants[0];
   const currentPrice = selectedVariant?.price ?? selectedProduct.price;
   const canBuy = selectedProduct.inStock !== false
     && (availableVariants.length > 0 || !(selectedProduct.variants?.length));
+  const isDefaultVariantOnly =
+    (selectedProduct.variants?.length === 1) &&
+    ["mặc định", "mặc định / mặc định", "default"].includes(
+      (selectedProduct.variants[0].label || "").trim().toLowerCase()
+    );
+  const hasVisibleVariants = (selectedProduct.variants?.length ?? 0) > 0 && !isDefaultVariantOnly;
   const media = [...selectedProduct.gallery, ...(selectedProduct.videos ?? [])];
   const activeIsVideo = selectedProduct.videos?.includes(activeImage) ?? false;
 
@@ -136,9 +146,11 @@ export default function ProductModal() {
               {selectedProduct.name}
             </h3>
 
-            <p className="text-sm text-forest-700 italic font-serif text-center sm:text-left">
-              ✦ {selectedProduct.notes}
-            </p>
+            {selectedProduct.notes && (
+              <p className="text-sm text-forest-700 italic font-serif text-center sm:text-left">
+                ✦ {selectedProduct.notes}
+              </p>
+            )}
 
             <p className="text-forest-800 text-sm sm:text-base leading-relaxed text-center sm:text-left">
               {selectedProduct.detail || selectedProduct.desc}
@@ -158,7 +170,7 @@ export default function ProductModal() {
             )}
 
             {/* Benefits list */}
-            {selectedProduct.benefits && (
+            {selectedProduct.benefits && selectedProduct.benefits.length > 0 && (
               <div className="space-y-2 pt-1 text-sm text-forest-800">
                 <span className="text-forest-900 font-semibold block text-center sm:text-left">Công dụng chính:</span>
                 {selectedProduct.benefits.map((b, i) => (
@@ -173,10 +185,10 @@ export default function ProductModal() {
 
           {/* Price, Quantity & Add to Cart Action */}
           <div className="pt-4 border-t border-forest-800/10 space-y-4">
-            {(selectedProduct.variants?.length ?? 0) > 0 && (
+            {hasVisibleVariants && (
               <div className="space-y-2 text-center sm:text-left">
                 <span className="block text-xs font-semibold uppercase tracking-wider text-forest-900">
-                  Chọn quy cách / mùi hương
+                  Chọn phân loại
                 </span>
                 <div className="flex flex-wrap justify-center sm:justify-start gap-2">
                   {selectedProduct.variants?.map((variant) => (

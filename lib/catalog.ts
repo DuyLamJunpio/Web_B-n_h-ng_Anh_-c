@@ -151,7 +151,14 @@ function toProduct(product: StorefrontProduct, apiUrl: string, categorySlugs: Ma
   const gallery = (product.images ?? []).map((image) => imageUrl(image, apiUrl));
   const videos = (product.videos ?? []).map((video) => imageUrl(video, apiUrl));
   const variants = (product.variants ?? []).map((variant) => {
-    const label = [variant.size, variant.color].filter(Boolean).join(" / ") || variant.sku || "Mặc định";
+    const rawParts = [variant.size, variant.color]
+      .map((item) => item?.trim())
+      .filter((item): item is string => Boolean(item));
+    const uniqueParts = Array.from(new Set(rawParts));
+    let label = uniqueParts.join(" / ") || variant.sku || "Mặc định";
+    if (label.toLowerCase() === "mặc định / mặc định") {
+      label = "Mặc định";
+    }
 
     return {
       id: String(variant.id),
