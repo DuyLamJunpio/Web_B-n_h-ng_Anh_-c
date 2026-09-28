@@ -785,7 +785,11 @@ function CheckoutContent() {
                         </div>
                         <div className="flex-1 min-w-0">
                           <p className="truncate font-semibold text-forest-950">{item.name}</p>
-                          <p className="text-[11px] text-forest-600 truncate">{item.variantLabel} × {item.qty}</p>
+                          <p className="text-[11px] text-forest-600 truncate">
+                            {item.variantLabel && !["mặc định", "mặc định / mặc định", "default"].includes(item.variantLabel.trim().toLowerCase())
+                              ? `${item.variantLabel} × `
+                              : "SL: "}{item.qty}
+                          </p>
                         </div>
                         <span className="font-semibold text-forest-900 shrink-0">
                           {(item.price * item.qty).toLocaleString("vi-VN")} đ
@@ -1081,7 +1085,9 @@ function CheckoutContent() {
                         </div>
                         <div className="flex-1 min-w-0">
                           <p className="truncate font-serif text-sm sm:text-base font-semibold text-forest-950">{item.name}</p>
-                          <p className="text-[11px] sm:text-xs text-forest-600 truncate">{item.variantLabel}</p>
+                          {item.variantLabel && !["mặc định", "mặc định / mặc định", "default"].includes(item.variantLabel.trim().toLowerCase()) && (
+                            <p className="text-[11px] sm:text-xs text-forest-600 truncate">{item.variantLabel}</p>
+                          )}
                           <div className="mt-0.5 flex items-center gap-1.5 text-xs text-forest-700">
                             <span>{item.price.toLocaleString("vi-VN")} đ</span>
                             <span>×</span>

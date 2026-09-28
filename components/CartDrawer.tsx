@@ -111,7 +111,9 @@ export default function CartDrawer() {
                 </div>
                 <div className="min-w-0 flex-1">
                   <h4 className="truncate font-serif text-sm sm:text-base font-semibold text-forest-950">{item.name}</h4>
-                  <span className="block truncate text-[11px] sm:text-xs text-forest-600">{item.variantLabel}</span>
+                  {item.variantLabel && !["mặc định", "mặc định / mặc định", "default"].includes(item.variantLabel.trim().toLowerCase()) && (
+                    <span className="block truncate text-[11px] sm:text-xs text-forest-600">{item.variantLabel}</span>
+                  )}
                   <span className="mt-0.5 block text-xs sm:text-sm font-bold text-forest-900">
                     {item.price.toLocaleString("vi-VN")} đ
                   </span>

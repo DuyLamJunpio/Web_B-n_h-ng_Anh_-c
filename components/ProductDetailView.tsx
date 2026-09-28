@@ -27,10 +27,18 @@ export default function ProductDetailView({ product, relatedProducts }: { produc
   const [quantity, setQuantity] = useState<number>(1);
   const [isAdded, setIsAdded] = useState(false);
   const availableVariants = (product.variants ?? []).filter((variant) => variant.available);
-  const [selectedVariantId, setSelectedVariantId] = useState<string>(availableVariants[0]?.id ?? "");
-  const selectedVariant = availableVariants.find((variant) => variant.id === selectedVariantId);
+  const [selectedVariantId, setSelectedVariantId] = useState<string>(
+    availableVariants[0]?.id ?? product.variants?.[0]?.id ?? ""
+  );
+  const selectedVariant = (product.variants ?? []).find((variant) => variant.id === selectedVariantId) ?? availableVariants[0];
   const currentPrice = selectedVariant?.price ?? product.price;
   const canBuy = product.inStock !== false && (availableVariants.length > 0 || !(product.variants?.length));
+  const isDefaultVariantOnly =
+    (product.variants?.length === 1) &&
+    ["mặc định", "mặc định / mặc định", "default"].includes(
+      (product.variants[0].label || "").trim().toLowerCase()
+    );
+  const hasVisibleVariants = (product.variants?.length ?? 0) > 0 && !isDefaultVariantOnly;
 
   const shippingMessage = Object.values(storefrontContent.sales).some((method) => method.enabled && method.free_shipping)
     ? "Miễn phí giao hàng"
@@ -210,10 +218,10 @@ export default function ProductDetailView({ product, relatedProducts }: { produc
               </div>
             )}
 
-            {(product.variants?.length ?? 0) > 0 && (
+            {hasVisibleVariants && (
               <div className="mt-6 space-y-2 w-full text-center sm:text-left">
                 <span className="block text-xs font-semibold uppercase tracking-[0.16em] text-[#24231f]">
-                  Chọn quy cách / mùi hương
+                  Chọn phân loại
                 </span>
                 <div className="flex flex-wrap justify-center sm:justify-start gap-2">
                   {product.variants?.map((variant) => (
