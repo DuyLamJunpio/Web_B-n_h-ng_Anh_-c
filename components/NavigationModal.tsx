@@ -145,7 +145,12 @@ export default function NavigationModal({ isOpen, onClose }: { isOpen: boolean; 
 
           <div className="mx-auto flex w-full max-w-[1400px] flex-col gap-2 border-t border-[#282723]/15 pt-5 text-xs sm:text-sm text-[#77736b] text-center sm:text-left sm:flex-row sm:items-center sm:justify-between">
             <span>Hương thơm tự nhiên cho những ngày bình thường.</span>
-            <span>hello@rungu.vn • 0868 238 690</span>
+            <span>
+              hello@rungu.vn •{" "}
+              <a href="tel:0945958185" className="hover:text-[#282723] transition-colors">
+                0945 958 185
+              </a>
+            </span>
           </div>
         </motion.div>
       )}

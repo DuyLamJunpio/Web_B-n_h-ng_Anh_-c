@@ -211,8 +211,8 @@ button, a { -webkit-tap-highlight-color: transparent; }
   gap: 0.75rem;
   border: 1px solid #ffffff;
   padding: 0.85rem 1.75rem;
-  background-color: #ffffff;
-  color: #000000 !important;
+  background-color: transparent;
+  color: #ffffff !important;
   font-size: 0.75rem;
   font-weight: 600;
   letter-spacing: 0.16em;
@@ -220,9 +220,9 @@ button, a { -webkit-tap-highlight-color: transparent; }
   transition: background-color 220ms ease, color 220ms ease, transform 220ms ease, border-color 220ms ease;
 }
 .hero-cta:hover {
-  background-color: #f3f0e8;
+  background-color: #ffffff;
   color: #000000 !important;
-  border-color: #f3f0e8;
+  border-color: #ffffff;
   transform: translateY(-1px);
 }
 .hero-cta:active {
