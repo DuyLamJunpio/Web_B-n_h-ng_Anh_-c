@@ -554,11 +554,17 @@ export default function ShopAllPLP() {
                         {product.origin}
                       </p>
 
-                      {/* Aromatic Profile */}
-                      <div className="mt-3 w-full border-t border-[#282723]/10 pt-3 text-sm leading-relaxed text-[#504c44]">
-                        <span className="text-[#24231f] font-semibold">Nốt hương: </span>
-                        {product.notes}
-                      </div>
+                      {/* Product Feature / Characteristics */}
+                      {(() => {
+                        const feature = product.notes?.trim() || (product.desc && !product.desc.includes("đang được RỪNG U cập nhật") ? product.desc.trim() : "");
+                        if (!feature) return null;
+                        return (
+                          <div className="mt-3 w-full border-t border-[#282723]/10 pt-3 text-sm leading-relaxed text-[#504c44] line-clamp-2">
+                            <span className="text-[#24231f] font-semibold">Đặc điểm: </span>
+                            {feature}
+                          </div>
+                        );
+                      })()}
 
                       {/* Price & Add to Cart (Aesop Minimalist Bar) */}
                       <div className="mt-auto pt-6 w-full">

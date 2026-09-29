@@ -96,7 +96,7 @@ export default function CartDrawer() {
               <ShoppingBag className="mx-auto h-12 w-12 sm:h-14 sm:w-14 text-forest-400" strokeWidth={1.2} />
               <h4 className="mt-4 font-serif text-lg sm:text-xl font-medium text-forest-900">Giỏ hàng của bạn đang trống</h4>
               <p className="mt-1.5 text-xs sm:text-sm text-forest-600 max-w-xs mx-auto leading-relaxed">
-                Hãy dạo một vòng và chọn cho mình nốt hương yêu thích nhé.
+                Hãy dạo một vòng và chọn cho mình sản phẩm yêu thích nhé.
               </p>
             </div>
           ) : (
