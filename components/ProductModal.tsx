@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCart } from "@/lib/CartContext";
-import { Star, Check, ShoppingBag, X, Shield, Sparkles, Truck, ArrowRight } from "lucide-react";
+import { Star, Check, ShoppingBag, X, Shield, Sparkles, Truck, ArrowRight, Minus, Plus } from "lucide-react";
 
 export default function ProductModal() {
   const router = useRouter();
@@ -256,53 +256,63 @@ export default function ProductModal() {
               </div>
             )}
 
-            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+            <div className="flex flex-wrap sm:flex-nowrap items-stretch gap-2.5 sm:gap-3">
               {/* Quantity selector */}
-              <div className="flex items-center justify-center border border-forest-800/20 rounded-lg bg-forest-50/60">
+              <div className="flex items-center border border-forest-800/35 rounded-xl bg-white h-12 shrink-0 overflow-hidden shadow-xs">
                 <button
+                  type="button"
                   onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                  className="px-4 py-2.5 text-forest-700 hover:text-forest-950 text-base transition-colors cursor-pointer"
+                  disabled={quantity <= 1}
+                  className="w-10 sm:w-11 h-full flex items-center justify-center text-forest-800 hover:text-black hover:bg-forest-100/80 active:scale-90 disabled:opacity-25 disabled:hover:bg-transparent disabled:active:scale-100 transition-all cursor-pointer"
+                  aria-label="Giảm số lượng"
                 >
-                  -
+                  <Minus className="w-4 h-4 stroke-[2.5]" />
                 </button>
-                <span className="px-4 text-sm font-semibold text-forest-950">{quantity}</span>
+                <span className="font-ui font-bold text-base sm:text-lg text-forest-950 min-w-[2.5rem] text-center select-none">
+                  {quantity}
+                </span>
                 <button
+                  type="button"
                   onClick={() => setQuantity(selectedVariant && selectedProduct.manageStock
                     ? Math.min(selectedVariant.stock, quantity + 1)
                     : quantity + 1)}
-                  className="px-4 py-2.5 text-forest-700 hover:text-forest-950 text-base transition-colors cursor-pointer"
+                  disabled={selectedVariant && selectedProduct.manageStock ? quantity >= selectedVariant.stock : false}
+                  className="w-10 sm:w-11 h-full flex items-center justify-center text-forest-800 hover:text-black hover:bg-forest-100/80 active:scale-90 disabled:opacity-25 disabled:hover:bg-transparent disabled:active:scale-100 transition-all cursor-pointer"
+                  aria-label="Tăng số lượng"
                 >
-                  +
+                  <Plus className="w-4 h-4 stroke-[2.5]" />
                 </button>
               </div>
 
-              {/* Add to Cart & Buy Now Buttons */}
+              {/* Add to Cart Button */}
               <button
                 type="button"
                 onClick={handleAdd}
                 disabled={!canBuy}
-                className="flex-1 py-3.5 bg-transparent hover:bg-forest-900/5 border border-forest-800/30 disabled:cursor-not-allowed disabled:opacity-50 text-forest-900 text-xs sm:text-sm font-semibold uppercase tracking-[0.14em] rounded-lg transition-all flex items-center justify-center gap-2 cursor-pointer"
+                className="flex-1 min-w-[145px] h-12 px-4 border-2 border-forest-800 hover:bg-forest-900 hover:text-white bg-white disabled:cursor-not-allowed disabled:opacity-50 text-forest-950 font-ui text-sm font-semibold rounded-xl transition-all duration-200 flex items-center justify-center gap-2 shadow-xs hover:shadow cursor-pointer whitespace-nowrap active:scale-[0.99] group"
               >
                 {isAdded ? (
                   <>
-                    <Check className="w-4 h-4 text-emerald-600" />
-                    <span>Đã Thêm!</span>
+                    <Check className="w-4 h-4 text-emerald-600 shrink-0 stroke-[2.5]" />
+                    <span>Đã thêm!</span>
                   </>
                 ) : (
                   <>
-                    <ShoppingBag className="w-4 h-4" />
-                    <span>{canBuy ? "Thêm Vào Giỏ" : "Tạm Hết Hàng"}</span>
+                    <ShoppingBag className="w-4 h-4 shrink-0 transition-transform group-hover:scale-110" strokeWidth={2} />
+                    <span>{canBuy ? "Thêm vào giỏ" : "Tạm hết hàng"}</span>
                   </>
                 )}
               </button>
 
+              {/* Buy Now Button */}
               <button
                 type="button"
                 onClick={handleBuyNow}
                 disabled={!canBuy}
-                className="flex-1 py-3.5 bg-forest-800 hover:bg-[#9d753d] disabled:cursor-not-allowed disabled:opacity-50 text-white text-xs sm:text-sm font-semibold uppercase tracking-[0.14em] rounded-lg transition-all flex items-center justify-center gap-2 shadow-lg shadow-forest-900/15 cursor-pointer"
+                className="w-full sm:w-auto sm:flex-1 h-12 px-5 bg-forest-950 hover:bg-[#9d753d] disabled:cursor-not-allowed disabled:opacity-50 text-white font-ui text-sm font-semibold rounded-xl transition-all duration-200 flex items-center justify-center gap-2 shadow-sm hover:shadow-lg active:scale-[0.99] cursor-pointer whitespace-nowrap group"
               >
-                <span>Mua Ngay</span>
+                <span>Mua ngay</span>
+                <ArrowRight className="w-4 h-4 shrink-0 transition-transform group-hover:translate-x-1" strokeWidth={2.2} />
               </button>
             </div>
 

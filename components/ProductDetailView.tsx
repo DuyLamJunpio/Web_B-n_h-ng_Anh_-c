@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -12,10 +11,9 @@ import {
   Shield,
   Sparkles,
   ArrowRight,
-  ArrowLeft,
   Flame,
-  Leaf,
-  Info,
+  Minus,
+  Plus,
 } from "lucide-react";
 import type { Product } from "@/lib/data";
 import { useCart } from "@/lib/CartContext";
@@ -158,13 +156,13 @@ export default function ProductDetailView({ product, relatedProducts }: { produc
             </div>
 
             {/* Product Title */}
-            <h1 className="mt-3 text-3xl font-light tracking-[-0.035em] text-[#24231f] sm:text-4xl">
+            <h1 className="mt-3 text-3xl font-semibold tracking-[-0.025em] text-[#1b1a18] sm:text-4xl lg:text-[2.5rem] leading-tight">
               {product.name}
             </h1>
 
             {/* Scent Summary Line */}
             {product.notes && (
-              <p className="mt-2 text-sm italic text-[#77736b]">
+              <p className="mt-2 text-sm sm:text-[15px] italic text-[#625f57] font-serif">
                 ✦ {product.notes}
               </p>
             )}
@@ -195,17 +193,21 @@ export default function ProductDetailView({ product, relatedProducts }: { produc
                 </div>
               ) : (
                 <div className="flex items-baseline justify-center sm:justify-start gap-3">
-                  <span className="text-3xl sm:text-4xl font-light tracking-tight text-[#24231f] font-serif">
+                  <span className="text-3xl sm:text-4xl font-bold tracking-tight text-[#1b1a18] font-serif">
                     {totalPrice.toLocaleString("vi-VN")} đ
                   </span>
                 </div>
               )}
             </div>
 
-            {/* Description & Detailed Information */}
-            <div className="mt-6 space-y-4 text-xs sm:text-sm leading-relaxed text-[#5e5a52]">
-              <p>{product.desc}</p>
-              {product.detail && <p className="text-xs text-[#77736b]">{product.detail}</p>}
+            {/* Description & Detailed Information (Deduplicated & Prominent) */}
+            <div className="mt-6 space-y-4 text-sm sm:text-base leading-relaxed text-[#282723]">
+              {product.desc && (
+                <p className="whitespace-pre-line leading-relaxed">{product.desc}</p>
+              )}
+              {product.detail && product.detail.trim() !== product.desc?.trim() && (
+                <p className="whitespace-pre-line text-[#504c44] leading-relaxed">{product.detail}</p>
+              )}
             </div>
 
             {/* Scent Pyramid Block (Aesop Olfactory Analysis) */}
@@ -281,27 +283,31 @@ export default function ProductDetailView({ product, relatedProducts }: { produc
 
             {/* Quantity Selector & Add to Cart Button */}
             <div className="mt-8 space-y-4 pt-4 border-t border-[#282723]/15 w-full">
-              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+              <div className="flex flex-wrap sm:flex-nowrap items-stretch gap-2.5 sm:gap-3">
                 {/* Quantity Control */}
-                <div className="flex items-center justify-center border border-[#282723]/25 bg-white">
+                <div className="flex items-center border border-[#282723]/35 rounded-xl bg-white h-12 shrink-0 overflow-hidden shadow-xs">
                   <button
                     type="button"
                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    className="px-4 py-3 text-sm transition-colors hover:bg-[#ede8dd]"
+                    disabled={quantity <= 1}
+                    className="w-10 sm:w-11 h-full flex items-center justify-center text-[#282723] hover:text-black hover:bg-[#ede8dd]/80 active:scale-90 disabled:opacity-25 disabled:hover:bg-transparent disabled:active:scale-100 transition-all cursor-pointer"
                     aria-label="Giảm số lượng"
                   >
-                    -
+                    <Minus className="w-4 h-4 stroke-[2.5]" />
                   </button>
-                  <span className="px-4 text-xs font-semibold text-[#24231f]">{quantity}</span>
+                  <span className="font-ui font-bold text-base sm:text-lg text-[#1b1a18] min-w-[2.5rem] text-center select-none">
+                    {quantity}
+                  </span>
                   <button
                     type="button"
                     onClick={() => setQuantity(selectedVariant && product.manageStock
                       ? Math.min(selectedVariant.stock, quantity + 1)
                       : quantity + 1)}
-                    className="px-4 py-3 text-sm transition-colors hover:bg-[#ede8dd]"
+                    disabled={selectedVariant && product.manageStock ? quantity >= selectedVariant.stock : false}
+                    className="w-10 sm:w-11 h-full flex items-center justify-center text-[#282723] hover:text-black hover:bg-[#ede8dd]/80 active:scale-90 disabled:opacity-25 disabled:hover:bg-transparent disabled:active:scale-100 transition-all cursor-pointer"
                     aria-label="Tăng số lượng"
                   >
-                    +
+                    <Plus className="w-4 h-4 stroke-[2.5]" />
                   </button>
                 </div>
 
@@ -310,16 +316,16 @@ export default function ProductDetailView({ product, relatedProducts }: { produc
                   type="button"
                   onClick={handleAddToCart}
                   disabled={!canBuy}
-                  className="flex-1 border border-[#282723]/30 bg-transparent py-3.5 px-6 text-xs font-semibold uppercase tracking-[0.16em] text-[#24231f] transition-all hover:bg-[#282723]/5 disabled:cursor-not-allowed disabled:opacity-50 flex items-center justify-center gap-2 shadow-xs cursor-pointer"
+                  className="flex-1 min-w-[145px] h-12 px-4 border-2 border-[#282723] hover:bg-[#282723] hover:text-white bg-white disabled:cursor-not-allowed disabled:opacity-50 text-[#1b1a18] font-ui text-sm sm:text-[15px] font-semibold rounded-xl transition-all duration-200 flex items-center justify-center gap-2 shadow-xs hover:shadow cursor-pointer whitespace-nowrap active:scale-[0.99] group"
                 >
                   {isAdded ? (
                     <>
-                      <Check className="h-4 w-4 text-emerald-600" />
+                      <Check className="h-4 w-4 text-emerald-600 shrink-0 stroke-[2.5]" />
                       <span>Đã thêm vào giỏ!</span>
                     </>
                   ) : (
                     <>
-                      <ShoppingBag className="h-4 w-4" strokeWidth={1.5} />
+                      <ShoppingBag className="h-4 w-4 shrink-0 transition-transform group-hover:scale-110" strokeWidth={2} />
                       <span>{canBuy ? "Thêm vào giỏ" : "Tạm hết hàng"}</span>
                     </>
                   )}
@@ -330,9 +336,10 @@ export default function ProductDetailView({ product, relatedProducts }: { produc
                   type="button"
                   onClick={handleBuyNow}
                   disabled={!canBuy}
-                  className="flex-1 border border-[#282723] bg-[#282723] py-3.5 px-6 text-xs font-semibold uppercase tracking-[0.16em] text-white transition-all hover:bg-[#9d753d] disabled:cursor-not-allowed disabled:opacity-50 flex items-center justify-center gap-2 shadow-sm cursor-pointer"
+                  className="w-full sm:w-auto sm:flex-1 h-12 px-5 bg-[#1b1a18] hover:bg-[#9d753d] disabled:cursor-not-allowed disabled:opacity-50 text-white font-ui text-sm sm:text-[15px] font-semibold rounded-xl transition-all duration-200 flex items-center justify-center gap-2 shadow-sm hover:shadow-lg active:scale-[0.99] cursor-pointer whitespace-nowrap group"
                 >
                   <span>Mua ngay</span>
+                  <ArrowRight className="h-4 w-4 shrink-0 transition-transform group-hover:translate-x-1" strokeWidth={2.2} />
                 </button>
               </div>
 
