@@ -104,11 +104,19 @@ export default function ProductDetailView({ product, relatedProducts }: { produc
                 />
               )}
 
-              {product.badge && (
-                <span className="absolute left-6 top-6 border border-[#282723]/20 bg-[#faf8f5]/95 px-3 py-1.5 text-xs uppercase tracking-[0.18em] text-[#24231f]">
-                  {product.badge}
-                </span>
-              )}
+              <div className="absolute left-5 top-5 sm:left-6 sm:top-6 flex flex-col gap-2 items-start z-10 pointer-events-none">
+                {hasDiscount && discountPercent > 0 && (
+                  <span className="rounded-lg bg-red-600 px-3 py-1 text-xs font-bold uppercase tracking-wider text-white shadow-md flex items-center gap-1.5 animate-pulse">
+                    <Flame className="w-3.5 h-3.5 fill-current" />
+                    Giảm {discountPercent}%
+                  </span>
+                )}
+                {product.badge && (
+                  <span className="border border-[#282723]/20 bg-[#faf8f5]/95 backdrop-blur-xs px-3 py-1.5 text-xs uppercase tracking-[0.18em] text-[#24231f] shadow-xs">
+                    {product.badge}
+                  </span>
+                )}
+              </div>
             </div>
 
             {/* Thumbnail Strip */}
@@ -168,31 +176,33 @@ export default function ProductDetailView({ product, relatedProducts }: { produc
             )}
 
             {/* Price Box with Discount */}
-            <div className="mt-6 border-y border-[#282723]/15 py-4 w-full text-center sm:text-left">
+            <div className="mt-6 w-full text-center sm:text-left">
               {hasDiscount ? (
-                <div className="space-y-1">
-                  <div className="flex items-center justify-center sm:justify-start gap-2">
-                    <span className="text-xs text-[#8c8273]">Giá gốc:</span>
-                    <span className="text-sm text-[#8c8273] line-through font-serif">
-                      {totalOriginalPrice.toLocaleString("vi-VN")} đ
+                <div className="rounded-2xl border border-red-200/90 bg-gradient-to-br from-red-50/90 via-[#faf8f5] to-amber-50/40 p-4 sm:p-5 shadow-xs space-y-2">
+                  <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
+                    <span className="inline-flex items-center gap-1 rounded-md bg-red-600 px-2.5 py-0.5 text-xs font-bold text-white shadow-xs tracking-wider uppercase">
+                      <Flame className="w-3.5 h-3.5 fill-current" />
+                      Giảm {discountPercent}%
                     </span>
-                    {discountPercent > 0 && (
-                      <span className="rounded-full bg-red-50 border border-red-200/80 px-2 py-0.5 text-[11px] font-bold text-red-600">
-                        -{discountPercent}%
-                      </span>
-                    )}
+                    <span className="text-xs font-semibold text-red-700 bg-red-100/70 border border-red-200 px-2 py-0.5 rounded-md">
+                      Tiết kiệm {(totalOriginalPrice - totalPrice).toLocaleString("vi-VN")} đ
+                    </span>
                   </div>
-                  <div className="flex items-baseline justify-center sm:justify-start gap-2.5">
-                    <span className="text-3xl sm:text-4xl font-bold tracking-tight text-red-600 font-serif">
+
+                  <div className="flex flex-wrap items-baseline justify-center sm:justify-start gap-3 pt-1">
+                    <span className="text-3xl sm:text-4xl lg:text-[2.6rem] font-bold tracking-tight text-red-600 font-serif leading-none">
                       {totalPrice.toLocaleString("vi-VN")} đ
                     </span>
-                    <span className="text-[11px] font-semibold text-red-600 bg-red-50 border border-red-200/60 uppercase tracking-wider px-2 py-0.5 rounded">
-                      Giá ưu đãi
-                    </span>
+                    <div className="flex items-center gap-1.5 text-xs sm:text-sm text-[#77736b]">
+                      <span>Giá gốc:</span>
+                      <span className="line-through font-serif decoration-red-400/80 decoration-1.5 text-[#8c8273]">
+                        {totalOriginalPrice.toLocaleString("vi-VN")} đ
+                      </span>
+                    </div>
                   </div>
                 </div>
               ) : (
-                <div className="flex items-baseline justify-center sm:justify-start gap-3">
+                <div className="border-y border-[#282723]/15 py-4 flex items-baseline justify-center sm:justify-start gap-3">
                   <span className="text-3xl sm:text-4xl font-bold tracking-tight text-[#1b1a18] font-serif">
                     {totalPrice.toLocaleString("vi-VN")} đ
                   </span>
@@ -396,7 +406,8 @@ export default function ProductDetailView({ product, relatedProducts }: { produc
                       className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
                     />
                     {item.originalPrice && item.originalPrice > item.price && (
-                      <span className="absolute top-2 left-2 rounded-full bg-red-600 px-2 py-0.5 text-[9px] font-bold text-white shadow-sm">
+                      <span className="absolute top-2.5 left-2.5 rounded-md bg-red-600 px-2 py-0.5 text-[10px] font-bold text-white shadow-md flex items-center gap-1">
+                        <Flame className="w-2.5 h-2.5 fill-current" />
                         -{item.discountPercent ?? Math.round(((item.originalPrice - item.price) / item.originalPrice) * 100)}%
                       </span>
                     )}
@@ -415,11 +426,16 @@ export default function ProductDetailView({ product, relatedProducts }: { produc
 
                     <div className="mt-auto flex items-center justify-between pt-4 border-t border-[#282723]/10 w-full">
                       {item.originalPrice && item.originalPrice > item.price ? (
-                        <div className="flex flex-col">
-                          <span className="text-[10px] text-[#8c8273] line-through font-serif">
-                            {item.originalPrice.toLocaleString("vi-VN")}đ
-                          </span>
-                          <span className="text-xs font-bold text-red-600">
+                        <div className="flex flex-col items-start gap-0.5">
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-[10px] text-[#8c8273] line-through font-serif decoration-red-400">
+                              {item.originalPrice.toLocaleString("vi-VN")}đ
+                            </span>
+                            <span className="text-[9px] font-bold text-white bg-red-600 px-1 py-0.2 rounded shadow-2xs">
+                              -{item.discountPercent ?? Math.round(((item.originalPrice - item.price) / item.originalPrice) * 100)}%
+                            </span>
+                          </div>
+                          <span className="text-sm font-bold text-red-600">
                             {item.price.toLocaleString("vi-VN")}đ
                           </span>
                         </div>

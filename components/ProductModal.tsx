@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCart } from "@/lib/CartContext";
-import { Star, Check, ShoppingBag, X, Shield, Sparkles, Truck, ArrowRight, Minus, Plus } from "lucide-react";
+import { Star, Check, ShoppingBag, X, Shield, Sparkles, Truck, ArrowRight, Minus, Plus, Flame } from "lucide-react";
 
 export default function ProductModal() {
   const router = useRouter();
@@ -105,11 +105,19 @@ export default function ProductModal() {
                 className="w-full h-full object-cover"
               />
             )}
-            {selectedProduct.badge && (
-              <span className="absolute top-3 left-3 px-2.5 py-1 bg-forest-800 text-white text-[10px] font-semibold tracking-wider uppercase rounded-full shadow-sm">
-                {selectedProduct.badge}
-              </span>
-            )}
+            <div className="absolute top-3 left-3 flex flex-col gap-1.5 items-start pointer-events-none z-10">
+              {hasDiscount && discountPercent > 0 && (
+                <span className="rounded-md bg-red-600 px-2.5 py-1 text-[11px] font-bold text-white shadow-md flex items-center gap-1 animate-pulse">
+                  <Flame className="w-3.5 h-3.5 fill-current" />
+                  Giảm {discountPercent}%
+                </span>
+              )}
+              {selectedProduct.badge && (
+                <span className="px-2.5 py-1 bg-forest-800 text-white text-[10px] font-semibold tracking-wider uppercase rounded-full shadow-sm">
+                  {selectedProduct.badge}
+                </span>
+              )}
+            </div>
           </div>
 
           {/* Thumbnails */}
@@ -226,26 +234,27 @@ export default function ProductModal() {
 
             {/* Price Box with Discount */}
             {hasDiscount ? (
-              <div className="space-y-1 text-center sm:text-left">
-                <div className="flex items-center justify-center sm:justify-start gap-2">
-                  <span className="text-xs text-forest-500 font-medium">Giá gốc:</span>
-                  <span className="text-sm sm:text-base text-forest-400 line-through font-serif">
-                    {totalOriginalPrice.toLocaleString("vi-VN")} đ
+              <div className="rounded-2xl border border-red-200/90 bg-gradient-to-br from-red-50/90 via-white to-amber-50/40 p-4 sm:p-5 shadow-xs space-y-2 text-center sm:text-left">
+                <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
+                  <span className="inline-flex items-center gap-1 rounded-md bg-red-600 px-2.5 py-0.5 text-xs font-bold text-white shadow-xs tracking-wider uppercase">
+                    <Flame className="w-3.5 h-3.5 fill-current" />
+                    Giảm {discountPercent}%
                   </span>
-                  {discountPercent > 0 && (
-                    <span className="rounded-full bg-red-50 border border-red-200/80 px-2 py-0.5 text-[11px] font-bold text-red-600">
-                      -{discountPercent}%
-                    </span>
-                  )}
+                  <span className="text-xs font-semibold text-red-700 bg-red-100/70 border border-red-200 px-2 py-0.5 rounded-md">
+                    Tiết kiệm {(totalOriginalPrice - totalPrice).toLocaleString("vi-VN")} đ
+                  </span>
                 </div>
 
-                <div className="flex items-baseline justify-center sm:justify-start gap-2.5">
-                  <span className="font-serif text-3xl sm:text-4xl text-red-600 font-bold tracking-tight">
+                <div className="flex flex-wrap items-baseline justify-center sm:justify-start gap-3 pt-1">
+                  <span className="font-serif text-3xl sm:text-4xl font-bold tracking-tight text-red-600 leading-none">
                     {totalPrice.toLocaleString("vi-VN")} đ
                   </span>
-                  <span className="text-[11px] font-semibold text-red-600 bg-red-50 border border-red-200/60 uppercase tracking-wider px-2 py-0.5 rounded">
-                    Giá ưu đãi
-                  </span>
+                  <div className="flex items-center gap-1.5 text-xs sm:text-sm text-forest-600">
+                    <span>Giá gốc:</span>
+                    <span className="line-through font-serif decoration-red-400/80 decoration-1.5 text-forest-400">
+                      {totalOriginalPrice.toLocaleString("vi-VN")} đ
+                    </span>
+                  </div>
                 </div>
               </div>
             ) : (

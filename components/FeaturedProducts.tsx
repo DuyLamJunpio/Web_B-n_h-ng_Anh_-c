@@ -3,7 +3,7 @@
 import { useRef, useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { ChevronLeft, ChevronRight, ShoppingBag, Check, ArrowRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, ShoppingBag, Check, ArrowRight, Flame } from "lucide-react";
 import { useCart } from "@/lib/CartContext";
 import type { Product } from "@/lib/data";
 
@@ -147,7 +147,8 @@ export default function FeaturedProducts() {
                         </span>
                       )}
                       {product.originalPrice && product.originalPrice > product.price && (
-                        <span className="rounded-full bg-red-600 px-2.5 py-0.5 text-[10px] font-bold text-white shadow-sm">
+                        <span className="rounded-md bg-red-600 px-2.5 py-1 text-[11px] font-bold text-white shadow-md flex items-center gap-1">
+                          <Flame className="w-3 h-3 fill-current" />
                           -{product.discountPercent ?? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}%
                         </span>
                       )}
@@ -182,18 +183,18 @@ export default function FeaturedProducts() {
                     {/* Price & Action Row */}
                     <div className="mt-6 flex flex-wrap items-center justify-between gap-2 border-t border-[#24231f]/10 pt-4">
                       {product.originalPrice && product.originalPrice > product.price ? (
-                        <div className="flex flex-col">
-                          <span className="text-xs text-[#8c8273] line-through font-serif">
-                            {product.originalPrice.toLocaleString("vi-VN")} đ
-                          </span>
-                          <div className="flex items-center gap-1.5">
-                            <span className="text-base sm:text-lg font-bold text-red-600 tracking-tight">
-                              {product.price.toLocaleString("vi-VN")} đ
+                        <div className="flex flex-col items-start gap-0.5">
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs text-[#8c8273] line-through font-serif decoration-red-400">
+                              {product.originalPrice.toLocaleString("vi-VN")} đ
                             </span>
-                            <span className="text-[10px] font-semibold text-red-600 bg-red-50 border border-red-200/80 px-1.5 py-0.2 rounded">
-                              Ưu đãi
+                            <span className="text-[10px] font-bold text-white bg-red-600 px-1.5 py-0.5 rounded shadow-2xs">
+                              -{product.discountPercent ?? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}%
                             </span>
                           </div>
+                          <span className="text-lg sm:text-xl font-bold text-red-600 tracking-tight font-serif">
+                            {product.price.toLocaleString("vi-VN")} đ
+                          </span>
                         </div>
                       ) : (
                         <span className="text-base sm:text-lg font-medium text-[#24231f] tracking-tight">
