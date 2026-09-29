@@ -64,7 +64,11 @@ export default function Footer() {
             <h2 className="text-sm font-bold uppercase tracking-[0.18em] text-[#282723]">Liên hệ</h2>
             <div className="mt-5 space-y-3.5 text-[#504c44]">
               <p>hello@rungu.vn</p>
-              <p>0868 238 690</p>
+              <p>
+                <a href="tel:0945958185" className="hover:text-[#282723] transition-colors">
+                  0945 958 185
+                </a>
+              </p>
               <p>Hoàn Kiếm, Hà Nội</p>
               <a href="#contact" className="inline-flex items-center justify-center sm:justify-start gap-2 pt-2 text-base font-medium text-[#282723] transition-colors hover:text-[#8d693a]">Tư vấn trực tiếp <ArrowUpRight className="h-4 w-4" strokeWidth={1.25} /></a>
             </div>

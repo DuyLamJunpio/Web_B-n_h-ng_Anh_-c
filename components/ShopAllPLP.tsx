@@ -685,7 +685,12 @@ export default function ShopAllPLP() {
                           <span>Gửi tin nhắn tư vấn</span>
                           <ArrowUpRight className="h-4 w-4" strokeWidth={1.25} />
                         </a>
-                        <span className="text-[#504c44] font-medium">Hotline: 0868 238 690</span>
+                        <span className="text-[#504c44] font-medium">
+                          Hotline:{" "}
+                          <a href="tel:0945958185" className="hover:text-[#282723] transition-colors font-semibold">
+                            0945 958 185
+                          </a>
+                        </span>
                       </div>
                     </article>
                   )}
