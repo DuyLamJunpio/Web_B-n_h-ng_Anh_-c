@@ -328,10 +328,10 @@ export default function HeroVideo() {
           </p>
           <Link
             href={story.ctaLink}
-            className="hero-cta group mt-6 sm:mt-8 inline-flex items-center justify-center gap-2.5 border border-white bg-white px-7 sm:px-8 py-3.5 sm:py-4 text-xs sm:text-sm font-semibold uppercase tracking-[0.16em] !text-black transition-all hover:border-[#f3f1eb] hover:bg-[#f3f1eb] hover:!text-black shadow-lg mx-auto"
+            className="hero-cta group mt-6 sm:mt-8 inline-flex items-center justify-center gap-2.5 border border-white bg-transparent px-7 sm:px-8 py-3.5 sm:py-4 text-xs sm:text-sm font-semibold uppercase tracking-[0.16em] text-white hover:bg-white hover:text-black transition-all mx-auto cursor-pointer"
           >
-            <span className="!text-black font-semibold">{story.cta}</span>
-            <ArrowRight className="h-4 w-4 !text-black transition-transform duration-200 group-hover:translate-x-1" strokeWidth={1.5} />
+            <span className="font-semibold text-white group-hover:text-black transition-colors">{story.cta}</span>
+            <ArrowRight className="h-4 w-4 text-white group-hover:text-black transition-transform duration-200 group-hover:translate-x-1" strokeWidth={1.5} />
           </Link>
         </motion.div>
 
